@@ -34,35 +34,36 @@
 <div class="vs-canvas">
 
   <div class="vs-topbar">
-    <button class="vs-btn-line">&#8592;&nbsp;返回导航</button>
+    <a class="vs-btn-line" href="13-vm-ops-overview.html">&#8592;&nbsp;返回导航</a>
     <div class="page-title">批处理</div>
   </div>
 
   <div class="vs-overlay">
     <div class="vs-modal" style="width:750px;">
-      <div class="vs-modal-head">批处理<span class="vs-modal-close">&#10005;</span></div>
+      <div class="vs-modal-head">批处理<span class="vs-modal-close" data-close-go="13-vm-ops-overview.html">&#10005;</span></div>
       <div class="vs-modal-body">
         <div class="f-label">选择的货道</div>
         <div class="f-lanes">L1-10; L2-10; L3-10 &nbsp;; L1-10; L2-10; L3-10</div>
 
         <div class="f-label">补货量</div>
         <div class="stepper">
-          <button class="step-btn" aria-label="减少">&minus;</button>
-          <div class="step-val">11</div>
-          <button class="step-btn" aria-label="增加">+</button>
+          <button class="step-btn" aria-label="减少" data-step="-">&minus;</button>
+          <div class="step-val" data-href="15c-vm-ops-restock-numpad.html">11</div>
+          <button class="step-btn" aria-label="增加" data-step="+">+</button>
         </div>
 
         <div class="f-total">总计补货数量： 66</div>
       </div>
       <div class="md-foot">
-        <button class="md-btn md-btn-line">取消</button>
-        <button class="md-btn md-btn-pink">下架</button>
-        <button class="md-btn md-btn-orange">清空</button>
-        <button class="md-btn md-btn-green">补满</button>
-        <button class="md-btn md-btn-dark">确认补货</button>
+        <button class="md-btn md-btn-line" data-close-go="13-vm-ops-overview.html">取消</button>
+        <button class="md-btn md-btn-pink" data-href="22-vm-confirm-remove.html">下架</button>
+        <button class="md-btn md-btn-orange" data-href="21-vm-confirm-clear.html">清空</button>
+        <button class="md-btn md-btn-green" data-href="20-vm-confirm-fill.html">补满</button>
+        <button class="md-btn md-btn-dark" data-act="goto-toast" data-href="13-vm-ops-overview.html" data-toast="批量补货成功">确认补货</button>
       </div>
     </div>
   </div>
 </div>
+<script src="../shared/interactions.js" defer></script>
 </body>
 </html>

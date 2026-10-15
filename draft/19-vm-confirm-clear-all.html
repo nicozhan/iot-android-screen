@@ -24,20 +24,21 @@
 <div class="vs-canvas">
 
   <div class="vs-topbar">
-    <button class="vs-btn-line">&#8592;&nbsp;返回导航</button>
+    <a class="vs-btn-line" href="13-vm-ops-overview.html">&#8592;&nbsp;返回导航</a>
     <div class="page-title">全部清空</div>
   </div>
 
   <div class="vs-overlay">
     <div class="vs-modal">
-      <div class="vs-modal-head">全部清空<span class="vs-modal-close">&#10005;</span></div>
+      <div class="vs-modal-head">全部清空<span class="vs-modal-close" data-close-go="13-vm-ops-overview.html">&#10005;</span></div>
       <div class="vs-modal-body">确定将所有货道「全部清空」吗？</div>
       <div class="md-foot">
-        <button class="md-btn md-btn-line">取消</button>
-        <button class="md-btn md-btn-orange">全部清空</button>
+        <button class="md-btn md-btn-line" data-close-go="13-vm-ops-overview.html">取消</button>
+        <button class="md-btn md-btn-orange" data-act="goto-toast" data-href="13-vm-ops-overview.html" data-toast="已全部清空">全部清空</button>
       </div>
     </div>
   </div>
 </div>
+<script src="../shared/interactions.js" defer></script>
 </body>
 </html>

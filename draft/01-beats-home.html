@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=1280">
 <title>VendSolution Console · Beats项目售卖机 · 首页</title>
 <link rel="stylesheet" href="../shared/style.css">
+<style>a.vs-quick-btn,a.vs-more-btn{text-decoration:none;}</style>
 </head>
 <body>
 <div class="vs-canvas">
@@ -71,19 +72,19 @@
     <section>
       <div class="vs-section-title">快捷操作</div>
       <div class="vs-quick-grid">
-        <button class="vs-quick-btn vs-q-restock">
+        <a class="vs-quick-btn vs-q-restock" href="13-vm-ops-overview.html">
           <span class="vs-quick-title">补货</span>
           <span class="vs-quick-sub">上次补货：<span class="mono">08/01 11:02</span></span>
-        </button>
-        <button class="vs-quick-btn vs-q-stats">
+        </a>
+        <a class="vs-quick-btn vs-q-stats" href="45-products-sort-1.html">
           <span class="vs-quick-title">商品排序</span>
-        </button>
-        <button class="vs-quick-btn vs-q-goods">
+        </a>
+        <a class="vs-quick-btn vs-q-goods" href="42-products-price-1.html">
           <span class="vs-quick-title">商品价格</span>
-        </button>
-        <button class="vs-quick-btn vs-q-clean">
+        </a>
+        <a class="vs-quick-btn vs-q-clean" href="46-products-sort-2.html">
           <span class="vs-quick-title">商品分组管理</span>
-        </button>
+        </a>
         <button class="vs-quick-btn vs-q-ops">
           <span class="vs-quick-title">测试出货</span>
         </button>
@@ -96,7 +97,7 @@
       <div class="vs-more-grid">
         <button class="vs-more-btn">基本设置</button>
         <button class="vs-more-btn">账号设置</button>
-        <button class="vs-more-btn">预留1</button>
+        <a class="vs-more-btn" href="36-products.html">商品管理</a>
         <button class="vs-more-btn">预留2</button>
         <button class="vs-more-btn">预留3</button>
         <button class="vs-more-btn">预留4</button>
@@ -106,5 +107,6 @@
 
   </main>
 </div>
+<script src="../shared/interactions.js" defer></script>
 </body>
 </html>

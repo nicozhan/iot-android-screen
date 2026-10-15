@@ -9,7 +9,7 @@
 </head>
 <body>
 <div class="vs-canvas">
-<div class="vs-topbar"><a class="vs-btn-line" href="36-products.html">&#8592;&nbsp;返回</a><div class="page-title">标签管理</div><button class="vs-btn-line" style="margin-left:auto">完成</button></div>
+<div class="vs-topbar"><a class="vs-btn-line" href="36-products.html">&#8592;&nbsp;返回</a><div class="page-title">标签管理</div><button class="vs-btn-line" style="margin-left:auto" data-href="36-products.html">完成</button></div>
 <main class="vs-main" style="gap:14px">
   <div class="pm-tag-bar"><button class="pm-chip on">全部</button><button class="pm-chip">无分类</button><button class="pm-chip">咖啡</button><button class="pm-chip">饮料</button><button class="pm-chip">零食</button><button class="pm-chip">水</button></div>
   <div class="pm-note">全选当前结果（50 个 SKU）</div>
@@ -17,10 +17,11 @@
   <div class="pm-note">已选 12 个</div>
 </main>
 <div class="vs-footer">
-  <button class="vs-btn-line">添加标签</button>
-  <button class="vs-btn-line">移除标签</button>
-  <button class="vs-save-btn">全部清除</button>
+  <button class="vs-btn-line" data-href="51-products-category-2.html">添加标签</button>
+  <button class="vs-btn-line" data-op="remove-tags">移除标签</button>
+  <button class="vs-save-btn" data-op="clear-sel">全部清除</button>
 </div>
 </div>
+<script src="../shared/interactions.js" defer></script>
 </body>
 </html>

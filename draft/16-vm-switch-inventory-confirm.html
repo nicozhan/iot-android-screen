@@ -22,22 +22,23 @@
 <div class="vs-canvas">
 
   <div class="vs-topbar">
-    <button class="vs-btn-line">&#8592;&nbsp;返回导航</button>
+    <a class="vs-btn-line" href="13-vm-ops-overview.html">&#8592;&nbsp;返回导航</a>
     <div class="page-title">切换到盘点模式？</div>
   </div>
 
   <div class="vs-overlay">
     <div class="vs-modal">
-      <div class="vs-modal-head">切换到盘点模式？<span class="vs-modal-close">&#10005;</span></div>
+      <div class="vs-modal-head">切换到盘点模式？<span class="vs-modal-close" data-close-go="13-vm-ops-overview.html">&#10005;</span></div>
       <div class="vs-modal-body">
         <span>「盘点模式」：系统根据实际盘点结果更新设备库存，不扣减后台补货库存。</span>
       </div>
       <div class="md-foot">
-        <button class="md-btn md-btn-line">取消</button>
-        <button class="md-btn md-btn-dark">确定</button>
+        <button class="md-btn md-btn-line" data-close-go="13-vm-ops-overview.html">取消</button>
+        <button class="md-btn md-btn-dark" data-act="goto-toast" data-href="13-vm-ops-overview.html" data-toast="已切换到盘点模式">确定</button>
       </div>
     </div>
   </div>
 </div>
+<script src="../shared/interactions.js" defer></script>
 </body>
 </html>

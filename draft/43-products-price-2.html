@@ -44,7 +44,7 @@
   <div class="vs-modal" style="width:640px;">
     <div class="vs-modal-head">
       <div class="vs-modal-title">修改价格</div>
-      <button class="vs-modal-close">&#10005;</button>
+      <button class="vs-modal-close" data-close-hide>&#10005;</button>
     </div>
     <div class="vs-modal-body">
       <div class="md-product">
@@ -54,20 +54,21 @@
       </div>
       <div class="md-field">
         <span class="md-field-label">销售价</span>
-        <div class="md-field-input">$ 2.00</div>
+        <div class="md-field-input" data-href="44-products-price-3.html">$ 2.00</div>
       </div>
       <div class="md-field">
         <span class="md-field-label">划线价<span class="opt">（非必填）</span></span>
-        <div class="md-field-input">$ 2.50</div>
+        <div class="md-field-input" data-href="44-products-price-3.html">$ 2.50</div>
       </div>
     </div>
     <div class="md-foot md-foot-center">
-      <button class="md-btn md-btn-line">取消</button>
-      <button class="md-btn md-btn-line">应用到本机同款</button>
-      <button class="md-btn md-btn-dark">保存</button>
+      <button class="md-btn md-btn-line" data-close-hide>取消</button>
+      <button class="md-btn md-btn-line" data-close-hide data-toast="已应用到本机同款">应用到本机同款</button>
+      <button class="md-btn md-btn-dark" data-close-hide data-toast="已保存">保存</button>
     </div>
   </div>
 </div>
 </div>
+<script src="../shared/interactions.js" defer></script>
 </body>
 </html>

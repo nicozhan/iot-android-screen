@@ -75,25 +75,25 @@
 <div class="vs-canvas">
 
   <div class="vs-topbar">
-    <button class="vs-btn-line">&#8592;&nbsp;返回</button>
+    <a class="vs-btn-line" href="13-vm-ops-overview.html">&#8592;&nbsp;返回</a>
     <div class="page-title">补货</div>
-    <button class="vs-btn-line" style="margin-left:auto">保存</button>
+    <button class="vs-btn-line" style="margin-left:auto" data-toast="已保存">保存</button>
   </div>
 
   <main class="vs-main" style="gap:18px">
     <div class="seg">
       <button class="active">补货</button>
-      <button>盘点</button>
+      <button data-href="16-vm-switch-inventory-confirm.html">盘点</button>
     </div>
 
     <div class="vm-toolbar">
       <span class="vm-count">共 12 个货道</span>
       <div class="vm-tools">
         <button class="tool-btn">&#8645;&nbsp;货道<span class="chev">&#9662;</span></button>
-        <button class="tool-btn active">&#9638;&nbsp;图片模式</button>
-        <button class="tool-btn">多选</button>
-        <button class="tool-btn">全部补满</button>
-        <button class="tool-btn">全部清空</button>
+        <button class="tool-btn active" data-toggle="active">&#9638;&nbsp;图片模式</button>
+        <button class="tool-btn" data-href="17-vm-batch-restock-modal.html">多选</button>
+        <button class="tool-btn" data-href="18-vm-confirm-fill-all.html">全部补满</button>
+        <button class="tool-btn" data-href="19-vm-confirm-clear-all.html">全部清空</button>
       </div>
     </div>
 
@@ -117,7 +117,7 @@
 <!-- L3 补货量数字键盘弹窗 -->
 <div class="vs-overlay">
   <div class="vs-modal" style="width:640px;">
-    <div class="vs-modal-head">补货量 · L3 糖浆<span class="vs-modal-close">&#10005;</span></div>
+    <div class="vs-modal-head">补货量 · L3 糖浆<span class="vs-modal-close" data-close-go="15-vm-ops-restock-modal.html">&#10005;</span></div>
     <div class="np-display">11</div>
     <div class="np-grid">
       <button class="np-key">1</button><button class="np-key">2</button><button class="np-key">3</button>
@@ -126,11 +126,12 @@
       <button class="np-key">&minus;</button><button class="np-key">0</button><button class="np-key">&#9003;</button>
     </div>
     <div class="md-foot">
-      <button class="md-btn md-btn-line">取消</button>
-      <button class="md-btn md-btn-dark">确定</button>
+      <button class="md-btn md-btn-line" data-close-go="15-vm-ops-restock-modal.html">取消</button>
+      <button class="md-btn md-btn-dark" data-act="goto-toast" data-href="15-vm-ops-restock-modal.html" data-toast="已设置补货量">确定</button>
     </div>
   </div>
 </div>
 
+<script src="../shared/interactions.js" defer></script>
 </body>
 </html>

@@ -89,25 +89,25 @@
 <div class="vs-canvas">
 
   <div class="vs-topbar">
-    <button class="vs-btn-line">&#8592;&nbsp;返回</button>
+    <a class="vs-btn-line" href="13-vm-ops-overview.html">&#8592;&nbsp;返回</a>
     <div class="page-title">补货</div>
-    <button class="vs-btn-line" style="margin-left:auto">保存</button>
+    <button class="vs-btn-line" style="margin-left:auto" data-toast="已保存">保存</button>
   </div>
 
   <main class="vs-main" style="gap:18px">
     <div class="seg">
       <button class="active">补货</button>
-      <button>盘点</button>
+      <button data-href="16-vm-switch-inventory-confirm.html">盘点</button>
     </div>
 
     <div class="vm-toolbar">
       <span class="vm-count">共 12 个货道</span>
       <div class="vm-tools">
         <button class="tool-btn">&#8645;&nbsp;货道<span class="chev">&#9662;</span></button>
-        <button class="tool-btn active">&#9638;&nbsp;图片模式</button>
-        <button class="tool-btn">多选</button>
-        <button class="tool-btn">全部补满</button>
-        <button class="tool-btn">全部清空</button>
+        <button class="tool-btn active" data-toggle="active">&#9638;&nbsp;图片模式</button>
+        <button class="tool-btn" data-href="17-vm-batch-restock-modal.html">多选</button>
+        <button class="tool-btn" data-href="18-vm-confirm-fill-all.html">全部补满</button>
+        <button class="tool-btn" data-href="19-vm-confirm-clear-all.html">全部清空</button>
       </div>
     </div>
 
@@ -131,15 +131,15 @@
 <!-- L3 补货弹窗（保质期按生产日期） -->
 <div class="vs-overlay">
   <div class="vs-modal" style="width:880px;">
-    <div class="vs-modal-head">L3 · 糖浆<span class="vs-modal-close">&#10005;</span></div>
+    <div class="vs-modal-head">L3 · 糖浆<span class="vs-modal-close" data-close-go="13-vm-ops-overview.html">&#10005;</span></div>
     <div class="vs-modal-body">
       <div class="m-label">当前库存</div>
       <div class="m-big">2</div>
       <div class="m-label">补货量</div>
       <div class="stepper">
-        <button class="st-btn">&minus;</button>
-        <span class="st-num">11</span>
-        <button class="st-btn">+</button>
+        <button class="st-btn" data-step="-">&minus;</button>
+        <span class="st-num" data-href="15c-vm-ops-restock-numpad.html">11</span>
+        <button class="st-btn" data-step="+">+</button>
       </div>
       <div class="m-sub">补货后库存/总容量</div>
       <div class="m-result">11 / 20</div>
@@ -147,7 +147,7 @@
       <div class="m-shelf">
         <div class="m-label">日期设置</div>
         <div class="m-radios">
-          <label class="vs-radio"><span class="dot"></span>按保质期时长</label>
+          <label class="vs-radio" data-href="15-vm-ops-restock-modal.html"><span class="dot"></span>按保质期时长</label>
           <label class="vs-radio on"><span class="dot"></span>按生产日期</label>
         </div>
         <div class="m-input-row">
@@ -158,14 +158,15 @@
       </div>
     </div>
     <div class="md-foot">
-      <button class="md-btn md-btn-line">取消</button>
-      <button class="md-btn md-btn-red">下架</button>
-      <button class="md-btn md-btn-orange">清空</button>
-      <button class="md-btn md-btn-green">补满</button>
-      <button class="md-btn md-btn-dark">确认补货</button>
+      <button class="md-btn md-btn-line" data-close-go="13-vm-ops-overview.html">取消</button>
+      <button class="md-btn md-btn-red" data-href="22-vm-confirm-remove.html">下架</button>
+      <button class="md-btn md-btn-orange" data-href="21-vm-confirm-clear.html">清空</button>
+      <button class="md-btn md-btn-green" data-href="20-vm-confirm-fill.html">补满</button>
+      <button class="md-btn md-btn-dark" data-act="goto-toast" data-href="13-vm-ops-overview.html" data-toast="补货成功">确认补货</button>
     </div>
   </div>
 </div>
 
+<script src="../shared/interactions.js" defer></script>
 </body>
 </html>
