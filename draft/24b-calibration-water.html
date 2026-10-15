@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="CKvhLEgotTLdSjBmys6B0s">
+<head data-page-node-id="4Lz2me47BLFhnsDlL4zQKh">
+<meta charset="UTF-8" data-page-node-id="MO8Nq2Ht5HEiMww1AWxkWC">
+<title>水料校准 · 水量校准 · VendSolution</title>
+<link rel="stylesheet" href="../shared/style.css" data-page-node-id="OzjTkI79G2O5uEZQnQmGHH">
+<style>
+  .wc-header{
+    height:72px;flex:0 0 72px;display:flex;align-items:center;
+    padding:0 32px;background:var(--card);border-bottom:1px solid var(--line);
+  }
+  .wc-title{font-size:20px;font-weight:700;display:flex;align-items:center;gap:10px;}
+  .wc-back{
+    margin-left:auto;font-size:15px;color:var(--sub);cursor:pointer;
+    display:flex;align-items:center;gap:6px;
+  }
+  .wc-back:hover{color:var(--ink);}
+
+  .wc-tabs{
+    display:flex;gap:14px;padding:18px 32px;background:var(--card);
+    border-bottom:1px solid var(--line);flex:0 0 auto;
+  }
+  .wc-tab{
+    height:44px;padding:0 22px;background:var(--card);
+    border:1px solid var(--line-btn);border-radius:4px;
+    font-size:15px;font-weight:600;color:var(--ink);cursor:pointer;font-family:var(--sans);
+  }
+  .wc-tab.active{background:var(--dark);border-color:var(--dark);color:#FFF;}
+
+  .wc-main{flex:1;padding:28px 32px 40px;overflow-y:auto;}
+  .wc-kicker{font-family:var(--mono);font-size:13px;letter-spacing:2px;color:var(--aux);margin-bottom:8px;}
+  .wc-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:22px;}
+  .wc-h1{font-size:26px;font-weight:700;}
+  .wc-count{font-size:15px;font-weight:600;color:var(--sub);}
+
+  .wc-card{
+    background:var(--card);border:1px solid var(--ink);border-radius:6px;
+    padding:26px 28px;margin-bottom:22px;position:relative;
+  }
+  .wc-card-title{font-size:20px;font-weight:700;margin-bottom:18px;}
+  .wc-label{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:10px;}
+  .wc-input{
+    width:220px;height:56px;border:1px solid var(--line-btn);border-radius:4px;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 18px;font-size:18px;font-family:var(--mono);font-weight:600;background:var(--card);
+  }
+  .wc-input .unit{font-family:var(--sans);font-weight:500;color:var(--sub);font-size:15px;}
+  .wc-note{font-size:14px;color:var(--aux);margin-top:14px;}
+  .wc-note .mono{color:var(--sub);font-weight:500;}
+  .wc-test{
+    position:absolute;right:28px;top:50%;transform:translateY(-50%);
+    width:96px;height:52px;background:var(--card);
+    border:1px solid var(--line-btn);border-radius:4px;
+    font-size:16px;font-weight:600;color:var(--ink);cursor:pointer;font-family:var(--sans);
+  }
+  .wc-test:hover{background:#F0F0EC;}
+</style>
+</head>
+<body data-page-node-id="UB87h9jFgzHjv5xTR9WLiU">
+<div class="vs-canvas" data-page-node-id="lBCnilGqluUaj8fVzj7CJT">
+
+  <div class="wc-header" data-page-node-id="TqeRiOcerjyW9QKOxeH3Os">
+    <div class="wc-title" data-page-node-id="1DFdKRJi65RM7CVvPibvsI"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#171717" stroke-width="1.8" data-page-node-id="zpxZJoOssclmubd2iDlew6"><circle cx="12" cy="12" r="3.2" data-page-node-id="Pm0Ju1ZJ7ySJmgt0Jm8Iao"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1" data-page-node-id="ebQcj4pWBLkfkjK5UqBAjH"/></svg>水料校准</div>
+    <div class="wc-back" data-page-node-id="1K63nbFB0Z9qZQceGUSPY3">返回运维界面 ←</div>
+  </div>
+
+  <div class="wc-tabs" data-page-node-id="2YABAUCzKInSfPUsOTvOJa">
+    <button class="wc-tab active" data-page-node-id="RcvcPucGcVsqEr5ItIZtu5">水量校准</button>
+    <button class="wc-tab" data-page-node-id="gHD60ajNDiEAa0kemynlce">粉盒校准（一）</button>
+    <button class="wc-tab" data-page-node-id="KG2tobEbltxV152k8qexPY">粉盒校准（二）</button>
+    <button class="wc-tab" data-page-node-id="UGv0m1LyUpcq9eADuy4u0H">磨豆校准</button>
+  </div>
+
+  <div class="wc-main" data-page-node-id="AEBsnunaHeYAOtoMjZ4eGC">
+    <div class="wc-kicker" data-page-node-id="FGVzi9KAAIxbb98S2ZjJz6">CALIBRATION / 01</div>
+    <div class="wc-head" data-page-node-id="TxjHJ3Uwb1w7sx679AMqU3">
+      <div class="wc-h1" data-page-node-id="DOCaBnlIYMAIVuyc8DYLZk">水量校准</div>
+      <div class="wc-count" data-page-node-id="u96r28stESz9dz9zfemEU7">共 5 个水量基准</div>
+    </div>
+
+    <div class="wc-card" data-page-node-id="kDIojomx1rC9SWSHMswCF8">
+      <div class="wc-card-title" data-page-node-id="3B1EmFG1QWAOZZxpF8kRKx">校准 60 mL</div>
+      <div class="wc-label" data-page-node-id="Va0zzsIhxUDnKRnuAWnCny">目标出水量</div>
+      <div class="wc-input" data-page-node-id="HlKHNcXGxPtJHFXB6u9lMc"><span data-page-node-id="abWWpsNSCCEdYKd51L3i1s">60</span><span class="unit" data-page-node-id="iIZq2ucstktDNmE0xiHckJ">mL</span></div>
+      <div class="wc-note" data-page-node-id="ACu7F9kfZ0myuiXARaCZ3q">请以实际出水量 <span class="mono" data-page-node-id="Kg1nnhcGtLyB2H2Nkl2OSM">60 mL</span> 为准</div>
+      <button class="wc-test" data-page-node-id="w1aNukf1izoVUHgWbiRSjW">测试</button>
+    </div>
+
+    <div class="wc-card" data-page-node-id="AJeLV0ZbgTSDPGKMedzZWI">
+      <div class="wc-card-title" data-page-node-id="P5XMjWMMrjNFgBmRqCZkwU">校准 70 mL</div>
+      <div class="wc-label" data-page-node-id="OeMVzaJr7vtZn6uKq4xafZ">目标出水量</div>
+      <div class="wc-input" data-page-node-id="DOjfBsIDQIk21Bu7JPgHFj"><span data-page-node-id="huLWwQKke6iGaBJEcwYcRR">70</span><span class="unit" data-page-node-id="y2pYYeb8DHmxaBvhKDvaQJ">mL</span></div>
+      <div class="wc-note" data-page-node-id="dXcHXx9TC75zgrxNAkS591">请以实际出水量 <span class="mono" data-page-node-id="wC1JBUGIHoEZPNq7RdjsA6">70 mL</span> 为准</div>
+      <button class="wc-test" data-page-node-id="XPaW1MMllQqfp5jq5AZk5G">测试</button>
+    </div>
+
+    <div class="wc-card" data-page-node-id="3iWeGkhDEjOYjYqtgrZ1Q7">
+      <div class="wc-card-title" data-page-node-id="iDOr8c9HmYD7WEx6JIf0pF">校准 90 mL</div>
+      <div class="wc-label" data-page-node-id="H18eMoBShiwib1CCTRwmS4">目标出水量</div>
+      <div class="wc-input" data-page-node-id="b5pHSh7GacDZn2b10BVLHY"><span data-page-node-id="YwWGVUvTynJwyrf93c8aY5">90</span><span class="unit" data-page-node-id="pgFINtHpDeTrOOxBpQ3Jyq">mL</span></div>
+      <div class="wc-note" data-page-node-id="UA4wEzLFBOvUgX1rLUeocA">请以实际出水量 <span class="mono" data-page-node-id="cLMNDVIpCoR3zPWbQY5BRx">90 mL</span> 为准</div>
+      <button class="wc-test" data-page-node-id="C81obHzFlzeiFIJlGKIObU">测试</button>
+    </div>
+
+    <div class="wc-card" data-page-node-id="HT5SfWHxs5fXH7PORw4MFA">
+      <div class="wc-card-title" data-page-node-id="FtdGDCFkZMhAAuHhHZ250z">校准 120 mL</div>
+      <div class="wc-label" data-page-node-id="Ox25540ZAjwfoh5r1Xty8U">目标出水量</div>
+      <div class="wc-input" data-page-node-id="R8z165iofUI3XuTICqhFTS"><span data-page-node-id="Zp9nLVzSnKEzHyIzGHGeuQ">120</span><span class="unit" data-page-node-id="FfZBKVJLcEmqyrRC8pdbs7">mL</span></div>
+      <div class="wc-note" data-page-node-id="Bo8Hs6diI62Owe90ItmH0E">请以实际出水量 <span class="mono" data-page-node-id="dYvoIJ0qdjXYOt6IBSRt5j">120 mL</span> 为准</div>
+      <button class="wc-test" data-page-node-id="mOO20h13DKWhtzNi04JZV2">测试</button>
+    </div>
+
+    <div class="wc-card" data-page-node-id="RrZigLeokVroepj99LVgGY">
+      <div class="wc-card-title" data-page-node-id="8xTzpaGOBlWR3654Uv5ugu">校准 150 mL</div>
+      <div class="wc-label" data-page-node-id="wBXmf8QWPmoe8oKKEYNqN9">目标出水量</div>
+      <div class="wc-input" data-page-node-id="PBAf3WPCi2giu4HqmHbfOT"><span data-page-node-id="Idlkt3lOSPSbmWjFKoYDeG">150</span><span class="unit" data-page-node-id="XAKDDMmv0ZvSiyHtRE8XPw">mL</span></div>
+      <div class="wc-note" data-page-node-id="5pGwnoQqtCI9mYp9BDfb2j">请以实际出水量 <span class="mono" data-page-node-id="JkQIlZMUlSo3o7UN3D0s1t">150 mL</span> 为准</div>
+      <button class="wc-test" data-page-node-id="2OBIQe6U0GwamZLnImMC1Q">测试</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
