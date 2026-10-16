@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=1280">
 <title>VendSolution Console · 设置 / 本机设置</title>
 <link rel="stylesheet" href="../shared/style.css">
+<style>
+  /* ---- 本页：语言单选（中文 / English） ---- */
+  .vs-lang-row{margin-left:auto;display:flex;align-items:center;gap:48px;}
+</style>
 </head>
 <body>
 <div class="vs-canvas">
@@ -25,9 +29,9 @@
 
     <div class="vs-field">
       <span class="vs-field-label">后台运维语言</span>
-      <div class="vs-input">
-        <span>简体中文</span>
-        <span class="chev">&#8744;</span>
+      <div class="vs-lang-row">
+        <span class="vs-radio on" data-act="set-lang" data-lang="zh"><span class="dot"></span>中文</span>
+        <span class="vs-radio" data-act="set-lang" data-lang="en"><span class="dot"></span>English</span>
       </div>
     </div>
 
@@ -70,6 +74,7 @@
   </footer>
 
 </div>
+<script src="../shared/i18n.js" defer></script>
 <script src="../shared/interactions.js" defer></script>
 </body>
 </html>

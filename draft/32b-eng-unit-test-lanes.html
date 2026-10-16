@@ -115,6 +115,7 @@
 /* 按分类渲染货道卡片（原型演示数据；分类由上一页经 sessionStorage vs-ctx 传入）。
    货道号规则：分类序号-分类内序号（咖啡=1-x，饮料=2-x，……），与排序页列表同规格。 */
 (function () {
+  function T(x){ return window.I18N ? window.I18N.t(x) : x; }
   var CATS = {
     '咖啡': ['美式', '拿铁', '卡布奇诺', '摩卡', '澳白', '冰美式', '燕麦拿铁', '香草拿铁', '焦糖玛奇朵', '抹茶拿铁', '椰奶咖啡', '浓缩'],
     '饮料': ['可乐', '雪碧', '芬达', '美年达', '冰红茶', '冰绿茶', '茉莉花茶', '酸梅汤', '橙汁', '苹果汁', '葡萄汁', '柠檬茶', '椰子水', '苏打水', '能量饮料', '乌龙茶', '玉米汁', '胡萝卜汁'],
@@ -136,16 +137,17 @@
   for (var i = 0; i < names.length; i++) {
     html += '<div class="pm-lane-card">' +
       '<span class="pm-lane-no">' + catIdx + '-' + (i + 1) + '</span>' +
-      '<div class="pm-lane-thumb">商品图片</div>' +
+      '<div class="pm-lane-thumb">' + T('商品图片') + '</div>' +
       '<div class="pm-lane-name">' + names[i] + '</div>' +
-      '<button class="pm-ship-btn" data-ship="#ship-confirm">出货</button>' +
+      '<button class="pm-ship-btn" data-ship="#ship-confirm">' + T('出货') + '</button>' +
       '</div>';
   }
   document.getElementById('lane-list').innerHTML = html;
   var title = document.getElementById('lane-title');
-  if (title) title.textContent = cat + ' · ' + names.length + ' 个货道';
+  if (title) title.textContent = T(cat) + ' · ' + names.length + ' ' + T('个货道');
 })();
 </script>
+<script src="../shared/i18n.js" defer></script>
 <script src="../shared/interactions.js" defer></script>
 </body>
 </html>

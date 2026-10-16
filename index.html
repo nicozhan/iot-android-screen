@@ -60,6 +60,7 @@
   <div id="groups" data-page-node-id="8Omt2PeDLt97ZeLWCtkDD9"></div>
 </div>
 
+<script src="shared/i18n.js"></script>
 <script>
 const GROUPS = [
   { name: "Beats项目售卖机", base: "draft/", items: [
@@ -138,8 +139,8 @@ for (const g of GROUPS) {
   const sec = document.createElement("div");
   sec.className = "nav-group";
   sec.innerHTML = `<div class="nav-group-head">
-    <div class="nav-group-title">${g.name}</div>
-    ${g.tag ? `<div class="nav-group-tag">${g.tag}</div>` : ""}
+    <div class="nav-group-title">${I18N.t(g.name)}</div>
+    ${g.tag ? `<div class="nav-group-tag">${I18N.t(g.tag)}</div>` : ""}
     <div class="nav-group-count">${done} / ${g.items.length}</div>
   </div>`;
   const grid = document.createElement("div");
@@ -149,7 +150,7 @@ for (const g of GROUPS) {
     a.className = "nav-item" + (href ? "" : " todo");
     if (href) a.href = g.base + href;
     a.innerHTML = `<span class="nav-no">${no}</span>
-      <span class="nav-name">${name}</span>
+      <span class="nav-name">${I18N.t(name)}</span>
       <span class="nav-dot"></span>
       <span class="nav-arrow">${href ? "→" : "—"}</span>`;
     grid.appendChild(a);

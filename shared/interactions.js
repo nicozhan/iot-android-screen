@@ -69,6 +69,21 @@
     '.vs-kb-done:active{background:#000;}';
   document.head.appendChild(css);
 
+  /* ---------- 双语（shared/i18n.js，若页面未引入则降级为原文） ---------- */
+  function T(x) { return window.I18N ? window.I18N.t(x) : x; }
+  /* 出货流程文案模板：[中文, English]，%s = 货道号 / 商品名 */
+  var SHIP_TPL = {
+    confirm: ['确定要测试货道 %s（%s）出货吗？', 'Start test dispensing for lane %s (%s)?'],
+    running: ['货道 %s（%s）正在出货，请稍候…', 'Lane %s (%s) is dispensing, please wait…'],
+    done:    ['货道 %s（%s）测试出货完成', 'Lane %s (%s) test dispensing complete']
+  };
+  function shipT(key, lane, name) {
+    var pair = SHIP_TPL[key]; if (!pair) return '';
+    var isEn = !!(window.I18N && window.I18N.get() === 'en');
+    var tpl = isEn ? pair[1] : pair[0];
+    return tpl.replace('%s', lane).replace('%s', isEn ? T(name) : name);
+  }
+
   /* ---------- Toast ---------- */
   var toastTimer = null;
   function toast(msg) {
@@ -77,7 +92,7 @@
     if (old) old.remove();
     var t = document.createElement('div');
     t.className = 'vs-toast';
-    t.textContent = msg;
+    t.textContent = T(msg);
     document.body.appendChild(t);
     requestAnimationFrame(function () { t.classList.add('show'); });
     clearTimeout(toastTimer);
@@ -124,12 +139,12 @@
       var c = JSON.parse(sessionStorage.getItem('vs-ctx') || 'null');
       if (c && c.name) {
         if (t.hasAttribute('data-ctx-fixed')) {
-          t.textContent = c.name + ' · ' + t.getAttribute('data-ctx-fixed');
+          t.textContent = T(c.name) + ' · ' + T(t.getAttribute('data-ctx-fixed'));
         } else {
-          var noun = t.getAttribute('data-ctx-noun') || '个商品';
-          var fb = t.getAttribute('data-ctx-fallback') || '';
+          var noun = T(t.getAttribute('data-ctx-noun') || '个商品');
+          var fb = T(t.getAttribute('data-ctx-fallback') || '');
           var cnt = (c.count || '').replace(/个\s*$/, '').trim();   // “12 个”→“12”，避免拼出“12 个个商品”
-          t.textContent = c.name + ' · ' + (cnt ? cnt + ' ' + noun : fb);
+          t.textContent = T(c.name) + ' · ' + (cnt ? cnt + ' ' + noun : fb);
         }
       }
     } catch (e) {}
@@ -161,11 +176,11 @@
     if (laneCtx.lane || laneCtx.name) {
       ov.querySelectorAll('[data-fill-lane]').forEach(function (el) {
         var pre = el.getAttribute('data-fill-lane');
-        el.textContent = pre ? pre + ' · ' + laneCtx.lane + ' ' + laneCtx.name
-                             : laneCtx.lane + ' · ' + laneCtx.name;
+        el.textContent = pre ? T(pre) + ' · ' + laneCtx.lane + ' ' + T(laneCtx.name)
+                             : laneCtx.lane + ' · ' + T(laneCtx.name);
       });
       ov.querySelectorAll('[data-fill-name]').forEach(function (el) {
-        if (laneCtx.name) el.textContent = laneCtx.name;
+        if (laneCtx.name) el.textContent = T(laneCtx.name);
       });
     }
   }
@@ -230,9 +245,9 @@
     document.querySelectorAll('[data-ship-text]').forEach(function (el) {
       var kind = el.getAttribute('data-ship-text');
       var lane = shipCtx.lane, name = shipCtx.name;
-      if (kind === 'confirm') el.textContent = '确定要测试货道 ' + lane + '（' + name + '）出货吗？';
-      else if (kind === 'running') el.textContent = '货道 ' + lane + '（' + name + '）正在出货，请稍候…';
-      else if (kind === 'done') el.textContent = '货道 ' + lane + '（' + name + '）测试出货完成';
+      if (kind === 'confirm') el.textContent = shipT('confirm', lane, name);
+      else if (kind === 'running') el.textContent = shipT('running', lane, name);
+      else if (kind === 'done') el.textContent = shipT('done', lane, name);
     });
   }
   function shipOpen(el) {
@@ -271,7 +286,7 @@
     hideOverlay(document.querySelector(runSel));
     var fill = document.querySelector(runSel + ' .ship-bar-fill');
     if (fill) { fill.style.transition = 'none'; fill.style.width = '0%'; }
-    toast('已终止出货' + (shipCtx.lane ? '（货道 ' + shipCtx.lane + '）' : ''));
+    toast(shipCtx.lane ? T('已终止出货（货道 %s）').replace('%s', shipCtx.lane) : T('已终止出货'));
   }
 
   /* ---------- 步进器 ---------- */
@@ -362,11 +377,11 @@
     }).join('');
     ov.innerHTML =
       '<div class="vs-modal vs-kb">' +
-        '<div class="vs-kb-disp"><span class="np-display">0</span><span class="vs-kb-clear">清空</span></div>' +
+        '<div class="vs-kb-disp"><span class="np-display">0</span><span class="vs-kb-clear">' + T('清空') + '</span></div>' +
         '<div class="vs-kb-grid">' + grid + '</div>' +
         '<div class="vs-kb-actions">' +
-          '<button class="vs-kb-cancel" data-kb-cancel>取消</button>' +
-          '<button class="vs-kb-done" data-kb-done>确定</button>' +
+          '<button class="vs-kb-cancel" data-kb-cancel>' + T('取消') + '</button>' +
+          '<button class="vs-kb-done" data-kb-done>' + T('确定') + '</button>' +
         '</div>' +
       '</div>';
     document.body.appendChild(ov);
@@ -378,6 +393,9 @@
     kbMasked = src.hasAttribute('data-kb-mask');
     kbMax = parseInt(src.getAttribute('data-kb-max') || '0', 10) || 0;
     KB.dataset.raw = src.getAttribute('data-kb-value') || '';
+    var _c = KB.querySelector('.vs-kb-clear'); if (_c) _c.textContent = T('清空');
+    var _x = KB.querySelector('[data-kb-cancel]'); if (_x) _x.textContent = T('取消');
+    var _o = KB.querySelector('[data-kb-done]'); if (_o) _o.textContent = T('确定');
     kbRender();
     KB.classList.add('show');
   }
@@ -391,7 +409,7 @@
     if (kbSrc) {
       // 回写到触发输入框（优先其内部 .ph 占位，否则自身）
       var target = kbSrc.querySelector('.ph') || kbSrc;
-      var ph = kbSrc.getAttribute('data-kb-ph') || '';
+      var ph = T(kbSrc.getAttribute('data-kb-ph') || '');
       if (kbMasked) target.textContent = raw ? kbMask(raw) : ph;
       else target.textContent = raw || ph;
       kbSrc.setAttribute('data-kb-value', raw);
@@ -415,6 +433,14 @@
     if ((el = t.closest('#vs-kb .vs-kb-clear'))) { if (KB) { KB.dataset.raw = ''; kbRender(); } return; }
     if ((el = t.closest('#vs-kb .np-key'))) { kbPress(el); return; }
     if ((el = t.closest('#' + 'vs-kb'))) { return; }         // 键盘区域空白不穿透
+
+    /* ---- 语言切换（先于 .vs-radio 等，保证单选控件可切语言） ---- */
+    if ((el = t.closest('[data-act="set-lang"]'))) {
+      var lang = el.getAttribute('data-lang') === 'en' ? 'en' : 'zh';
+      if (window.I18N) window.I18N.set(lang);
+      toast(T(lang === 'en' ? '已切换为英文' : '已切换为中文'));
+      return;
+    }
 
     /* ---- 下拉菜单：点外部自动收起 / data-menu 切换 / data-modal 打开页内浮层 ---- */
     if (!t.closest('[data-menu]') && !t.closest('.vs-menu')) closeMenus();

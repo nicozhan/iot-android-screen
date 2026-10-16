@@ -383,6 +383,7 @@
       </div>
     </div>
   </div>
+<script src="../shared/i18n.js" defer></script>
 
 
 <script src="../shared/interactions.js" defer></script>
@@ -412,6 +413,7 @@
   };
   var LABEL = { lane:'货道顺序', sales:'售卖顺序', stock:'库存少-多', 'sku-asc':'SKU A-Z', 'sku-desc':'SKU Z-A' };
 
+  function T(x){ return window.I18N ? window.I18N.t(x) : x; }
   function toast(msg){ /* 与引擎同款 .vs-toast（样式由引擎注入） */
     var old = document.querySelector('.vs-toast');
     if (old) old.remove();
@@ -429,11 +431,11 @@
   function applySort(key){
     var cmp = CMP[key] || CMP.lane;
     cards.slice().sort(cmp).forEach(function(c){ grid.appendChild(c); });
-    if (label) label.textContent = LABEL[key] || '货道顺序';
+    if (label) label.textContent = T(LABEL[key] || '货道顺序');
     menu.querySelectorAll('.vs-menu-item').forEach(function(it){
       it.classList.toggle('on', it.getAttribute('data-sort') === key);
     });
-    toast('已按' + (LABEL[key] || '货道顺序') + '排序');
+    toast(T('已按' + (LABEL[key] || '货道顺序') + '排序'));
   }
 
   menu.addEventListener('click', function(e){
