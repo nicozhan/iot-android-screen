@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>整机清洗 · 确认 · VendSolution</title>
+<title>整机清洗 · 进行中 · VendSolution</title>
 <link rel="stylesheet" href="../shared/style.css">
 <style>
   .cl-status-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
@@ -27,21 +27,23 @@
   .vs-overlay{position:absolute;inset:0;background:transparent;display:flex;align-items:center;justify-content:center;z-index:10;}
   .vs-modal{width:560px;background:var(--card);border:1px solid var(--ink);border-radius:6px;overflow:hidden;}
   .vs-modal-head{height:64px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--line);font-size:18px;font-weight:700;}
-  .vs-modal-body{padding:36px 40px;display:flex;flex-direction:column;gap:22px;}
-  .cl-check-list{display:flex;flex-direction:column;gap:14px;font-size:16px;color:var(--ink);}
-  .cl-check-item{display:flex;gap:10px;align-items:flex-start;line-height:1.5;}
-  .cl-check-item .bullet{color:var(--ink);font-weight:700;}
-  .vs-modal-foot{display:flex;gap:16px;padding:0 40px 32px;}
-  .cl-btn{flex:1;height:56px;border-radius:4px;font-size:17px;font-weight:600;font-family:var(--sans);cursor:pointer;}
-  .cl-btn-line{background:var(--card);border:1px solid var(--line-btn);color:var(--ink);}
-  .cl-btn-dark{background:var(--dark);border:1px solid var(--dark);color:#FFF;}
+  .vs-modal-body{padding:40px 48px 36px;display:flex;flex-direction:column;align-items:center;gap:18px;}
+  .cl-step{font-size:15px;color:var(--sub);}
+  .cl-step .mono{font-weight:700;color:var(--ink);font-size:16px;}
+  .cl-task{font-size:24px;font-weight:700;}
+  .cl-progress{width:100%;height:14px;background:var(--track);border-radius:7px;overflow:hidden;}
+  .cl-progress-bar{height:100%;width:60%;background:var(--green);border-radius:7px;}
+  .cl-pct{font-family:var(--mono);font-size:16px;font-weight:700;}
+  .cl-warn{font-size:14px;color:var(--orange);font-weight:600;}
+  .vs-modal-foot{display:flex;justify-content:center;padding:0 40px 36px;}
+  .cl-stop-btn{width:240px;height:56px;background:var(--card);border:1px solid var(--red);border-radius:4px;color:var(--red);font-size:17px;font-weight:600;font-family:var(--sans);cursor:pointer;}
 </style>
 </head>
 <body>
 <div class="vs-canvas" style="position:relative;">
 
   <div class="vs-topbar">
-    <button class="vs-btn-line" data-href="01-beats-home.html">← 返回首页</button>
+    <button class="vs-btn-line" data-href="../draft/01-beats-home.html">← 返回首页</button>
     <div class="page-title">清洗</div>
   </div>
 
@@ -81,22 +83,19 @@
     </section>
   </div>
 
-  <!-- 整机清洗确认弹窗 -->
+  <!-- 整机清洗进行中弹窗 -->
   <div class="vs-overlay">
     <div class="vs-modal">
       <div class="vs-modal-head">整机清洗</div>
       <div class="vs-modal-body">
-        <div style="font-size:20px;font-weight:700;">准备开始清洗</div>
-        <div style="font-size:15px;color:var(--sub);">请确认：</div>
-        <div class="cl-check-list">
-          <div class="cl-check-item"><span class="bullet">·</span>机器处于可维护状态</div>
-          <div class="cl-check-item"><span class="bullet">·</span>已准备清洗液</div>
-          <div class="cl-check-item"><span class="bullet">·</span>清洗过程中请勿操作机器</div>
-        </div>
+        <div class="cl-step">正在清洗 <span class="mono">② / ⑤</span></div>
+        <div class="cl-task">冲洗冲泡器</div>
+        <div class="cl-progress"><div class="cl-progress-bar"></div></div>
+        <div class="cl-pct">60%</div>
+        <div class="cl-warn">请勿操作机器</div>
       </div>
       <div class="vs-modal-foot">
-        <button class="cl-btn cl-btn-line" data-close-go="16-cleaning.html">取消</button>
-        <button class="cl-btn cl-btn-dark" data-href="21-cleaning-progress.html">开始清洗</button>
+        <button class="cl-stop-btn" data-close-go="16-cleaning.html" data-toast="已停止清洗">停止</button>
       </div>
     </div>
   </div>

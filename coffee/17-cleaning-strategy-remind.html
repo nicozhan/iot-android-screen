@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>清洗策略 · 自动 · 按定时 · VendSolution</title>
+<title>清洗策略 · 只提醒 · VendSolution</title>
 <link rel="stylesheet" href="../shared/style.css">
 <style>
   .cl-status-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
@@ -24,28 +24,24 @@
   .cl-action-btn::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--green);}
   .cl-action-btn .arrow{color:var(--aux);font-size:18px;}
 
+  /* 弹窗 */
   .vs-overlay{position:absolute;inset:0;background:transparent;display:flex;align-items:center;justify-content:center;z-index:10;}
   .vs-modal{width:560px;background:var(--card);border:1px solid var(--ink);border-radius:6px;overflow:hidden;}
-  .vs-modal-head{height:64px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--line);font-size:18px;font-weight:700;}
+  .vs-modal-head{height:64px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--line);font-size:18px;font-weight:700;position:relative;}
   .vs-modal-body{padding:32px 40px;display:flex;flex-direction:column;gap:26px;}
   .vs-modal-foot{display:flex;gap:16px;padding:0 40px 32px;}
   .vs-m-label{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:14px;}
   .cl-radio-row{display:flex;flex-direction:column;gap:18px;}
-  .cl-radio-inline{display:flex;gap:48px;}
   .cl-btn{flex:1;height:56px;border-radius:4px;font-size:17px;font-weight:600;font-family:var(--sans);cursor:pointer;}
   .cl-btn-line{background:var(--card);border:1px solid var(--line-btn);color:var(--ink);}
   .cl-btn-dark{background:var(--dark);border:1px solid var(--dark);color:#FFF;}
-  .cl-input{height:56px;border:1px solid var(--line-btn);border-radius:4px;display:flex;align-items:center;padding:0 18px;font-size:18px;font-family:var(--mono);font-weight:600;background:var(--card);}
-  .cl-input .unit{font-family:var(--sans);font-weight:400;color:var(--sub);margin-left:10px;font-size:15px;}
-  .cl-next{font-size:14px;color:var(--sub);}
-  .cl-next .mono{color:var(--ink);font-weight:600;}
 </style>
 </head>
 <body>
 <div class="vs-canvas" style="position:relative;">
 
   <div class="vs-topbar">
-    <button class="vs-btn-line" data-href="01-beats-home.html">← 返回首页</button>
+    <button class="vs-btn-line" data-href="../draft/01-beats-home.html">← 返回首页</button>
     <div class="page-title">清洗</div>
   </div>
 
@@ -85,7 +81,7 @@
     </section>
   </div>
 
-  <!-- 清洗策略弹窗：自动 · 按定时 -->
+  <!-- 清洗策略弹窗：只提醒 -->
   <div class="vs-overlay">
     <div class="vs-modal">
       <div class="vs-modal-head">清洗策略</div>
@@ -93,22 +89,10 @@
         <div>
           <div class="vs-m-label">清洗方式</div>
           <div class="cl-radio-row">
-            <label class="vs-radio" data-href="17-cleaning-strategy-remind.html"><span class="dot"></span>只提醒</label>
-            <label class="vs-radio on"><span class="dot"></span>自动</label>
+            <label class="vs-radio on"><span class="dot"></span>只提醒</label>
+            <label class="vs-radio" data-href="19-cleaning-strategy-timer.html"><span class="dot"></span>自动</label>
           </div>
         </div>
-        <div>
-          <div class="vs-m-label">自动清洗条件</div>
-          <div class="cl-radio-inline">
-            <label class="vs-radio on"><span class="dot"></span>按定时</label>
-            <label class="vs-radio" data-href="18-cleaning-strategy-cups.html"><span class="dot"></span>按杯数</label>
-          </div>
-        </div>
-        <div>
-          <div class="vs-m-label">清洗周期</div>
-          <div class="cl-input" data-kb data-kb-ph="48"><span class="ph">48</span><span class="unit">小时</span></div>
-        </div>
-        <div class="cl-next">下次清洗：还剩 <span class="mono">48</span> 小时</div>
       </div>
       <div class="vs-modal-foot">
         <button class="cl-btn cl-btn-line" data-close-go="16-cleaning.html">取消</button>
