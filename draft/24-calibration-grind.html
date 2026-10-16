@@ -45,7 +45,7 @@
 <div class="vs-canvas">
 
   <div class="vs-topbar">
-    <button class="vs-btn-line">← 返回校准</button>
+    <button class="vs-btn-line" data-href="23-calibration.html">← 返回校准</button>
     <div class="page-title">研磨量校准</div>
   </div>
 
@@ -61,18 +61,18 @@
       <div class="cal-rounds">
         <div class="cal-round">
           <div class="cal-round-label">第一次</div>
-          <div class="cal-round-val">0.0<small>g</small></div>
-          <button class="cal-input-btn">输入重量</button>
+          <div class="cal-round-val" data-kb data-kb-ph="0.0"><span class="ph">0.0</span><small>g</small></div>
+          <button class="cal-input-btn" data-toast="点击左侧数值用键盘输入">输入重量</button>
         </div>
         <div class="cal-round">
           <div class="cal-round-label">第二次</div>
-          <div class="cal-round-val">0.0<small>g</small></div>
-          <button class="cal-input-btn">输入重量</button>
+          <div class="cal-round-val" data-kb data-kb-ph="0.0"><span class="ph">0.0</span><small>g</small></div>
+          <button class="cal-input-btn" data-toast="点击左侧数值用键盘输入">输入重量</button>
         </div>
         <div class="cal-round">
           <div class="cal-round-label">第三次</div>
-          <div class="cal-round-val">0.0<small>g</small></div>
-          <button class="cal-input-btn">输入重量</button>
+          <div class="cal-round-val" data-kb data-kb-ph="0.0"><span class="ph">0.0</span><small>g</small></div>
+          <button class="cal-input-btn" data-toast="点击左侧数值用键盘输入">输入重量</button>
         </div>
       </div>
     </section>
@@ -88,11 +88,12 @@
     </div>
 
     <div class="cal-foot">
-      <button class="cal-cancel">取消</button>
-      <button class="cal-save">保存</button>
+      <button class="cal-cancel" data-toast="已取消">取消</button>
+      <button class="cal-save" data-toast="已保存">保存</button>
     </div>
 
   </div>
 </div>
+<script src="../shared/interactions.js" defer></script>
 </body>
 </html>

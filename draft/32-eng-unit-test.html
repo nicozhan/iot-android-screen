@@ -2,62 +2,37 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>单动测试 · VendSolution</title>
+<meta name="viewport" content="width=1280">
+<title>VendSolution · 测试出货</title>
 <link rel="stylesheet" href="../shared/style.css">
 <style>
-  .ut-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
-  .ut-item{
-    background:var(--card);border:1px solid var(--line);border-radius:6px;
-    padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;
-  }
-  .ut-name{font-size:16px;font-weight:600;}
-  .ut-btn{
-    flex:0 0 auto;width:76px;height:40px;background:var(--card);
-    border:1px solid var(--line-btn);border-radius:4px;
-    font-size:14px;font-weight:600;color:var(--ink);font-family:var(--sans);cursor:pointer;
-  }
-  .ut-btn:hover{background:#F0F0EC;}
-  .ut-btn.run{background:var(--dark);border-color:var(--dark);color:#FFF;}
+  /* 本页：分类行为导航入口（不拖拽），沿用 pm-cat-row 规格 */
+  .pm-cat-row{cursor:pointer;}
+  .pm-cat-row:hover{background:#FCFCFA;}
+  .pm-cat-go{color:var(--aux);font-size:18px;flex:0 0 24px;text-align:center;}
 </style>
 </head>
 <body>
 <div class="vs-canvas">
 
   <div class="vs-topbar">
-    <button class="vs-btn-line">← 返回高级设置</button>
-    <div class="page-title">单动测试</div>
+    <button class="vs-btn-line" data-href="31-eng-settings.html">&#8592;&nbsp;返回高级设置</button>
+    <div class="page-title">测试出货</div>
   </div>
 
-  <div class="vs-main" style="gap:24px;overflow-y:auto;">
-    <section>
-      <div class="vs-section-title sm" style="margin-bottom:14px;">电机 / 水泵</div>
-      <div class="ut-grid">
-        <div class="ut-item"><span class="ut-name">出料电机 1</span><button class="ut-btn">启动</button></div>
-        <div class="ut-item"><span class="ut-name">出料电机 2</span><button class="ut-btn">启动</button></div>
-        <div class="ut-item"><span class="ut-name">出料电机 3</span><button class="ut-btn">启动</button></div>
-        <div class="ut-item"><span class="ut-name">出料电机 4</span><button class="ut-btn">启动</button></div>
-        <div class="ut-item"><span class="ut-name">出料电机 5</span><button class="ut-btn">启动</button></div>
-        <div class="ut-item"><span class="ut-name">出料电机 6</span><button class="ut-btn">启动</button></div>
-        <div class="ut-item"><span class="ut-name">低压水泵</span><button class="ut-btn">启动</button></div>
-        <div class="ut-item"><span class="ut-name">磨豆电机</span><button class="ut-btn">启动</button></div>
-        <div class="ut-item"><span class="ut-name">冲泡电机</span><button class="ut-btn">启动</button></div>
-      </div>
-    </section>
-
-    <section>
-      <div class="vs-section-title sm" style="margin-bottom:14px;">电磁阀</div>
-      <div class="ut-grid">
-        <div class="ut-item"><span class="ut-name">左搅拌器电磁阀</span><button class="ut-btn">启动</button></div>
-        <div class="ut-item"><span class="ut-name">右搅拌器电磁阀</span><button class="ut-btn">启动</button></div>
-        <div class="ut-item"><span class="ut-name">冲泡器电磁阀</span><button class="ut-btn">启动</button></div>
-        <div class="ut-item"><span class="ut-name">热水电磁阀</span><button class="ut-btn">启动</button></div>
-        <div class="ut-item"><span class="ut-name">排气电磁阀</span><button class="ut-btn">启动</button></div>
-        <div class="ut-item"><span class="ut-name">左搅拌器</span><button class="ut-btn">启动</button></div>
-        <div class="ut-item"><span class="ut-name">右搅拌器</span><button class="ut-btn">启动</button></div>
-        <div class="ut-item"><span class="ut-name">风扇</span><button class="ut-btn">启动</button></div>
-      </div>
-    </section>
-  </div>
+  <main class="vs-main" style="gap:14px">
+    <div class="pm-note">选择商品分类，进入后点击「出货」可测试对应货道</div>
+    <div class="pm-cat-list">
+      <div class="pm-cat-row" data-href="32b-eng-unit-test-lanes.html"><span class="pm-cat-name">咖啡</span><span class="pm-cat-count">12 个货道</span><span class="pm-cat-go">&#8250;</span></div>
+      <div class="pm-cat-row" data-href="32b-eng-unit-test-lanes.html"><span class="pm-cat-name">饮料</span><span class="pm-cat-count">18 个货道</span><span class="pm-cat-go">&#8250;</span></div>
+      <div class="pm-cat-row" data-href="32b-eng-unit-test-lanes.html"><span class="pm-cat-name">零食</span><span class="pm-cat-count">25 个货道</span><span class="pm-cat-go">&#8250;</span></div>
+      <div class="pm-cat-row" data-href="32b-eng-unit-test-lanes.html"><span class="pm-cat-name">水</span><span class="pm-cat-count">8 个货道</span><span class="pm-cat-go">&#8250;</span></div>
+      <div class="pm-cat-row" data-href="32b-eng-unit-test-lanes.html"><span class="pm-cat-name">早餐</span><span class="pm-cat-count">6 个货道</span><span class="pm-cat-go">&#8250;</span></div>
+      <div class="pm-cat-row" data-href="32b-eng-unit-test-lanes.html"><span class="pm-cat-name">奶茶</span><span class="pm-cat-count">9 个货道</span><span class="pm-cat-go">&#8250;</span></div>
+      <div class="pm-cat-row" data-href="32b-eng-unit-test-lanes.html"><span class="pm-cat-name">其他</span><span class="pm-cat-count">4 个货道</span><span class="pm-cat-go">&#8250;</span></div>
+    </div>
+  </main>
 </div>
+<script src="../shared/interactions.js" defer></script>
 </body>
 </html>

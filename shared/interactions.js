@@ -7,10 +7,20 @@
  *   data-close-go="x.html"        “关闭弹窗”= 返回来源页（用于整页即弹窗的截图态页面）
  *   data-toast="提示"             点击弹 toast
  *   data-toggle="active"          点击切换自身类名
+ *   data-menu="#id"               点击切换下拉菜单（点页面外部自动收起，如用户菜单）
+ *   data-modal="#id"              打开页内弹窗（.vs-overlay，配 data-close-hide 关闭，如二次确认）
+ *   data-ship="#id"               测试出货：出货按钮（读同卡片货道号/商品名）打开二次确认弹窗
+ *   data-ship-go / data-ship-stop / data-ship-done  开始出货（进度条约2.5s自动到完成）/ 终止 / 完成浮窗选择器
  *   data-step="+"/"-"             步进器加减（.stepper 内的 .st-num/.step-val）
  *   data-del                      删除所在 .pm-cat-row
  *   data-op="remove-tags|clear-sel"  标签管理底部操作
- * 自动接管：.np-key 数字键盘 / .vm-ctrl .sq 卡片加减 / .pm-sku 勾选 / .pm-chip 切换 / .pm-sort-list 拖拽排序 / .vs-overlay 点遮罩关闭
+ *   data-kb[.ph|data-kb-mask|data-kb-max|data-kb-ph]     打开通用数字键盘（输入框用）
+ *   data-kb-goto / data-kb-toast  键盘“确定”后跳转 / 提示（如登录 → 首页）
+ * 通用数字键盘（data-kb）：点击输入框唤起屏上数字键盘，键盘输入掩码/明文回写到触发框，
+ *   “确定”后可根据 data-kb-goto 跳转（如登录项，账号/口令纯数字场景）。
+ * 自动接管：.np-key 数字键盘 / .vm-ctrl .sq 卡片加减 / .pm-sku 勾选 / .pm-chip 切换 /
+ *   .pm-sort-list 拖拽排序 / .vs-radio 单选互斥 / .vs-overlay 点遮罩关闭
+ * 动态标题：读取 sessionStorage vs-ctx 写入 .vs-section-title[data-ctx]（排序/分类子页）
  */
 (function () {
   'use strict';
@@ -24,9 +34,33 @@
       'z-index:99999;pointer-events:none;font-family:var(--sans,"PingFang SC","Microsoft YaHei",sans-serif);}' +
     '.vs-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}' +
     '[data-href]{cursor:pointer;}' +
-    '.pm-sku,.pm-chip{cursor:pointer;}' +
+    '[data-menu],[data-modal]{cursor:pointer;}' +
+    '.vs-tab,.login-tab{cursor:pointer;}' +
+    '.pm-sku,.pm-chip,.vs-radio{cursor:pointer;}' +
     '.pm-sort-card.dragging{opacity:.4;}' +
-    '.pm-sort-card.drop-target{outline:2px dashed var(--ink);outline-offset:-2px;}';
+    '.pm-sort-card.drop-target{outline:2px dashed var(--ink);outline-offset:-2px;}' +
+    /* ===== 通用数字键盘 ===== */
+    '.vs-kb-overlay{position:fixed;inset:0;background:rgba(20,20,20,.42);display:none;align-items:flex-end;' +
+      'justify-content:center;z-index:99998;}' +
+    '.vs-kb-overlay.show{display:flex;}' +
+    '.vs-kb{width:min(680px,94vw);background:#fff;border:1px solid var(--line,#d9d9d2);border-radius:10px;' +
+      'margin-bottom:36px;overflow:hidden;box-shadow:0 -6px 40px rgba(0,0,0,.22);}' +
+    '.vs-kb-disp{display:flex;align-items:center;justify-content:space-between;padding:22px 26px;' +
+      'border-bottom:1px solid var(--line,#d9d9d2);}' +
+    '.vs-kb-disp .np-display{font-family:var(--mono,"Roboto Mono",monospace);font-size:40px;font-weight:700;' +
+      'color:var(--ink,#111);letter-spacing:2px;min-height:48px;}' +
+    '.vs-kb-clear{font-size:15px;color:var(--aux,#7a7a72);cursor:pointer;}' +
+    '.vs-kb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line,#d9d9d2);}' +
+    '.vs-kb-grid .np-key{height:76px;background:#fff;border:none;font-size:28px;font-weight:600;' +
+      'color:var(--ink,#111);cursor:pointer;font-family:var(--sans,sans-serif);}' +
+    '.vs-kb-grid .np-key:active{background:#f0f0eb;}' +
+    '.vs-kb-grid .np-key.np-fn{color:var(--aux,#7a7a72);}' +
+    '.vs-kb-actions{display:flex;}' +
+    '.vs-kb-actions button{flex:1;height:64px;border:none;font-size:18px;font-weight:700;cursor:pointer;' +
+      'font-family:var(--sans,sans-serif);}' +
+    '.vs-kb-cancel{background:#fff;color:var(--ink,#111);border-top:1px solid var(--line,#d9d9d2);}' +
+    '.vs-kb-done{background:var(--dark,#0f0f0f);color:#fff;}' +
+    '.vs-kb-done:active{background:#000;}';
   document.head.appendChild(css);
 
   /* ---------- Toast ---------- */
@@ -74,6 +108,27 @@
       }
     } catch (e) {}
   }
+  /* 动态标题：读取 vs-ctx 写入 .vs-section-title[data-ctx]
+     - data-ctx-noun / data-ctx-fallback：显示 “来源名 · N 个商品”，缺省回退文案（47/48）
+     - data-ctx-fixed：显示 “来源名 · <fixed>”（49，固定“12 个SKU”） */
+  (function applyCtxTitle() {
+    var t = document.querySelector('.vs-section-title[data-ctx]');
+    if (!t) return;
+    try {
+      var c = JSON.parse(sessionStorage.getItem('vs-ctx') || 'null');
+      if (c && c.name) {
+        if (t.hasAttribute('data-ctx-fixed')) {
+          t.textContent = c.name + ' · ' + t.getAttribute('data-ctx-fixed');
+        } else {
+          var noun = t.getAttribute('data-ctx-noun') || '个商品';
+          var fb = t.getAttribute('data-ctx-fallback') || '';
+          var cnt = (c.count || '').replace(/个\s*$/, '').trim();   // “12 个”→“12”，避免拼出“12 个个商品”
+          t.textContent = c.name + ' · ' + (cnt ? cnt + ' ' + noun : fb);
+        }
+      }
+    } catch (e) {}
+    try { sessionStorage.removeItem('vs-ctx'); } catch (e) {}
+  })();
 
   /* ---------- 弹窗关闭 ---------- */
   function doClose(el) {
@@ -81,16 +136,101 @@
       location.href = el.getAttribute('data-close-go');
     } else {
       var ov = el.closest('.vs-overlay');
-      if (ov) ov.style.display = 'none';
+      if (ov) { ov.style.display = 'none'; ov.classList.remove('show'); }
     }
     if (el.getAttribute('data-toast')) toast(el.getAttribute('data-toast'));
   }
 
+  /* ---------- 页内弹窗（按选择器打开，同时关闭其它已开浮层） ---------- */
+  function openModal(sel) {
+    if (!sel) return;
+    var ov = document.querySelector(sel);
+    if (!ov) return;
+    document.querySelectorAll('.vs-overlay.show').forEach(function (o) {
+      if (o !== ov) { o.classList.remove('show'); o.style.display = 'none'; }
+    });
+    ov.style.display = '';                 // 清除 doClose 留下的 display:none，交还给 .show 类
+    ov.classList.add('show');
+  }
+
+  /* ---------- 下拉菜单（如用户菜单） ---------- */
+  function closeMenus() {
+    document.querySelectorAll('.vs-menu.show').forEach(function (m) { m.classList.remove('show'); });
+  }
+  function toggleMenu(sel) {
+    var panel = sel ? document.querySelector(sel) : null;
+    if (!panel) return;
+    var wasOpen = panel.classList.contains('show');
+    closeMenus();
+    if (!wasOpen) panel.classList.add('show');
+  }
+
+  /* =====================================================================
+   * 测试出货流程（data-ship）：货道卡片上的「出货」按钮 →
+   *   二次确认弹窗 → 出货中（进度条 + 可终止）→ 出货完成
+   * 页面约定（均可由 data-* 指定，以下为默认值）：
+   *   [data-ship="#ship-confirm"]   出货按钮：从所属卡片读货道号(.pm-lane-no)与商品名(.pm-lane-name)，打开确认弹窗
+   *   [data-ship-go="#ship-running"] 开始出货：打开出货中浮层并播进度条，约 2.5s 后自动打开完成浮层
+   *   [data-ship-done="#ship-done"]  完成浮层选择器（可写在开始出货按钮上）
+   *   [data-ship-stop="#ship-running"] 终止出货：停止计时、复位进度条、toast 提示
+   *   [data-ship-text="confirm|running|done"] 浮层内文案占位，点击时按货道号/商品名回填
+   * ===================================================================== */
+  var shipCtx = { lane: '', name: '' };
+  var shipTimer = null;
+  function shipTexts() {
+    document.querySelectorAll('[data-ship-text]').forEach(function (el) {
+      var kind = el.getAttribute('data-ship-text');
+      var lane = shipCtx.lane, name = shipCtx.name;
+      if (kind === 'confirm') el.textContent = '确定要测试货道 ' + lane + '（' + name + '）出货吗？';
+      else if (kind === 'running') el.textContent = '货道 ' + lane + '（' + name + '）正在出货，请稍候…';
+      else if (kind === 'done') el.textContent = '货道 ' + lane + '（' + name + '）测试出货完成';
+    });
+  }
+  function shipOpen(el) {
+    var card = el.closest('.pm-lane-card') || el.closest('.pm-sort-card') || el.closest('.pm-row');
+    shipCtx.lane = '';
+    shipCtx.name = '';
+    if (card) {
+      var no = card.querySelector('.pm-lane-no') || card.querySelector('.pm-sort-no') || card.querySelector('.pm-sku-id');
+      var nm = card.querySelector('.pm-lane-name') || card.querySelector('.pm-sort-name') || card.querySelector('.pm-name');
+      if (no) shipCtx.lane = no.textContent.trim();
+      if (nm) shipCtx.name = nm.textContent.trim();
+    }
+    shipTexts();
+    openModal(el.getAttribute('data-ship') || '#ship-confirm');
+    closeMenus();
+  }
+  function shipStart(el) {
+    var runSel = (el && el.getAttribute('data-ship-go')) || '#ship-running';
+    var doneSel = (el && el.getAttribute('data-ship-done')) || '#ship-done';
+    shipTexts();
+    openModal(runSel);
+    var fill = document.querySelector(runSel + ' .ship-bar-fill');
+    if (fill) {
+      fill.style.transition = 'none';
+      fill.style.width = '0%';
+      void fill.offsetWidth;                       // 强制回流，保证过渡重新播放
+      fill.style.transition = 'width 2.4s linear';
+      fill.style.width = '100%';
+    }
+    clearTimeout(shipTimer);
+    shipTimer = setTimeout(function () { openModal(doneSel); }, 2500);
+  }
+  function shipStop(el) {
+    var runSel = (el && el.getAttribute('data-ship-stop')) || '#ship-running';
+    clearTimeout(shipTimer);
+    var ov = document.querySelector(runSel);
+    if (ov) { ov.classList.remove('show'); ov.style.display = 'none'; }
+    var fill = document.querySelector(runSel + ' .ship-bar-fill');
+    if (fill) { fill.style.transition = 'none'; fill.style.width = '0%'; }
+    toast('已终止出货' + (shipCtx.lane ? '（货道 ' + shipCtx.lane + '）' : ''));
+  }
+
   /* ---------- 步进器 ---------- */
   function step(el) {
-    var box = el.closest('.stepper');
+    var box = el.closest('.stepper') || el.closest('.pp-stepper');
     if (!box) return;
-    var num = box.querySelector('.st-num') || box.querySelector('.step-val');
+    var num = box.querySelector('.st-num') || box.querySelector('.step-val') || box.querySelector('.pp-val');
     if (!num) return;
     var v = parseInt(num.textContent.replace(/[^\d-]/g, ''), 10);
     if (isNaN(v)) v = 0;
@@ -112,7 +252,7 @@
     num.textContent = '+' + v;
   }
 
-  /* ---------- 数字键盘 ---------- */
+  /* ---------- 整页数字键盘（.np-key → .np-display）---------- */
   function npKey(el) {
     var modal = el.closest('.vs-modal');
     if (!modal) return;
@@ -131,17 +271,121 @@
     }
   }
 
+  /* =====================================================================
+   * 通用数字键盘（data-kb）：屏上键盘，供任意输入框唤起
+   * ===================================================================== */
+  var KB = null, kbSrc = null, kbMasked = false, kbMax = 0;
+  function kbMask(s) {
+    // 明文转掩码点（保留符号位提示：空则空）
+    if (!s) return '';
+    return s.replace(/[0-9]/g, '\u2022');
+  }
+  function kbRender() {
+    if (!KB) return;
+    var raw = KB.dataset.raw || '';
+    var disp = KB.querySelector('.np-display');
+    if (kbMasked) disp.textContent = kbMask(raw);
+    else disp.textContent = raw || '0';
+  }
+  function kbPress(el) {
+    if (!KB) return;
+    var k = el.textContent.trim();
+    var cur = KB.dataset.raw || '';
+    if (k === '\u232B') {                                   // 退格
+      cur = cur.slice(0, -1);
+    } else if (k === '.' || k === '\u2212' || k === '-') { // 小数点（键盘含 .，口令牌不需要）
+      if (k === '.' && cur.indexOf('.') < 0) cur = cur + '.';
+    } else {
+      var digits = cur.replace(/[^0-9]/g, '');
+      if (kbMax && digits.length >= kbMax) return;         // 达到最大位数
+      cur = cur + k;
+    }
+    KB.dataset.raw = cur;
+    kbRender();
+  }
+  function buildKB() {
+    var ov = document.createElement('div');
+    ov.className = 'vs-kb-overlay';
+    ov.id = 'vs-kb';
+    var keys = ['1','2','3','4','5','6','7','8','9','.','0','\u232B'];
+    var grid = keys.map(function (k) {
+      var fn = (k === '.' || k === '\u232B') ? ' np-fn' : '';
+      return '<button class="np-key' + fn + '">' + k + '</button>';
+    }).join('');
+    ov.innerHTML =
+      '<div class="vs-modal vs-kb">' +
+        '<div class="vs-kb-disp"><span class="np-display">0</span><span class="vs-kb-clear">清空</span></div>' +
+        '<div class="vs-kb-grid">' + grid + '</div>' +
+        '<div class="vs-kb-actions">' +
+          '<button class="vs-kb-cancel" data-kb-cancel>取消</button>' +
+          '<button class="vs-kb-done" data-kb-done>确定</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(ov);
+    KB = ov;
+  }
+  function openKB(src) {
+    if (!KB) buildKB();
+    kbSrc = src;
+    kbMasked = src.hasAttribute('data-kb-mask');
+    kbMax = parseInt(src.getAttribute('data-kb-max') || '0', 10) || 0;
+    KB.dataset.raw = src.getAttribute('data-kb-value') || '';
+    kbRender();
+    KB.classList.add('show');
+  }
+  function closeKB() {
+    if (KB) KB.classList.remove('show');
+    kbSrc = null;
+  }
+  function kbDone() {
+    var raw = KB ? (KB.dataset.raw || '') : '';
+    var href = null, toastMsg = null;
+    if (kbSrc) {
+      // 回写到触发输入框（优先其内部 .ph 占位，否则自身）
+      var target = kbSrc.querySelector('.ph') || kbSrc;
+      var ph = kbSrc.getAttribute('data-kb-ph') || '';
+      if (kbMasked) target.textContent = raw ? kbMask(raw) : ph;
+      else target.textContent = raw || ph;
+      kbSrc.setAttribute('data-kb-value', raw);
+      href = kbSrc.getAttribute('data-kb-goto');
+      toastMsg = kbSrc.getAttribute('data-kb-toast');
+    }
+    closeKB();
+    if (href) goto(href, toastMsg);
+    else if (toastMsg) toast(toastMsg);
+  }
+
   /* ---------- 统一点击委托 ---------- */
   document.addEventListener('click', function (ev) {
     var t = ev.target;
     if (!t || !t.closest) return;
     var el;
 
+    /* 通用键盘（先于其它，避免与内层 np-key 混淆） */
+    if ((el = t.closest('#vs-kb [data-kb-done]'))) { kbDone(); return; }
+    if ((el = t.closest('#vs-kb [data-kb-cancel]'))) { closeKB(); return; }
+    if ((el = t.closest('#vs-kb .vs-kb-clear'))) { if (KB) { KB.dataset.raw = ''; kbRender(); } return; }
+    if ((el = t.closest('#vs-kb .np-key'))) { kbPress(el); return; }
+    if ((el = t.closest('#' + 'vs-kb'))) { return; }         // 键盘区域空白不穿透
+
+    /* ---- 下拉菜单：点外部自动收起 / data-menu 切换 / data-modal 打开页内弹窗 ---- */
+    if (!t.closest('[data-menu]') && !t.closest('.vs-menu')) closeMenus();
+    if ((el = t.closest('[data-menu]'))) { toggleMenu(el.getAttribute('data-menu')); return; }
+    if ((el = t.closest('[data-modal]'))) { openModal(el.getAttribute('data-modal')); closeMenus(); return; }
+
+    /* ---- 测试出货流程 ---- */
+    if ((el = t.closest('[data-ship]'))) { shipOpen(el); return; }
+    if ((el = t.closest('[data-ship-go]'))) { shipStart(el); return; }
+    if ((el = t.closest('[data-ship-stop]'))) { shipStop(el); return; }
+
     /* 点弹窗遮罩 = 关闭 */
     if (t.classList && t.classList.contains('vs-overlay')) {
       var c = t.querySelector('[data-close-go]') || t.querySelector('[data-close-hide]');
       if (c) { doClose(c); return; }
     }
+
+    /* 唤起通用键盘（输入框） */
+    if ((el = t.closest('[data-kb]'))) { openKB(el); return; }
 
     if ((el = t.closest('.np-key'))) { npKey(el); return; }
     if ((el = t.closest('.vm-ctrl .sq'))) { plusN(el); return; }
@@ -174,6 +418,19 @@
     }
     if ((el = t.closest('.pm-chip'))) { el.classList.toggle('on'); return; }
 
+    /* 单选：带 data-href 视为模式切换（跳转），否则行内互斥（设置页） */
+    if ((el = t.closest('.vs-radio'))) {
+      if (el.hasAttribute('data-href')) {
+        storeCtx(el);
+        goto(el.getAttribute('data-href'), el.getAttribute('data-toast'));
+        return;
+      }
+      var grp = el.closest('.vs-unit-row') || el.parentNode;
+      if (grp) grp.querySelectorAll('.vs-radio').forEach(function (r) { r.classList.remove('on'); });
+      el.classList.add('on');
+      return;
+    }
+
     if ((el = t.closest('[data-act="goto-toast"]'))) {
       goto(el.getAttribute('data-href'), el.getAttribute('data-toast'));
       return;
@@ -188,7 +445,7 @@
     if ((el = t.closest('[data-toggle]'))) { el.classList.toggle(el.getAttribute('data-toggle')); return; }
   });
 
-  /* ---------- 排序拖拽（.pm-sort-list 内的 .pm-sort-card） ---------- */
+  /* ---------- 排序拖拽（.pm-sort-list 内的 .pm-sort-card）---------- */
   function renumber(list) {
     list.querySelectorAll('.pm-sort-no').forEach(function (no, i) {
       no.textContent = 'L' + (i + 1);

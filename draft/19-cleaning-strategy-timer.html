@@ -45,7 +45,7 @@
 <div class="vs-canvas" style="position:relative;">
 
   <div class="vs-topbar">
-    <button class="vs-btn-line">← 返回首页</button>
+    <button class="vs-btn-line" data-href="01-beats-home.html">← 返回首页</button>
     <div class="page-title">清洗</div>
   </div>
 
@@ -93,7 +93,7 @@
         <div>
           <div class="vs-m-label">清洗方式</div>
           <div class="cl-radio-row">
-            <label class="vs-radio"><span class="dot"></span>只提醒</label>
+            <label class="vs-radio" data-href="17-cleaning-strategy-remind.html"><span class="dot"></span>只提醒</label>
             <label class="vs-radio on"><span class="dot"></span>自动</label>
           </div>
         </div>
@@ -101,22 +101,23 @@
           <div class="vs-m-label">自动清洗条件</div>
           <div class="cl-radio-inline">
             <label class="vs-radio on"><span class="dot"></span>按定时</label>
-            <label class="vs-radio"><span class="dot"></span>按杯数</label>
+            <label class="vs-radio" data-href="18-cleaning-strategy-cups.html"><span class="dot"></span>按杯数</label>
           </div>
         </div>
         <div>
           <div class="vs-m-label">清洗周期</div>
-          <div class="cl-input">48<span class="unit">小时</span></div>
+          <div class="cl-input" data-kb data-kb-ph="48"><span class="ph">48</span><span class="unit">小时</span></div>
         </div>
         <div class="cl-next">下次清洗：还剩 <span class="mono">48</span> 小时</div>
       </div>
       <div class="vs-modal-foot">
-        <button class="cl-btn cl-btn-line">取消</button>
-        <button class="cl-btn cl-btn-dark">确定</button>
+        <button class="cl-btn cl-btn-line" data-close-go="16-cleaning.html">取消</button>
+        <button class="cl-btn cl-btn-dark" data-close-go="16-cleaning.html" data-toast="策略已保存">确定</button>
       </div>
     </div>
   </div>
 
 </div>
+<script src="../shared/interactions.js" defer></script>
 </body>
 </html>

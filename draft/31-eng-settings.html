@@ -28,7 +28,7 @@
 <div class="vs-canvas">
 
   <div class="vs-topbar">
-    <button class="vs-btn-line">← 返回首页</button>
+    <button class="vs-btn-line" data-href="01-beats-home.html">← 返回首页</button>
     <div class="page-title">高级设置</div>
     <div class="eng-tag">工程模式</div>
   </div>
@@ -37,24 +37,24 @@
     <section>
       <div class="vs-section-title" style="margin-bottom:16px;">工程工具</div>
       <div class="eng-list">
-        <div class="eng-item">
+        <div class="eng-item" data-href="32-eng-unit-test.html">
           <div>
-            <div class="eng-item-name">单动测试</div>
-            <div class="eng-item-sub">电机 / 水泵 / 电磁阀 / 搅拌器 / 磨豆机 / 冲泡器 / 风扇</div>
+            <div class="eng-item-name" data-toast="该工具（演示）">测试出货</div>
+            <div class="eng-item-sub" data-toast="该工具（演示）">按分类与货道测试实际出货</div>
           </div>
           <span class="eng-arrow">→</span>
         </div>
-        <div class="eng-item">
+        <div class="eng-item" data-href="34-eng-sensors.html">
           <div>
-            <div class="eng-item-name">传感器状态</div>
-            <div class="eng-item-sub">查看设备实时传感器状态</div>
+            <div class="eng-item-name" data-toast="该工具（演示）">传感器状态</div>
+            <div class="eng-item-sub" data-href="35-eng-params.html">查看设备实时传感器状态</div>
           </div>
           <span class="eng-arrow">→</span>
         </div>
-        <div class="eng-item">
+        <div class="eng-item" data-href="35-eng-params.html">
           <div>
-            <div class="eng-item-name">参数调节</div>
-            <div class="eng-item-sub">Item 1 – Item 5</div>
+            <div class="eng-item-name" data-toast="该工具（演示）">参数调节</div>
+            <div class="eng-item-sub" data-toast="该工具（演示）">Item 1 – Item 5</div>
           </div>
           <span class="eng-arrow">→</span>
         </div>
@@ -62,5 +62,6 @@
     </section>
   </div>
 </div>
+<script src="../shared/interactions.js" defer></script>
 </body>
 </html>

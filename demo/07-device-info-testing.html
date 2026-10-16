@@ -64,14 +64,14 @@
 <div class="vs-canvas">
 
   <div class="vs-topbar">
-    <button class="vs-btn-line">&#8592;&nbsp;返回首页</button>
+    <button class="vs-btn-line" data-href="01-home.html">&#8592;&nbsp;返回首页</button>
     <div class="page-title">设置</div>
   </div>
 
   <div class="vs-tabs">
-    <button class="vs-tab">本机设置</button>
+    <button class="vs-tab" data-href="02-settings-device.html">本机设置</button>
     <button class="vs-tab active">设备信息</button>
-    <button class="vs-tab">角色权限</button>
+    <button class="vs-tab" data-href="03-settings-users.html">角色权限</button>
   </div>
 
   <main class="vs-main-pad">
@@ -82,8 +82,8 @@
       <div class="info-row"><span class="info-label">备注</span><span class="info-value dim">—</span></div>
       <div class="info-row"><span class="info-label">铭牌号</span><span class="info-value mono">SN001012</span></div>
       <div class="info-row"><span class="info-label">IMEI</span><span class="info-value mono">SN001012SN001012SN001012</span></div>
-      <div class="info-row"><span class="info-label">App 版本</span><span class="info-value mono">v1.2.3</span><button class="info-action">检查更新</button></div>
-      <div class="info-row"><span class="info-label">网络状态</span><span class="info-value"><span class="net-ok"><i></i>在线</span></span><button class="info-action">测试</button></div>
+      <div class="info-row"><span class="info-label">App 版本</span><span class="info-value mono">v1.2.3</span><button class="info-action" data-href="08-device-info-updating.html">检查更新</button></div>
+      <div class="info-row"><span class="info-label">网络状态</span><span class="info-value"><span class="net-ok"><i></i>在线</span></span><button class="info-action" data-href="07-device-info-testing.html">测试</button></div>
       <div class="info-row"><span class="info-label">信号强度</span><span class="info-value"><span class="sig-dots"><i></i><i></i><i></i><i></i><i class="off"></i></span></span></div>
     </div>
 
@@ -106,7 +106,7 @@
   </main>
 
   <footer class="vs-footer">
-    <button class="vs-save-btn">保存</button>
+    <button class="vs-save-btn" data-toast="已保存">保存</button>
   </footer>
 
 </div>
@@ -117,9 +117,10 @@
     <div class="spinner"></div>
     <div class="loading-title">网络测试中...</div>
     <div class="loading-sub">请稍候</div>
-    <button class="loading-cancel">取消</button>
+    <button class="loading-cancel" data-close-hide>取消</button>
   </div>
 </div>
 
+<script src="../shared/interactions.js" defer></script>
 </body>
 </html>

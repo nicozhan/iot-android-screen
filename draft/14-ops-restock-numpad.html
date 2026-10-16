@@ -63,9 +63,9 @@
 <div class="vs-canvas">
 
   <div class="vs-topbar">
-    <button class="vs-btn-line">&#8592;&nbsp;返回首页</button>
+    <button class="vs-btn-line" data-href="01-beats-home.html">&#8592;&nbsp;返回首页</button>
     <div class="page-title">运营总览</div>
-    <button class="vs-btn-line" style="margin-left:auto">运营设置</button>
+    <button class="vs-btn-line" style="margin-left:auto" data-toast="运营设置（演示）">运营设置</button>
   </div>
 
   <main class="vs-main" style="gap:24px">
@@ -117,7 +117,7 @@
 <!-- 补货量数字键盘弹窗 -->
 <div class="vs-overlay">
   <div class="vs-modal">
-    <div class="vs-modal-head"><span>补货量 · L3 糖浆</span><button class="vs-modal-close">&#10005;</button></div>
+    <div class="vs-modal-head"><span>补货量 · L3 糖浆</span><button class="vs-modal-close" data-close-go="12-ops-restock-modal.html">&#10005;</button></div>
     <div class="np-display">500 ml</div>
     <div class="np-grid">
       <button class="np-key">1</button><button class="np-key">2</button><button class="np-key">3</button>
@@ -126,11 +126,12 @@
       <button class="np-key">&#8722;</button><button class="np-key">0</button><button class="np-key">&#9003;</button>
     </div>
     <div class="md-foot">
-      <button class="md-btn md-btn-line">取消</button>
-      <button class="md-btn md-btn-dark">确定</button>
+      <button class="md-btn md-btn-line" data-close-go="12-ops-restock-modal.html">取消</button>
+      <button class="md-btn md-btn-dark" data-close-go="11-ops-overview.html" data-toast="补货已提交">确定</button>
     </div>
   </div>
 </div>
 
+<script src="../shared/interactions.js" defer></script>
 </body>
 </html>

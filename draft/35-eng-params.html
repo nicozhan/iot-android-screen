@@ -28,24 +28,25 @@
 <div class="vs-canvas">
 
   <div class="vs-topbar">
-    <button class="vs-btn-line">← 返回高级设置</button>
+    <button class="vs-btn-line" data-href="31-eng-settings.html">← 返回高级设置</button>
     <div class="page-title">参数调节</div>
   </div>
 
   <div class="vs-main" style="gap:0;">
     <div class="pp-range">参数范围：<span class="mono">1 – 50</span></div>
     <div class="pp-list">
-      <div class="pp-row"><span class="pp-name">Item 1</span><div class="pp-stepper"><button class="pp-step">−</button><div class="pp-val">20</div><button class="pp-step">+</button></div></div>
-      <div class="pp-row"><span class="pp-name">Item 2</span><div class="pp-stepper"><button class="pp-step">−</button><div class="pp-val">35</div><button class="pp-step">+</button></div></div>
-      <div class="pp-row"><span class="pp-name">Item 3</span><div class="pp-stepper"><button class="pp-step">−</button><div class="pp-val">10</div><button class="pp-step">+</button></div></div>
-      <div class="pp-row"><span class="pp-name">Item 4</span><div class="pp-stepper"><button class="pp-step">−</button><div class="pp-val">25</div><button class="pp-step">+</button></div></div>
-      <div class="pp-row"><span class="pp-name">Item 5</span><div class="pp-stepper"><button class="pp-step">−</button><div class="pp-val">15</div><button class="pp-step">+</button></div></div>
+      <div class="pp-row"><span class="pp-name">Item 1</span><div class="pp-stepper"><button class="pp-step" data-step="-">−</button><div class="pp-val">20</div><button class="pp-step" data-step="+">+</button></div></div>
+      <div class="pp-row"><span class="pp-name">Item 2</span><div class="pp-stepper"><button class="pp-step" data-step="-">−</button><div class="pp-val">35</div><button class="pp-step" data-step="+">+</button></div></div>
+      <div class="pp-row"><span class="pp-name">Item 3</span><div class="pp-stepper"><button class="pp-step" data-step="-">−</button><div class="pp-val">10</div><button class="pp-step" data-step="+">+</button></div></div>
+      <div class="pp-row"><span class="pp-name">Item 4</span><div class="pp-stepper"><button class="pp-step" data-step="-">−</button><div class="pp-val">25</div><button class="pp-step" data-step="+">+</button></div></div>
+      <div class="pp-row"><span class="pp-name">Item 5</span><div class="pp-stepper"><button class="pp-step" data-step="-">−</button><div class="pp-val">15</div><button class="pp-step" data-step="+">+</button></div></div>
     </div>
     <div class="pp-foot">
-      <button class="pp-cancel">取消</button>
-      <button class="pp-save">保存</button>
+      <button class="pp-cancel" data-href="31-eng-settings.html">取消</button>
+      <button class="pp-save" data-toast="参数已保存">保存</button>
     </div>
   </div>
 </div>
+<script src="../shared/interactions.js" defer></script>
 </body>
 </html>

@@ -83,9 +83,9 @@
 <div class="vs-canvas">
 
   <div class="vs-topbar">
-    <button class="vs-btn-line">&#8592;&nbsp;返回首页</button>
+    <button class="vs-btn-line" data-href="01-beats-home.html">&#8592;&nbsp;返回首页</button>
     <div class="page-title">运营总览</div>
-    <button class="vs-btn-line" style="margin-left:auto">运营设置</button>
+    <button class="vs-btn-line" style="margin-left:auto" data-toast="运营设置（演示）">运营设置</button>
   </div>
 
   <main class="vs-main" style="gap:24px">
@@ -139,7 +139,7 @@
 <!-- L3 补货弹窗 -->
 <div class="vs-overlay">
   <div class="vs-modal">
-    <div class="vs-modal-head"><span>L3 · 糖浆</span><button class="vs-modal-close">&#10005;</button></div>
+    <div class="vs-modal-head"><span>L3 · 糖浆</span><button class="vs-modal-close" data-close-go="11-ops-overview.html">&#10005;</button></div>
     <div class="vs-modal-body">
       <div class="m-label">当前库存</div>
       <div class="m-value green">180 ml</div>
@@ -152,9 +152,9 @@
         <div class="m-label">保质期</div>
         <div class="m-radios">
           <label class="vs-radio on"><span class="dot"></span>按保质期时长</label>
-          <label class="vs-radio"><span class="dot"></span>按生产日期</label>
+          <label class="vs-radio" data-href="12b-ops-restock-shelflife-date.html"><span class="dot"></span>按生产日期</label>
         </div>
-        <div class="m-input-row">
+        <div class="m-input-row" data-href="14-ops-restock-numpad.html">
           <div class="m-input"><span>24</span></div>
           <div class="m-unit-select"><span>小时</span><span class="chev">&#9662;</span></div>
         </div>
@@ -162,13 +162,14 @@
       </div>
     </div>
     <div class="md-foot">
-      <button class="md-btn md-btn-line">取消</button>
-      <button class="md-btn md-btn-orange">清空当前库存</button>
-      <button class="md-btn md-btn-green">全部补满</button>
-      <button class="md-btn md-btn-dark">确认补货</button>
+      <button class="md-btn md-btn-line" data-close-go="11-ops-overview.html">取消</button>
+      <button class="md-btn md-btn-orange" data-close-go="11-ops-overview.html" data-toast="已清空当前库存">清空当前库存</button>
+      <button class="md-btn md-btn-green" data-close-go="11-ops-overview.html" data-toast="已全部补满">全部补满</button>
+      <button class="md-btn md-btn-dark" data-href="14-ops-restock-numpad.html">确认补货</button>
     </div>
   </div>
 </div>
 
+<script src="../shared/interactions.js" defer></script>
 </body>
 </html>

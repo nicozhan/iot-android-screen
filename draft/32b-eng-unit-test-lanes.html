@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>VendSolution · 测试出货</title>
+<link rel="stylesheet" href="../shared/style.css">
+<style>
+  /* ---- 货道列表：沿用 pm-sort 卡片规格，序号位改为货道号，操作位改为「出货」 ---- */
+  .pm-lane-list{display:flex;flex-direction:column;gap:12px;}
+  .pm-lane-card{display:flex;align-items:center;gap:16px;height:76px;background:var(--card);
+    border:1px solid var(--line);border-radius:6px;padding:0 20px;}
+  .pm-lane-no{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--sub);flex:0 0 44px;}
+  .pm-lane-thumb{width:52px;height:52px;flex:0 0 52px;background:var(--track);border-radius:4px;
+    display:flex;align-items:center;justify-content:center;color:var(--aux);font-size:12px;}
+  .pm-lane-name{flex:1;font-size:18px;font-weight:600;}
+  .pm-ship-btn{flex:0 0 auto;height:40px;padding:0 22px;background:var(--card);
+    border:1px solid var(--line-btn);border-radius:4px;font-size:14px;font-weight:600;
+    color:var(--ink);font-family:var(--sans);cursor:pointer;}
+  .pm-ship-btn:hover{background:#F0F0EC;}
+
+  /* ---- 出货中进度条 ---- */
+  .ship-bar{height:10px;background:var(--track);border-radius:5px;overflow:hidden;margin:20px 0 6px;}
+  .ship-bar-fill{display:block;height:100%;width:0%;background:var(--dark);border-radius:5px;}
+
+  /* ---- 页内弹窗（二次确认 / 出货中 / 出货完成，沿用全站组件样式） ---- */
+  .vs-overlay{position:absolute;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;z-index:50;}
+  .vs-overlay.show{display:flex;}
+  .vs-modal{width:480px;background:var(--card);border:1px solid var(--ink);border-radius:6px;overflow:hidden;padding:26px 28px 28px;}
+  .modal-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;}
+  .modal-tag{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:2px;color:var(--orange);}
+  .vs-modal-close{background:none;border:none;font-size:18px;color:var(--aux);cursor:pointer;line-height:1;padding:2px;}
+  .modal-title{font-size:20px;font-weight:700;}
+  .modal-divider{border:none;border-top:1px solid var(--line);margin:16px 0 20px;}
+  .modal-desc{font-size:16px;color:var(--ink);line-height:1.7;}
+  .md-foot{display:flex;justify-content:center;gap:14px;margin-top:26px;}
+  .md-btn{height:52px;padding:0 28px;border-radius:4px;font-size:16px;font-weight:600;font-family:var(--sans);cursor:pointer;border:1px solid transparent;}
+  .md-btn-line{background:var(--card);border-color:var(--line-btn);color:var(--ink);}
+  .md-btn-dark{background:var(--dark);border-color:var(--dark);color:#FFFFFF;}
+  .md-btn-orange{background:var(--card);border-color:var(--orange);color:var(--orange);}
+</style>
+</head>
+<body>
+<div class="vs-canvas">
+
+  <div class="vs-topbar">
+    <button class="vs-btn-line" data-href="32-eng-unit-test.html">&#8592;&nbsp;返回</button>
+    <div class="page-title">测试出货</div>
+  </div>
+
+  <main class="vs-main" style="gap:14px;overflow-y:auto;">
+    <section>
+      <div class="vs-section-title" id="lane-title">咖啡 · 12 个货道</div>
+      <div class="pm-note">点击「出货」按钮测试对应货道；出货过程中可随时终止</div>
+      <div class="pm-lane-list" id="lane-list"></div>
+    </section>
+  </main>
+
+  <!-- 弹窗1：测试出货 · 二次确认 -->
+  <div class="vs-overlay" id="ship-confirm">
+    <div class="vs-modal">
+      <div class="modal-head">
+        <div>
+          <div class="modal-tag">CONFIRM</div>
+          <div class="modal-title" style="margin-top:6px">测试出货</div>
+        </div>
+        <button class="vs-modal-close" data-close-hide>&#10005;</button>
+      </div>
+      <hr class="modal-divider">
+      <div class="modal-desc" data-ship-text="confirm">确定要测试货道出货吗？</div>
+      <div class="md-foot">
+        <button class="md-btn md-btn-line" data-close-hide>取消</button>
+        <button class="md-btn md-btn-dark" data-ship-go="#ship-running" data-ship-done="#ship-done">开始出货</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗2：出货中（可终止） -->
+  <div class="vs-overlay" id="ship-running">
+    <div class="vs-modal">
+      <div class="modal-head">
+        <div>
+          <div class="modal-tag">SHIPPING</div>
+          <div class="modal-title" style="margin-top:6px">出货中</div>
+        </div>
+      </div>
+      <hr class="modal-divider">
+      <div class="modal-desc" data-ship-text="running">货道正在出货…</div>
+      <div class="ship-bar"><span class="ship-bar-fill"></span></div>
+      <div class="md-foot">
+        <button class="md-btn md-btn-orange" data-ship-stop="#ship-running">终止出货</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗3：出货完成 -->
+  <div class="vs-overlay" id="ship-done">
+    <div class="vs-modal">
+      <div class="modal-head">
+        <div>
+          <div class="modal-tag">DONE</div>
+          <div class="modal-title" style="margin-top:6px">出货完成</div>
+        </div>
+      </div>
+      <hr class="modal-divider">
+      <div class="modal-desc" data-ship-text="done">货道测试出货完成</div>
+      <div class="md-foot">
+        <button class="md-btn md-btn-dark" data-close-hide>确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* 按分类渲染货道卡片（原型演示数据；分类由上一页经 sessionStorage vs-ctx 传入）。
+   货道号规则：分类序号-分类内序号（咖啡=1-x，饮料=2-x，……），与排序页列表同规格。 */
+(function () {
+  var CATS = {
+    '咖啡': ['美式', '拿铁', '卡布奇诺', '摩卡', '澳白', '冰美式', '燕麦拿铁', '香草拿铁', '焦糖玛奇朵', '抹茶拿铁', '椰奶咖啡', '浓缩'],
+    '饮料': ['可乐', '雪碧', '芬达', '美年达', '冰红茶', '冰绿茶', '茉莉花茶', '酸梅汤', '橙汁', '苹果汁', '葡萄汁', '柠檬茶', '椰子水', '苏打水', '能量饮料', '乌龙茶', '玉米汁', '胡萝卜汁'],
+    '零食': ['薯片', '巧克力威化', '饼干', '牛角包', '奶油蛋糕', '混合坚果', '果冻', '牛奶糖', '口香糖', '牛肉干', '小鱼干', '豆干', '海苔', '瓜子', '花生', '蚕豆', '雪饼', '仙贝', '蛋卷', '沙琪玛', '爆米花', '冰淇淋', '棉花糖', '南瓜子', '杏仁'],
+    '水': ['矿泉水', '纯净水', '气泡水', '薄荷水', '柠檬水', '山泉水', '矿物质水', '薄荷柠水'],
+    '早餐': ['三明治', '饭团', '肉包', '菜包', '米糕', '南瓜饼'],
+    '奶茶': ['珍珠奶茶', '椰果奶茶', '红豆奶茶', '布丁奶茶', '仙草奶茶', '抹茶奶茶', '燕麦奶茶', '黑糖奶茶', '芝士奶茶'],
+    '其他': ['纸巾', '湿巾', '口罩', '电池']
+  };
+  var cat = '咖啡';
+  try {
+    var ctx = JSON.parse(sessionStorage.getItem('vs-ctx') || 'null');
+    if (ctx && ctx.name && CATS[ctx.name]) cat = ctx.name;
+  } catch (e) {}
+  var keys = Object.keys(CATS);
+  var catIdx = keys.indexOf(cat) + 1;
+  var names = CATS[cat];
+  var html = '';
+  for (var i = 0; i < names.length; i++) {
+    html += '<div class="pm-lane-card">' +
+      '<span class="pm-lane-no">' + catIdx + '-' + (i + 1) + '</span>' +
+      '<div class="pm-lane-thumb">商品图片</div>' +
+      '<div class="pm-lane-name">' + names[i] + '</div>' +
+      '<button class="pm-ship-btn" data-ship="#ship-confirm">出货</button>' +
+      '</div>';
+  }
+  document.getElementById('lane-list').innerHTML = html;
+  var title = document.getElementById('lane-title');
+  if (title) title.textContent = cat + ' · ' + names.length + ' 个货道';
+})();
+</script>
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>
