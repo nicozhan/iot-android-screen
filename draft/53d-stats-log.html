@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>VendSolution Console · 操作记录 Log</title>
+<link rel="stylesheet" href="../shared/style.css">
+<style>
+  .pg-head{
+    flex:0 0 88px;height:88px;background:var(--card);
+    border-bottom:1px solid var(--ink);
+    display:flex;align-items:center;justify-content:center;position:relative;
+  }
+  .pg-back{
+    position:absolute;left:40px;top:18px;height:52px;padding:0 26px;
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--card);border:2px solid var(--ink);border-radius:8px;
+    font-family:var(--sans);font-size:16px;font-weight:700;color:var(--ink);cursor:pointer;
+  }
+  .pg-back:hover{background:var(--ink);color:#FFFFFF;}
+  .pg-title{font-size:20px;font-weight:700;}
+  .sec{padding:28px 40px 32px;border-bottom:1px solid var(--ink);background:var(--card);}
+  .sec-h{font-size:17px;font-weight:700;margin-bottom:16px;}
+  .range-row{display:flex;gap:12px;}
+  .rg-btn{
+    height:44px;padding:0 22px;background:var(--card);
+    border:2px solid var(--ink);border-radius:8px;
+    font-family:var(--sans);font-size:16px;font-weight:700;color:var(--ink);cursor:pointer;
+  }
+  .rg-btn.on{background:var(--ink);color:#FFFFFF;}
+  .body{flex:1;background:var(--card);display:flex;flex-direction:column;padding-top:26px;}
+  .filter-label{font-size:17px;font-weight:700;margin:0 40px 12px;}
+  .type-sel{
+    margin:0 40px 22px;width:220px;height:48px;padding:0 16px;
+    border:2px solid var(--ink);border-radius:8px;background:var(--card);
+    font-family:var(--sans);font-size:16px;font-weight:700;color:var(--ink);
+    cursor:pointer;appearance:none;
+    background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23171717' stroke-width='2'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 16px center;
+  }
+  .rec-table{margin:0 40px;border:2px solid var(--ink);border-radius:8px;overflow:hidden;}
+  .rec-row{display:grid;grid-template-columns:1.1fr 1.4fr 1fr;padding:14px 24px;font-size:16px;}
+  .rec-row + .rec-row{border-top:1px solid var(--line);}
+  .rec-row.h{background:var(--bg);font-weight:700;}
+  .rec-row .mono{font-weight:500;}
+  .pager{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin:22px 40px 0;}
+  .pg-btn{
+    min-width:44px;height:36px;padding:0 12px;background:var(--card);
+    border:2px solid var(--ink);border-radius:8px;
+    font-family:var(--sans);font-size:15px;font-weight:700;color:var(--ink);cursor:pointer;
+  }
+  .pg-btn:hover{background:var(--ink);color:#FFFFFF;}
+  .pg-btn.off{opacity:.35;pointer-events:none;}
+  .pg-info{font-family:var(--mono);font-size:15px;font-weight:500;margin:0 6px;}
+</style>
+</head>
+<body>
+<div class="vs-canvas">
+
+  <header class="pg-head">
+    <button class="pg-back" data-href="53-stats.html">&#8592; 返回统计</button>
+    <div class="pg-title">操作记录 Log</div>
+  </header>
+
+  <section class="sec">
+    <div class="sec-h">时间范围</div>
+    <div class="range-row" id="rangeRow">
+      <button class="rg-btn on">今日</button>
+      <button class="rg-btn">本周</button>
+      <button class="rg-btn">本月</button>
+      <button class="rg-btn">自定义 &#9662;</button>
+    </div>
+  </section>
+
+  <div class="body">
+    <div class="filter-label">操作类型</div>
+    <select class="type-sel" id="typeSel">
+      <option>全部</option>
+      <option>出杯</option>
+      <option>补货</option>
+      <option>清洗</option>
+      <option>校准</option>
+    </select>
+
+    <div class="rec-table">
+      <div class="rec-row h"><span>时间</span><span>操作</span><span>操作人</span></div>
+      <div id="logRows"></div>
+    </div>
+
+    <div class="pager">
+      <button class="pg-btn" id="prevBtn">&lt;</button>
+      <span class="pg-info" id="pageInfo">1 / 5</span>
+      <button class="pg-btn" id="nextBtn">&gt;</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  document.getElementById('rangeRow').addEventListener('click', function (e) {
+    var b = e.target.closest('.rg-btn');
+    if (!b) return;
+    this.querySelectorAll('.rg-btn').forEach(function (x) { x.classList.remove('on'); });
+    b.classList.add('on');
+  });
+
+  /* 操作记录：30 条模拟数据，每页 6 条（共 5 页），支持按操作类型筛选 */
+  var LOGS = [
+    ['08/28 14:30', '出杯 · Latte', 'Adams'],
+    ['08/28 14:15', '出杯 · Americano', 'Adams'],
+    ['08/28 13:40', '清洗', 'Tom'],
+    ['08/28 10:20', '补货 · 咖啡豆', 'Tom'],
+    ['08/27 16:30', '校准', 'Mike'],
+    ['08/27 15:10', '出杯 · Latte', 'Adams'],
+    ['08/27 11:25', '出杯 · Mocha', 'Mike'],
+    ['08/27 09:40', '补货 · 纸杯', 'Adams'],
+    ['08/26 18:15', '出杯 · Cappuccino', 'Adams'],
+    ['08/26 16:40', '清洗', 'Tom'],
+    ['08/26 11:05', '出杯 · Latte', 'Tom'],
+    ['08/25 15:30', '校准', 'Mike'],
+    ['08/25 10:15', '补货 · 咖啡豆', 'Adams'],
+    ['08/24 17:20', '出杯 · Americano', 'Mike'],
+    ['08/24 14:00', '清洗', 'Adams'],
+    ['08/24 09:35', '出杯 · Latte', 'Adams'],
+    ['08/23 16:50', '出杯 · Mocha', 'Tom'],
+    ['08/23 13:10', '补货 · 糖浆', 'Mike'],
+    ['08/22 18:05', '出杯 · Cappuccino', 'Adams'],
+    ['08/22 15:45', '清洗', 'Tom'],
+    ['08/22 10:30', '出杯 · Americano', 'Adams'],
+    ['08/21 17:15', '校准', 'Mike'],
+    ['08/21 12:40', '补货 · 咖啡豆', 'Tom'],
+    ['08/21 08:55', '出杯 · Latte', 'Adams'],
+    ['08/20 16:25', '出杯 · Mocha', 'Mike'],
+    ['08/20 11:50', '清洗', 'Adams'],
+    ['08/19 15:35', '出杯 · Americano', 'Tom'],
+    ['08/19 10:20', '补货 · 纸杯', 'Adams'],
+    ['08/18 14:45', '出杯 · Latte', 'Mike'],
+    ['08/18 09:30', '校准', 'Adams']
+  ];
+  var PER = 6, page = 1, filtered = LOGS;
+
+  function applyFilter() {
+    var t = document.getElementById('typeSel').value;
+    filtered = (t === '全部') ? LOGS : LOGS.filter(function (r) { return r[1].indexOf(t) === 0; });
+    page = 1;
+    render();
+  }
+
+  function render() {
+    var pages = Math.max(1, Math.ceil(filtered.length / PER));
+    if (page > pages) page = pages;
+    var box = document.getElementById('logRows');
+    box.innerHTML = '';
+    filtered.slice((page - 1) * PER, page * PER).forEach(function (r) {
+      var row = document.createElement('div');
+      row.className = 'rec-row';
+      var t = document.createElement('span'); t.className = 'mono'; t.textContent = r[0];
+      var op = document.createElement('span'); op.textContent = r[1];
+      var by = document.createElement('span'); by.textContent = r[2];
+      row.appendChild(t); row.appendChild(op); row.appendChild(by);
+      box.appendChild(row);
+    });
+    document.getElementById('pageInfo').textContent = page + ' / ' + pages;
+    document.getElementById('prevBtn').classList.toggle('off', page <= 1);
+    document.getElementById('nextBtn').classList.toggle('off', page >= pages);
+  }
+
+  document.getElementById('prevBtn').addEventListener('click', function () { if (page > 1) { page--; render(); } });
+  document.getElementById('nextBtn').addEventListener('click', function () { if (page * PER < filtered.length) { page++; render(); } });
+  document.getElementById('typeSel').addEventListener('change', applyFilter);
+  render();
+</script>
+<script src="../shared/i18n.js" defer></script>
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>
