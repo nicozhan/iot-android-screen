@@ -19,6 +19,24 @@
   .role-pwd-btn:hover{background:#FFF7F2;}
   .role-pwd-btn:active{background:#FDEEE4;}
   .role-note{margin-top:20px;font-size:14px;color:var(--aux);}
+
+
+  /* ---- 浮层内容样式（自弹窗页合并） ---- */
+  
+  .modal-head{
+    display:flex;align-items:flex-start;justify-content:space-between;
+    margin-bottom:6px;
+  }
+  
+  .modal-tag{
+    font-family:var(--mono);
+    font-size:12px;font-weight:700;letter-spacing:2px;
+    color:var(--orange);
+  }
+  
+  .modal-title{font-size:20px;font-weight:700;}
+  
+  .modal-divider{border:none;border-top:1px solid var(--line);margin:16px 0 20px;}
 </style>
 </head>
 <body data-page-node-id="MR9C3BMnu8KvGAojD0QZoT">
@@ -48,17 +66,17 @@
       <div class="role-row item">
         <span class="role-col-name">店长</span>
         <span class="role-col-desc">管理设备及全部设置</span>
-        <span class="role-col-act"><button class="role-pwd-btn" data-href="06-users-password-modal.html">修改口令</button></span>
+        <span class="role-col-act"><button class="role-pwd-btn" data-modal="#pwd-modal">修改口令</button></span>
       </div>
       <div class="role-row item">
         <span class="role-col-name">店员</span>
         <span class="role-col-desc">日常运营操作</span>
-        <span class="role-col-act"><button class="role-pwd-btn" data-href="06-users-password-modal.html">修改口令</button></span>
+        <span class="role-col-act"><button class="role-pwd-btn" data-modal="#pwd-modal">修改口令</button></span>
       </div>
       <div class="role-row item">
         <span class="role-col-name">工程师</span>
         <span class="role-col-desc">校准 / 工程模式</span>
-        <span class="role-col-act"><button class="role-pwd-btn" data-href="06-users-password-modal.html">修改口令</button></span>
+        <span class="role-col-act"><button class="role-pwd-btn" data-modal="#pwd-modal">修改口令</button></span>
       </div>
     </div>
 
@@ -66,6 +84,33 @@
   </main>
 
 </div>
+
+<!-- 浮层 · pwd-modal（源自 06-users-password-modal.html，深链仍可访问） -->
+<div class="vs-overlay" id="pwd-modal" data-page-node-id="aEJXELh76IUNf8A1Aqt8N1">
+  <div class="vs-modal" style="width:480px" data-page-node-id="nw89glSpqyPZVz9CPPircW">
+    <div class="modal-head" data-page-node-id="zcP4swyz0GEHFx17F6NoKd">
+      <div data-page-node-id="RucU0n2cRHARsThdTdPX3u">
+        <div class="modal-tag" data-page-node-id="EXLRoeGvecOBXTB6mDYjlm">SECURITY</div>
+        <div class="modal-title" style="margin-top:6px" data-page-node-id="y9LrmLOtQ8obrAABDmvEIA">修改口令</div>
+      </div>
+      <button class="vs-modal-close" data-page-node-id="w6H5DsCRBGCCLUNOVyCz4m" data-close-hide>&#10005;</button>
+    </div>
+    <hr class="modal-divider" data-page-node-id="UKEOgtmKGryp0RPBpJtOBk">
+    <div class="vs-field" data-page-node-id="LCsD1zHFm75RD9YSxebrlf">
+      <span class="vs-field-label" data-page-node-id="KEmwQXx1t50xYJUj8SwEqR">原口令</span>
+      <div class="vs-input" data-page-node-id="CnOB5xUpEV0HKxLcgng6Uu"><span class="ph" data-page-node-id="OjFriMrEKLCPEVvSd9PyIA">请输入原口令</span></div>
+    </div>
+    <div class="vs-field" data-page-node-id="xHnNeEJuGAVm6R8tsRjEex">
+      <span class="vs-field-label" data-page-node-id="vFqUCS2dE8k5ePUpHQwG1Q">新口令</span>
+      <div class="vs-input" data-page-node-id="2YUrKuWxrSBu8qbLjMZBPD"><span class="ph" data-page-node-id="PoLrwLbgad8XL0aw7KHABJ">请输入新口令</span></div>
+    </div>
+    <div class="md-foot" data-page-node-id="aYkoNwDM6kXNATGYHnk1hq">
+      <button class="md-btn md-btn-line" data-page-node-id="cEoHzDjRAkVKIuBUB9df3s" data-close-hide>取消</button>
+      <button class="md-btn md-btn-dark" data-page-node-id="ljYwq3JQ32nwlHYFwkhCcy" data-close-hide data-toast="口令已修改">确认修改</button>
+    </div>
+  </div>
+</div>
+
 <script src="../shared/interactions.js" defer></script>
 </body>
 </html>

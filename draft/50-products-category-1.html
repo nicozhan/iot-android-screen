@@ -17,11 +17,25 @@
   <div class="pm-note">已选 12 个</div>
 </main>
 <div class="vs-footer">
-  <button class="vs-btn-line" data-href="51-products-category-2.html">添加标签</button>
+  <button class="vs-btn-line" data-modal="#tag-modal">添加标签</button>
   <button class="vs-btn-line" data-op="remove-tags">移除标签</button>
   <button class="vs-save-btn" data-op="clear-sel">全部清除</button>
 </div>
 </div>
+
+<!-- 浮层 · tag-modal（源自 51-products-category-2.html，深链仍可访问） -->
+<div class="vs-overlay" id="tag-modal">
+  <div class="vs-modal" style="width:560px">
+    <div class="vs-modal-head"><div class="vs-modal-title">批量管理 SKU 标签</div><button class="vs-modal-close" data-close-hide>&#10005;</button></div>
+    <div class="vs-modal-body">
+      <div class="pm-note">已选择 12 个 SKU</div>
+      <div class="pm-tag-bar"><button class="pm-chip on">热销</button><button class="pm-chip on">新品</button><button class="pm-chip on">促销</button><button class="pm-chip on">推荐</button><button class="pm-chip">早餐</button><button class="pm-chip">低糖</button><button class="pm-chip">常温</button><button class="pm-chip">冷藏</button></div>
+      <div class="pm-note">已有关联的标签显示为已勾选</div>
+    </div>
+    <div class="md-foot"><button class="md-btn md-btn-line" data-close-hide>取消</button><button class="md-btn md-btn-dark" data-close-all data-toast="已添加标签">确认添加标签</button></div>
+  </div>
+</div>
+
 <script src="../shared/interactions.js" defer></script>
 </body>
 </html>

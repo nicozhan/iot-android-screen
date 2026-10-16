@@ -302,13 +302,18 @@ html,body{
 .vs-main-pad{flex:1;padding:28px 32px;overflow:hidden;}
 
 /* =========================================================
-   统一弹窗系统（vs-overlay / vs-modal / md-btn）
+   统一浮层系统（vs-overlay / vs-modal / md-btn）· 无遮罩轻浮层范式
+   - 浮层=透明全页点击捕获层 + 居中投影浮卡，背后页面内容原样可见（不变暗）
+   - .vs-overlay 默认隐藏，.show 显示；引擎按打开顺序逐层抬高 z-index（链式堆叠）
+   - .vs-overlay[data-modal-safe] 点空白处即收起；默认（危险操作）仅按钮可关
    所有页共用，锁在 1280×1280 画布内（position:absolute）
    ========================================================= */
-.vs-overlay{position:absolute;inset:0;background:rgba(0,0,0,.35);
-  display:flex;align-items:center;justify-content:center;z-index:20;}
+.vs-overlay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;z-index:60;}
+.vs-overlay.show{display:flex;}
 .vs-modal{background:var(--card);border:1px solid var(--ink);border-radius:6px;
-  display:flex;flex-direction:column;max-height:92%;}
+  display:flex;flex-direction:column;max-height:92%;
+  box-shadow:0 18px 52px rgba(0,0,0,.30);animation:vsFloat .18s ease;}
+@keyframes vsFloat{from{opacity:0;transform:translateY(12px) scale(.985);}to{opacity:1;transform:none;}}
 .vs-modal-head{display:flex;align-items:flex-start;justify-content:space-between;
   padding:24px 28px 0;}
 .vs-modal-title{font-size:20px;font-weight:700;}

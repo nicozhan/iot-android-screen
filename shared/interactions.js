@@ -3,12 +3,18 @@
  * 声明式接线，页面只需加属性，无需重复写 JS：
  *   data-href="x.html"            点击跳转（自动记录来源卡片名称供排序页动态标题）
  *   data-act="goto-toast"         跳转并在落地页弹提示（配合 data-href + data-toast）
- *   data-close-hide               关闭当前弹窗（停留在本页，用于列表页上的弹窗）
- *   data-close-go="x.html"        “关闭弹窗”= 返回来源页（用于整页即弹窗的截图态页面）
+ *   data-close-hide               关闭当前浮层（停留在本页；堆叠链中=收起最上层）
+ *   data-close-go="x.html"        “关闭”= 跳转（仅深链接/截图态页面使用）
+ *   data-close-all                收拢整个浮层栈（终态确认按钮，配 data-toast）
  *   data-toast="提示"             点击弹 toast
  *   data-toggle="active"          点击切换自身类名
  *   data-menu="#id"               点击切换下拉菜单（点页面外部自动收起，如用户菜单）
- *   data-modal="#id"              打开页内弹窗（.vs-overlay，配 data-close-hide 关闭，如二次确认）
+ *   data-modal="#id"              打开页内浮层（无遮罩轻浮层：透明点击捕获层+投影浮卡）
+ *   data-modal-stack              堆叠打开（链式弹窗：不收起下层浮层，如 补货→保质期→数字键盘）
+ *   data-fill-lane[="前缀"]        浮层内占位：按触发卡片的货道号+商品名回填（"L3 · 糖浆"）
+ *   data-fill-name                浮层内占位：按触发卡片的商品名回填
+ *  浮层安全级：.vs-overlay[data-modal-safe] 点浮层空白处即收起；
+ *   默认（危险操作：确认/表单/输入）只能通过按钮关闭，点空白处不关闭
  *   data-ship="#id"               测试出货：出货按钮（读同卡片货道号/商品名）打开二次确认弹窗
  *   data-ship-go / data-ship-stop / data-ship-done  开始出货（进度条约2.5s自动到完成）/ 终止 / 完成浮窗选择器
  *   data-step="+"/"-"             步进器加减（.stepper 内的 .st-num/.step-val）
@@ -130,27 +136,70 @@
     try { sessionStorage.removeItem('vs-ctx'); } catch (e) {}
   })();
 
-  /* ---------- 弹窗关闭 ---------- */
+  /* ---------- 页面内浮层 · 工具 ---------- */
+  var zTop = 60;                          // 浮层堆叠 z-index 种子（链式弹窗逐层 +1）
+  var laneCtx = { lane: '', name: '' };   // 当前货道/商品上下文（浮层动态标题回填）
+
+  function hideOverlay(ov) {
+    if (!ov) return;
+    ov.classList.remove('show');
+    ov.style.display = 'none';
+  }
+
+  /* 从触发卡片读货道号+商品名（补货卡 / 货道卡 / 商品行） */
+  function setLaneCtx(src) {
+    var card = src && src.closest ? src.closest('.vm-card,.lane-card,.pm-lane-card,.pm-sort-card,.pm-row,.pm-sku') : null;
+    if (!card) return;
+    var no = card.querySelector('.vm-lid,.lane-id,.pm-lane-no,.pm-sort-no,.pm-sku-id');
+    var nm = card.querySelector('.vm-name,.lane-name,.pm-lane-name,.pm-sort-name,.pm-name,.pm-sku-name');
+    if (no) laneCtx.lane = no.textContent.trim();
+    if (nm) laneCtx.name = nm.textContent.trim();
+  }
+  /* 回填浮层内占位：[data-fill-lane] → "L3 · 糖浆"（带属性值则 "前缀 · L3 糖浆"）；[data-fill-name] → 商品名 */
+  function fillLane(ov) {
+    if (!ov) return;
+    if (laneCtx.lane || laneCtx.name) {
+      ov.querySelectorAll('[data-fill-lane]').forEach(function (el) {
+        var pre = el.getAttribute('data-fill-lane');
+        el.textContent = pre ? pre + ' · ' + laneCtx.lane + ' ' + laneCtx.name
+                             : laneCtx.lane + ' · ' + laneCtx.name;
+      });
+      ov.querySelectorAll('[data-fill-name]').forEach(function (el) {
+        if (laneCtx.name) el.textContent = laneCtx.name;
+      });
+    }
+  }
+
+  /* ---------- 浮层关闭 ---------- */
   function doClose(el) {
-    if (el.hasAttribute('data-close-go')) {
+    if (el.hasAttribute('data-close-go')) {           // 深链接态：关闭 = 跳转来源页
       location.href = el.getAttribute('data-close-go');
-    } else {
-      var ov = el.closest('.vs-overlay');
-      if (ov) { ov.style.display = 'none'; ov.classList.remove('show'); }
+      return;
+    }
+    if (el.hasAttribute('data-close-all')) {          // 收拢整个浮层栈（终态确认）
+      document.querySelectorAll('.vs-overlay.show').forEach(hideOverlay);
+    } else {                                          // 只收最上层当前浮层
+      hideOverlay(el.closest('.vs-overlay'));
     }
     if (el.getAttribute('data-toast')) toast(el.getAttribute('data-toast'));
   }
 
-  /* ---------- 页内弹窗（按选择器打开，同时关闭其它已开浮层） ---------- */
-  function openModal(sel) {
-    if (!sel) return;
-    var ov = document.querySelector(sel);
-    if (!ov) return;
-    document.querySelectorAll('.vs-overlay.show').forEach(function (o) {
-      if (o !== ov) { o.classList.remove('show'); o.style.display = 'none'; }
-    });
-    ov.style.display = '';                 // 清除 doClose 留下的 display:none，交还给 .show 类
+  /* ---------- 打开页内浮层（无遮罩轻浮层） ---------- */
+  /* 默认互斥（收起其它已开浮层）；data-modal-stack 触发时堆叠（链式弹窗逐层叠） */
+  function openModal(sel, opts) {
+    opts = opts || {};
+    var ov = typeof sel === 'string' ? document.querySelector(sel) : sel;
+    if (!ov || !ov.classList.contains('vs-overlay')) return;
+    if (!opts.stack) {
+      document.querySelectorAll('.vs-overlay.show').forEach(function (o) {
+        if (o !== ov) hideOverlay(o);
+      });
+    }
+    if (opts.src) setLaneCtx(opts.src);
+    ov.style.display = '';                 // 清除 hideOverlay 留下的 display:none，交还给 .show 类
+    ov.style.zIndex = String(++zTop);      // 后开的浮层居上
     ov.classList.add('show');
+    fillLane(ov);
   }
 
   /* ---------- 下拉菜单（如用户菜单） ---------- */
@@ -219,8 +268,7 @@
   function shipStop(el) {
     var runSel = (el && el.getAttribute('data-ship-stop')) || '#ship-running';
     clearTimeout(shipTimer);
-    var ov = document.querySelector(runSel);
-    if (ov) { ov.classList.remove('show'); ov.style.display = 'none'; }
+    hideOverlay(document.querySelector(runSel));
     var fill = document.querySelector(runSel + ' .ship-bar-fill');
     if (fill) { fill.style.transition = 'none'; fill.style.width = '0%'; }
     toast('已终止出货' + (shipCtx.lane ? '（货道 ' + shipCtx.lane + '）' : ''));
@@ -368,20 +416,27 @@
     if ((el = t.closest('#vs-kb .np-key'))) { kbPress(el); return; }
     if ((el = t.closest('#' + 'vs-kb'))) { return; }         // 键盘区域空白不穿透
 
-    /* ---- 下拉菜单：点外部自动收起 / data-menu 切换 / data-modal 打开页内弹窗 ---- */
+    /* ---- 下拉菜单：点外部自动收起 / data-menu 切换 / data-modal 打开页内浮层 ---- */
     if (!t.closest('[data-menu]') && !t.closest('.vs-menu')) closeMenus();
     if ((el = t.closest('[data-menu]'))) { toggleMenu(el.getAttribute('data-menu')); return; }
-    if ((el = t.closest('[data-modal]'))) { openModal(el.getAttribute('data-modal')); closeMenus(); return; }
+    if ((el = t.closest('[data-modal]'))) {
+      openModal(el.getAttribute('data-modal'), {
+        stack: el.hasAttribute('data-modal-stack'),
+        src: el
+      });
+      closeMenus();
+      return;
+    }
 
     /* ---- 测试出货流程 ---- */
     if ((el = t.closest('[data-ship]'))) { shipOpen(el); return; }
     if ((el = t.closest('[data-ship-go]'))) { shipStart(el); return; }
     if ((el = t.closest('[data-ship-stop]'))) { shipStop(el); return; }
 
-    /* 点弹窗遮罩 = 关闭 */
+    /* 点浮层空白处：安全浮层（data-modal-safe）收起；危险浮层吞掉点击，只能按钮关闭 */
     if (t.classList && t.classList.contains('vs-overlay')) {
-      var c = t.querySelector('[data-close-go]') || t.querySelector('[data-close-hide]');
-      if (c) { doClose(c); return; }
+      if (t.hasAttribute('data-modal-safe')) hideOverlay(t);
+      return;
     }
 
     /* 唤起通用键盘（输入框） */
@@ -418,8 +473,13 @@
     }
     if ((el = t.closest('.pm-chip'))) { el.classList.toggle('on'); return; }
 
-    /* 单选：带 data-href 视为模式切换（跳转），否则行内互斥（设置页） */
+    /* 单选：带 data-href 视为模式切换（跳转），否则行内互斥（设置页）；
+       带关闭/堆叠指令的单选项（如“按保质期时长”回上层浮层）交给关闭逻辑 */
     if ((el = t.closest('.vs-radio'))) {
+      if (el.hasAttribute('data-close-go') || el.hasAttribute('data-close-hide') || el.hasAttribute('data-close-all')) {
+        doClose(el);
+        return;
+      }
       if (el.hasAttribute('data-href')) {
         storeCtx(el);
         goto(el.getAttribute('data-href'), el.getAttribute('data-toast'));
@@ -435,7 +495,7 @@
       goto(el.getAttribute('data-href'), el.getAttribute('data-toast'));
       return;
     }
-    if ((el = t.closest('[data-close-go]')) || (el = t.closest('[data-close-hide]'))) { doClose(el); return; }
+    if ((el = t.closest('[data-close-go]')) || (el = t.closest('[data-close-hide]')) || (el = t.closest('[data-close-all]'))) { doClose(el); return; }
     if ((el = t.closest('[data-href]'))) {
       storeCtx(el);
       goto(el.getAttribute('data-href'), el.getAttribute('data-toast'));

@@ -90,7 +90,7 @@
         <button class="vs-quick-btn vs-q-ops" data-page-node-id="tsqjbejXReNx8ETHjpMuOV" data-href="../draft/32-eng-unit-test.html">
           <span class="vs-quick-title" data-page-node-id="BtiFCfOVZW5V7RBT3JPvMn">测试打杯</span>
         </button>
-        <button class="vs-quick-btn vs-q-ota" data-page-node-id="JDJt9hsArcytMiSFYuHuVt" data-href="08-device-info-updating.html">
+        <button class="vs-quick-btn vs-q-ota" data-page-node-id="JDJt9hsArcytMiSFYuHuVt" data-modal="#check-update">
           <span class="vs-quick-title" data-page-node-id="lBCB5CKXHjwP4CU5Bc7aMe">OTA升级</span>
           <span class="vs-quick-sub mono" data-page-node-id="hRvecXKyYhPbEQisaEdsWy">v0.1.2</span>
         </button>
@@ -110,12 +110,36 @@
         <button class="vs-more-btn" data-page-node-id="T3BcRSQMjepreEatJ4OJMU" data-toast="功能待接入">预留1</button>
         <button class="vs-more-btn" data-page-node-id="2uc47Dnr4QokJXKUAQK3PV" data-toast="功能待接入">预留2</button>
         <button class="vs-more-btn" data-page-node-id="h1TH3AW7cqZ7ovpwilGXNK" data-toast="功能待接入">预留3</button>
-        <button class="vs-more-btn power" data-page-node-id="l5iKLklAEPNo6KLaMkLcAW" data-href="10-power-off-modal.html">关机</button>
+        <button class="vs-more-btn power" data-page-node-id="l5iKLklAEPNo6KLaMkLcAW" data-modal="#power-off">关机</button>
       </div>
     </section>
 
   </main>
 </div>
+
+<!-- 浮层 · power-off（源自 10-power-off-modal.html，深链仍可访问） -->
+<div class="vs-overlay" id="power-off">
+  <div class="vs-modal" style="width:460px">
+    <div class="modal-tag">POWER</div>
+    <div class="modal-title">是否立即关机？</div>
+    <hr class="modal-divider">
+    <div class="md-foot">
+      <button class="md-btn md-btn-line" data-close-hide>取消</button>
+      <button class="md-btn md-btn-red" data-close-hide data-toast="已下发关机指令">关机</button>
+    </div>
+  </div>
+</div>
+
+<!-- 浮层 · check-update（源自 08-device-info-updating.html，深链仍可访问） -->
+<div class="vs-overlay" id="check-update" data-modal-safe>
+  <div class="loading-modal">
+    <div class="spinner"></div>
+    <div class="loading-title">检查更新中...</div>
+    <div class="loading-sub">请稍候</div>
+    <button class="loading-cancel" data-close-hide>取消</button>
+  </div>
+</div>
+
 <script src="../shared/interactions.js" defer></script>
 </body>
 </html>
