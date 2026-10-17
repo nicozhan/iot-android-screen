@@ -421,3 +421,38 @@ html,body{
 }
 .cr-sel:focus{outline:none;border-color:var(--dark);}
 .cr-preview{margin-top:6px;font-size:14px;color:var(--sub);font-family:var(--mono);}
+
+/* ---- 设置 · 左右双栏（左主设置 / 右其他设置预留） ---- */
+.vs-settings-cols{display:flex;gap:32px;align-items:flex-start;}
+.vs-settings-main{flex:1 1 auto;min-width:0;}
+.vs-settings-aside{flex:0 0 360px;}
+
+/* 右侧「其他设置」卡片 */
+.vs-other-card{
+  background:var(--card);border:1px solid var(--line);border-radius:6px;
+  padding:22px 24px;position:sticky;top:0;
+}
+.vs-other-head{
+  font-size:18px;font-weight:700;color:var(--ink);
+  padding-bottom:14px;margin-bottom:18px;border-bottom:1px solid var(--line-soft);
+}
+.vs-reserve-item{
+  display:flex;align-items:center;justify-content:space-between;
+  height:64px;padding:0 20px;margin-bottom:14px;
+  border:1px dashed var(--line-btn);border-radius:6px;
+  background:repeating-linear-gradient(45deg,transparent,transparent 9px,rgba(120,120,120,.05) 9px,rgba(120,120,120,.05) 18px);
+  color:var(--aux);cursor:not-allowed;user-select:none;
+}
+.vs-reserve-item:last-child{margin-bottom:0;}
+.vs-reserve-name{font-size:16px;font-weight:600;}
+.vs-reserve-tag{
+  font-family:var(--mono);font-size:12px;color:var(--aux);
+  border:1px solid var(--line-btn);border-radius:10px;padding:2px 10px;
+}
+
+/* 窄屏回退 */
+@media (max-width:900px){
+  .vs-settings-cols{flex-direction:column;}
+  .vs-settings-aside{flex:1 1 auto;width:100%;}
+  .vs-other-card{position:static;}
+}

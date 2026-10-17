@@ -707,6 +707,7 @@
   "预留3": "Reserved 3",
   "预留4": "Reserved 4",
   "预留5": "Reserved 5",
+  "其他设置": "Other Settings",
   "预计到期日：": "Estimated expiry: ",
   "风扇": "Fan",
   "饭团": "Rice Ball",
