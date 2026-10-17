@@ -251,15 +251,24 @@
       '</div>';
     host.appendChild(ov);
   }
-  /* cfg: {title, text(可含 %s), count, okText, onOk}；文案经 T() 按当前语言填充 */
+  /* cfg: {title, text(可含 %s), count, okText, onOk}；文案经 T() 按当前语言填充；
+     text 含参时把模板与参数登记到 data-i18n-tpl/args，切语言由 i18n.apply 重填 */
   function openConfirm(id, cfg) {
     buildConfirm(id);
     var ov = document.getElementById(id);
     if (!ov) return;
     var text = T(cfg.text);
     if (cfg.count != null) text = text.split('%s').join(cfg.count);
+    var textEl = ov.querySelector('[data-cf="text"]');
+    if (cfg.count != null) {
+      textEl.setAttribute('data-i18n-tpl', cfg.text);
+      textEl.setAttribute('data-i18n-args', String(cfg.count));
+    } else {
+      textEl.removeAttribute('data-i18n-tpl');
+      textEl.removeAttribute('data-i18n-args');
+    }
+    textEl.textContent = text;
     ov.querySelector('[data-cf="title"]').textContent = T(cfg.title);
-    ov.querySelector('[data-cf="text"]').textContent = text;
     ov.querySelector('[data-cf="ok"]').textContent = T(cfg.okText);
     ov.querySelector('[data-cf="cancel"]').textContent = T('取消');
     confirmOnOk = cfg.onOk || null;

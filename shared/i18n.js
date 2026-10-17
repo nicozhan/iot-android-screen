@@ -494,7 +494,7 @@
   "浓缩": "Espresso",
   "海苔": "Seaweed",
   "混合坚果": "Mixed Nuts",
-  "添加标签": "Add Tag",
+  "添加标签": "Add Tags",
   "清洗": "Cleaning",
   "清洗 · VendSolution": "Cleaning · VendSolution",
   "清洗主页": "Cleaning Home",
@@ -571,7 +571,7 @@
   "确定退出": "Sign Out",
   "确认修改": "Confirm Change",
   "确认后将退出运营后台，本演示环境返回账号密码登录页面。": "You will leave the ops console. In this demo, this returns to the account & password login page.",
-  "确认添加标签": "Confirm Add Tag",
+  "确认添加标签": "Confirm Add Tags",
   "删除": "Delete",
   "删除分类": "Delete Category",
   "确定删除该分类吗？": "Delete this category?",
@@ -580,7 +580,7 @@
   "磨豆电机": "Grinder Motor",
   "离线": "Offline",
   "称量并依次输入三次研磨粉重量。": "Weigh and enter the ground coffee weight three times in order.",
-  "移除标签": "Remove Tag",
+  "移除标签": "Remove Tags",
   "第一次": "1st",
   "第三次": "3rd",
   "第二次": "2nd",
@@ -601,7 +601,7 @@
   "已选择 %s 个 SKU": "%s SKUs selected",
   "已设置标签": "Tags updated",
   "取消选择": "Clear selection",
-  "设置标签": "Set tags",
+  "设置标签": "Set Tags",
   "移出标签": "Remove Tags",
   "共 %s 个 SKU": "%s SKUs in total",
   "收起标签列表": "Collapse tag list",
@@ -944,6 +944,14 @@
       n.nodeValue = keep.lead + dispFor(lang, keep.key) + keep.trail;
     });
     walk(document.documentElement);
+    // 运行时生成的含参文案（如二次确认框「确定将所选 %s 个…」）：按模板+参数重填，
+    // 避免 %s 已被具体数字替换后无法命中词典（openConfirm 写入时登记 data-i18n-tpl/args）
+    document.querySelectorAll('[data-i18n-tpl]').forEach(function (el) {
+      var s = t(el.getAttribute('data-i18n-tpl'));
+      var args = (el.getAttribute('data-i18n-args') || '').split('|');
+      args.forEach(function (a) { s = s.split('%s').join(a); });
+      el.textContent = s;
+    });
     // 同步语言切换控件的选中态（data-act="set-lang"）
     document.querySelectorAll('[data-act="set-lang"]').forEach(function (el) {
       el.classList.toggle('on', el.getAttribute('data-lang') === lang);
