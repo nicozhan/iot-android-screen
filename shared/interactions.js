@@ -18,13 +18,13 @@
  *   data-ship="#id"               测试出货：出货按钮（读同卡片货道号/商品名）打开二次确认弹窗
  *   data-ship-go / data-ship-stop / data-ship-done  开始出货（进度条约2.5s自动到完成）/ 终止 / 完成浮窗选择器
  *   data-step="+"/"-"             步进器加减（.stepper 内的 .st-num/.step-val）
- *   data-del                      删除所在 .pm-cat-row
+ *   data-del                      点击删除所在 .pm-cat-row，先弹二次确认（#vs-confirm-del），确认后才隐藏
  *   data-op="remove-tags|clear-sel"  标签管理底部操作
  *   data-kb[.ph|data-kb-mask|data-kb-max|data-kb-ph]     打开通用数字键盘（输入框用）
  *   data-kb-goto / data-kb-toast  键盘“确定”后跳转 / 提示（如登录 → 首页）
  * 通用数字键盘（data-kb）：点击输入框唤起屏上数字键盘，键盘输入掩码/明文回写到触发框，
  *   “确定”后可根据 data-kb-goto 跳转（如登录项，账号/口令纯数字场景）。
- * 自动接管：.np-key 数字键盘 / .vm-ctrl .sq 卡片加减 / .pm-sku 勾选 / .pm-chip 切换 /
+ * 自动接管：.np-key 数字键盘 / .vm-ctrl .sq 卡片加减 / .pm-sku 勾选 / .pm-chip（筛选条单选、标签选择多选）/
  *   .pm-sort-list 拖拽排序 / .vs-radio 单选互斥 / .vs-overlay 点遮罩关闭
  * 动态标题：读取 sessionStorage vs-ctx 写入 .vs-section-title[data-ctx]（排序/分类子页）
  */
@@ -154,6 +154,7 @@
   /* ---------- 页面内浮层 · 工具 ---------- */
   var zTop = 60;                          // 浮层堆叠 z-index 种子（链式弹窗逐层 +1）
   var laneCtx = { lane: '', name: '' };   // 当前货道/商品上下文（浮层动态标题回填）
+  var delTarget = null;                   // 待删除的分类行（二次确认）
 
   function hideOverlay(ov) {
     if (!ov) return;
@@ -215,6 +216,112 @@
     ov.style.zIndex = String(++zTop);      // 后开的浮层居上
     ov.classList.add('show');
     fillLane(ov);
+  }
+
+  /* ---------- 删除二次确认（data-del）→ 复用页内浮层 ---------- */
+  /* 危险操作：默认仅按钮可关（非 data-modal-safe），确认后才删除目标行 */
+  function buildDelConfirm() {
+    if (document.getElementById('vs-confirm-del')) return;
+    var host = document.querySelector('.vs-canvas') || document.body;
+    var ov = document.createElement('div');
+    ov.className = 'vs-overlay';
+    ov.id = 'vs-confirm-del';
+    ov.innerHTML =
+      '<div class="vs-modal" style="width:420px">' +
+        '<div class="vs-modal-head"><div class="vs-modal-title" data-cd="title">删除分类</div>' +
+          '<button class="vs-modal-close" data-close-hide>&#10005;</button></div>' +
+        '<div class="vs-modal-body"><div class="pm-note" data-cd="text">确定删除该分类吗？</div></div>' +
+        '<div class="md-foot">' +
+          '<button class="md-btn md-btn-line" data-close-hide data-cd="cancel">取消</button>' +
+          '<button class="md-btn md-btn-red" data-confirm-del data-cd="ok">删除</button>' +
+        '</div>' +
+      '</div>';
+    // 注入晚于 i18n 初走查：按当前语言填充；后续切语言由 i18n.apply 整体重走查覆盖
+    ov.querySelector('[data-cd="title"]').textContent = T('删除分类');
+    ov.querySelector('[data-cd="text"]').textContent = T('确定删除该分类吗？');
+    ov.querySelector('[data-cd="cancel"]').textContent = T('取消');
+    ov.querySelector('[data-cd="ok"]').textContent = T('删除');
+    host.appendChild(ov);
+  }
+
+  /* ---------- 自定义时间范围（data-op="custom-range"）→ 复用页内浮层 ---------- */
+  /* 年/月/日 + 时/分 各一组（开始/结束），应用于全部统计页的“自定义”时间选择 */
+  var customTrigger = null;                 // 触发自定义时间范围的按钮（应用后回填其文案）
+  function crOpt(v) { return '<option>' + v + '</option>'; }
+  function crVal(ov, k) { var s = ov.querySelector('[data-cr="' + k + '"]'); return s ? s.value : ''; }
+  function crFmt(ov, p) {
+    return crVal(ov, p + 'y') + '/' + crVal(ov, p + 'm') + '/' + crVal(ov, p + 'd') + ' ' +
+           crVal(ov, p + 'h') + ':' + crVal(ov, p + 'min');
+  }
+  function crFill(ov) {
+    var years = ['2025', '2026'];
+    var pad = function (n) { return ('0' + n).slice(-2); };
+    var months = [], days = [], hours = [], mins = [];
+    for (var m = 1; m <= 12; m++) months.push(pad(m));
+    for (var d = 1; d <= 31; d++) days.push(pad(d));
+    for (var h = 0; h <= 23; h++) hours.push(pad(h));
+    for (var mi = 0; mi <= 59; mi++) mins.push(pad(mi));
+    function set(k, arr, def) {
+      var s = ov.querySelector('[data-cr="' + k + '"]');
+      s.innerHTML = arr.map(crOpt).join('');
+      s.value = def;
+    }
+    set('sy', years, '2026'); set('sm', months, '08'); set('sd', days, '01');
+    set('sh', hours, '00'); set('smin', mins, '00');
+    set('ey', years, '2026'); set('em', months, '08'); set('ed', days, '31');
+    set('eh', hours, '23'); set('emin', mins, '59');
+  }
+  function crPreview(ov) {
+    ov.querySelector('[data-cr="preview"]').textContent = crFmt(ov, 's') + '  ~  ' + crFmt(ov, 'e');
+  }
+  function buildCustomTime() {
+    if (document.getElementById('stats-custom-time')) return;
+    var host = document.querySelector('.vs-canvas') || document.body;
+    var ov = document.createElement('div');
+    ov.className = 'vs-overlay';
+    ov.id = 'stats-custom-time';
+    ov.innerHTML =
+      '<div class="vs-modal" style="width:660px">' +
+        '<div class="vs-modal-head"><div class="vs-modal-title" data-cr="title">自定义时间范围</div>' +
+          '<button class="vs-modal-close" data-close-hide>&#10005;</button></div>' +
+        '<div class="vs-modal-body">' +
+          '<div class="cr-block"><div class="cr-label" data-cr="startL">开始时间</div>' +
+            '<div class="cr-units"><span>年</span><span>月</span><span>日</span><span>时</span><span>分</span></div>' +
+            '<div class="cr-dt">' +
+              '<select class="cr-sel" data-cr="sy"></select>' +
+              '<select class="cr-sel" data-cr="sm"></select>' +
+              '<select class="cr-sel" data-cr="sd"></select>' +
+              '<select class="cr-sel" data-cr="sh"></select>' +
+              '<select class="cr-sel" data-cr="smin"></select>' +
+            '</div></div>' +
+          '<div class="cr-block"><div class="cr-label" data-cr="endL">结束时间</div>' +
+            '<div class="cr-units"><span>年</span><span>月</span><span>日</span><span>时</span><span>分</span></div>' +
+            '<div class="cr-dt">' +
+              '<select class="cr-sel" data-cr="ey"></select>' +
+              '<select class="cr-sel" data-cr="em"></select>' +
+              '<select class="cr-sel" data-cr="ed"></select>' +
+              '<select class="cr-sel" data-cr="eh"></select>' +
+              '<select class="cr-sel" data-cr="emin"></select>' +
+            '</div></div>' +
+          '<div class="cr-preview" data-cr="preview">请选择起止时间</div>' +
+        '</div>' +
+        '<div class="md-foot">' +
+          '<button class="md-btn md-btn-line" data-cr-cancel>取消</button>' +
+          '<button class="md-btn md-btn-dark" data-cr-apply>应用</button>' +
+        '</div>' +
+      '</div>';
+    ov.querySelector('[data-cr="title"]').textContent = T('自定义时间范围');
+    ov.querySelector('[data-cr="startL"]').textContent = T('开始时间');
+    ov.querySelector('[data-cr="endL"]').textContent = T('结束时间');
+    ov.querySelector('[data-cr="preview"]').textContent = T('请选择起止时间');
+    ov.querySelector('[data-cr-apply]').textContent = T('应用');
+    ov.querySelector('[data-cr-cancel]').textContent = T('取消');
+    crFill(ov);
+    crPreview(ov);
+    ov.querySelectorAll('.cr-sel').forEach(function (s) {
+      s.addEventListener('change', function () { crPreview(ov); });
+    });
+    host.appendChild(ov);
   }
 
   /* ---------- 下拉菜单（如用户菜单） ---------- */
@@ -472,13 +579,24 @@
     if ((el = t.closest('.vm-ctrl .sq'))) { plusN(el); return; }
     if ((el = t.closest('[data-step]'))) { step(el); return; }
     if ((el = t.closest('[data-del]'))) {
-      var row = el.closest('.pm-cat-row');
-      if (row) { row.style.display = 'none'; toast('已删除该分类'); }
+      delTarget = el.closest('.pm-cat-row');
+      if (delTarget) { buildDelConfirm(); openModal('#vs-confirm-del'); }
+      return;
+    }
+    if ((el = t.closest('[data-confirm-del]'))) {
+      if (delTarget) { delTarget.style.display = 'none'; delTarget = null; }
+      hideOverlay(document.getElementById('vs-confirm-del'));
+      toast('已删除该分类');
       return;
     }
     if ((el = t.closest('[data-op]'))) {
       var kind = el.getAttribute('data-op');
-      if (kind === 'remove-tags') {
+      if (kind === 'custom-range') {
+        customTrigger = el;
+        buildCustomTime();
+        openModal('#stats-custom-time', { src: el });
+        return;
+      } else if (kind === 'remove-tags') {
         document.querySelectorAll('.pm-sku.on .pm-mini-tag').forEach(function (tag) { tag.remove(); });
         toast('已移除所选 SKU 的标签');
       } else if (kind === 'clear-sel') {
@@ -491,13 +609,46 @@
       }
       return;
     }
+    /* 自定义时间范围弹窗：应用 / 取消 */
+    if ((el = t.closest('[data-cr-apply]'))) {
+      var ovA = document.getElementById('stats-custom-time');
+      if (!ovA) return;
+      var sa = crFmt(ovA, 's'), ea = crFmt(ovA, 'e');
+      if (sa > ea) { toast(T('开始时间不能晚于结束时间')); return; }
+      crPreview(ovA);
+      if (customTrigger) customTrigger.innerHTML = sa.slice(0, 10) + '  →  ' + ea.slice(0, 10) + ' &#9662;';
+      hideOverlay(ovA);
+      toast(T('已应用自定义时间范围'));
+      return;
+    }
+    if ((el = t.closest('[data-cr-cancel]'))) {
+      var ovC = document.getElementById('stats-custom-time');
+      if (ovC) hideOverlay(ovC);
+      var rr = document.getElementById('rangeRow');
+      if (rr) {
+        rr.querySelectorAll('.rg-btn').forEach(function (x) { x.classList.remove('on'); });
+        var firstBtn = rr.querySelector('.rg-btn');
+        if (firstBtn) firstBtn.classList.add('on');
+      }
+      return;
+    }
     if ((el = t.closest('.pm-sku'))) {
       el.classList.toggle('on');
       var chk = el.querySelector('.pm-sku-check');
       if (chk) chk.textContent = el.classList.contains('on') ? '\u2713' : '';
       return;
     }
-    if ((el = t.closest('.pm-chip'))) { el.classList.toggle('on'); return; }
+    if ((el = t.closest('.pm-chip'))) {
+      if (el.closest('.pm-filter-bar')) {
+        /* 筛选条：单选（互斥）——同一组只能选中一个 */
+        el.parentElement.querySelectorAll('.pm-chip').forEach(function (c) { c.classList.remove('on'); });
+        el.classList.add('on');
+      } else {
+        /* 添加标签弹窗内的标签选择：可多选 */
+        el.classList.toggle('on');
+      }
+      return;
+    }
 
     /* 单选：带 data-href 视为模式切换（跳转），否则行内互斥（设置页）；
        带关闭/堆叠指令的单选项（如“按保质期时长”回上层浮层）交给关闭逻辑 */

@@ -14,6 +14,22 @@
   <div class="pm-note">长按分类按钮拖动，调整分类顺序；点击分类查看商品</div>
   <div class="pm-cat-list"><div class="pm-cat-row" data-href="47-products-sort-3.html"><span class="pm-cat-name">咖啡</span><span class="pm-cat-count">12 个</span><button class="pm-cat-del" data-del>&#215;</button><span class="pm-handle">&#8801;</span></div><div class="pm-cat-row" data-href="47-products-sort-3.html"><span class="pm-cat-name">饮料</span><span class="pm-cat-count">18 个</span><button class="pm-cat-del" data-del>&#215;</button><span class="pm-handle">&#8801;</span></div><div class="pm-cat-row" data-href="47-products-sort-3.html"><span class="pm-cat-name">零食</span><span class="pm-cat-count">25 个</span><button class="pm-cat-del" data-del>&#215;</button><span class="pm-handle">&#8801;</span></div><div class="pm-cat-row" data-href="47-products-sort-3.html"><span class="pm-cat-name">水</span><span class="pm-cat-count">8 个</span><button class="pm-cat-del" data-del>&#215;</button><span class="pm-handle">&#8801;</span></div><div class="pm-cat-row" data-href="47-products-sort-3.html"><span class="pm-cat-name">早餐</span><span class="pm-cat-count">6 个</span><button class="pm-cat-del" data-del>&#215;</button><span class="pm-handle">&#8801;</span></div><div class="pm-cat-row" data-href="47-products-sort-3.html"><span class="pm-cat-name">奶茶</span><span class="pm-cat-count">9 个</span><button class="pm-cat-del" data-del>&#215;</button><span class="pm-handle">&#8801;</span></div><div class="pm-cat-row" data-href="47-products-sort-3.html"><span class="pm-cat-name">其他</span><span class="pm-cat-count">4 个</span><button class="pm-cat-del" data-del>&#215;</button><span class="pm-handle">&#8801;</span></div></div>
 </main>
+<div class="vs-footer">
+  <button class="vs-btn-line" data-modal="#tag-modal">添加标签</button>
+  <button class="vs-btn-line" data-op="remove-tags">移除标签</button>
+</div>
+<!-- 浮层 · 添加标签弹窗（与标签管理 51 页一致） -->
+<div class="vs-overlay" id="tag-modal">
+  <div class="vs-modal" style="width:560px">
+    <div class="vs-modal-head"><div class="vs-modal-title">批量管理 SKU 标签</div><button class="vs-modal-close" data-close-hide>&#10005;</button></div>
+    <div class="vs-modal-body">
+      <div class="pm-note">已选择 12 个 SKU</div>
+      <div class="pm-tag-bar"><button class="pm-chip on">热销</button><button class="pm-chip on">新品</button><button class="pm-chip on">促销</button><button class="pm-chip on">推荐</button><button class="pm-chip">早餐</button><button class="pm-chip">低糖</button><button class="pm-chip">常温</button><button class="pm-chip">冷藏</button></div>
+      <div class="pm-note">已有关联的标签显示为已勾选</div>
+    </div>
+    <div class="md-foot"><button class="md-btn md-btn-line" data-close-hide>取消</button><button class="md-btn md-btn-dark" data-close-all data-toast="已添加标签">确认添加标签</button></div>
+  </div>
+</div>
 </div>
 <script src="../shared/i18n.js" defer></script>
 <script src="../shared/interactions.js" defer></script>
