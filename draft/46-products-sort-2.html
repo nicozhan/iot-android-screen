@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1280">
-<title>VendSolution · 商品 SKU 标签管理</title>
+<title>VendSolution · 商品分类管理</title>
 <link rel="stylesheet" href="../shared/style.css">
 <style>
-  /* ===== 本页：左侧标签导航 + 右侧 SKU 标签管理（左右 4:6 双栏） ===== */
+  /* ===== 本页：左侧分组导航 + 右侧 SKU 分组管理（左右 4:6 双栏） ===== */
   .tag-main{flex:1;display:flex;flex-direction:row;flex-wrap:nowrap;min-height:0;overflow:hidden;padding:0;gap:0;}
 
-  /* ---- 左侧标签导航栏（约 40%） ---- */
+  /* ---- 左侧分组导航栏（约 40%） ---- */
   .tag-nav{
     flex:0 0 40%;max-width:40%;min-width:0;background:var(--card);
     border-right:1px solid var(--line);
@@ -83,20 +83,20 @@
 
   <div class="vs-topbar">
     <button class="vs-btn-line" data-href="36-products.html">&#8592;&nbsp;返回</button>
-    <div class="page-title">商品 SKU 标签管理</div>
+    <div class="page-title">商品分类管理</div>
     <button class="vs-btn-line" style="margin-left:auto" data-toast="已保存">保存</button>
   </div>
 
   <main class="vs-main tag-main">
 
-    <!-- 左：标签导航栏 -->
+    <!-- 左：分组导航栏 -->
     <aside class="tag-nav" id="tagNav">
       <div class="tag-nav-head">
-        <span class="tag-nav-title">标签</span>
+        <span class="tag-nav-title">分组</span>
         <button class="tag-nav-toggle" id="tagNavToggle" title="收起 / 展开">&#8994;</button>
       </div>
       <div class="tag-nav-list" id="tagNavList"></div>
-      <button class="tag-nav-new" data-modal="#newtag-modal">&#65291;&nbsp;新建标签</button>
+      <button class="tag-nav-new" data-modal="#newtag-modal">&#65291;&nbsp;新建分组</button>
     </aside>
 
     <!-- 右：SKU 列表 + 底部操作 -->
@@ -105,7 +105,7 @@
         <div class="sku-table-head">
           <span class="sku-check-col"><span class="sku-check-all" id="selectAll" title="全选"></span></span>
           <span class="sku-name-col">SKU 名称</span>
-          <span class="sku-tags-col">标签</span>
+          <span class="sku-tags-col">分组</span>
         </div>
         <div class="sku-list" id="skuList"></div>
         <div class="sku-empty" id="skuEmpty" style="display:none">暂无匹配的 SKU</div>
@@ -117,48 +117,48 @@
           <button class="vs-btn-line" data-op="clear-sel">取消选择</button>
         </div>
         <div class="sku-foot-right">
-          <button class="vs-btn-line skufoot-btn" id="setTagsBtn" data-modal="#tag-modal">设置标签</button>
-          <button class="vs-btn-line skufoot-btn" id="removeTagsBtn" data-op="remove-tags">移出标签</button>
+          <button class="vs-btn-line skufoot-btn" id="setTagsBtn" data-modal="#tag-modal">设置分组</button>
+          <button class="vs-btn-line skufoot-btn" id="removeTagsBtn" data-op="remove-tags">移出分组</button>
         </div>
       </div>
     </section>
 
   </main>
 
-  <!-- 浮层 · 设置标签（批量管理 SKU 标签） -->
+  <!-- 浮层 · 设置分组（批量管理 SKU 分组） -->
   <div class="vs-overlay" id="tag-modal">
     <div class="vs-modal" style="width:600px">
       <div class="vs-modal-head">
-        <div class="vs-modal-title">批量管理 SKU 标签</div>
+        <div class="vs-modal-title">批量管理 SKU 分组</div>
         <button class="vs-modal-close" data-close-all>&#10005;</button>
       </div>
       <div class="vs-modal-body">
         <div class="pm-note" id="tagModalNote">已选择 0 个 SKU</div>
         <div class="pm-tag-bar" id="tagModalChips"></div>
-        <div class="pm-note">已有关联的标签显示为已勾选，可多选</div>
+        <div class="pm-note">已有关联的分组显示为已勾选，可多选</div>
       </div>
       <div class="md-foot">
         <button class="md-btn md-btn-line" data-close-all>取消</button>
-        <button class="md-btn md-btn-dark" id="tagModalConfirm">确认设置标签</button>
+        <button class="md-btn md-btn-dark" id="tagModalConfirm">确认设置分组</button>
       </div>
     </div>
   </div>
 
-  <!-- 浮层 · 新建标签 -->
+  <!-- 浮层 · 新建分组 -->
   <div class="vs-overlay" id="newtag-modal">
     <div class="vs-modal" style="width:560px">
       <div class="vs-modal-head">
-        <div class="vs-modal-title">新建标签</div>
+        <div class="vs-modal-title">新建分组</div>
         <button class="vs-modal-close" data-close-hide>&#10005;</button>
       </div>
       <div class="vs-modal-body">
         <div class="vs-field" style="max-width:none">
-          <span class="vs-field-label">标签名称</span>
-          <div class="vs-input" id="newTagInput" data-kb data-kb-type="text" data-kb-max="12" data-kb-ph="请输入标签名称">
-            <span class="ph">请输入标签名称</span>
+          <span class="vs-field-label">分组名称</span>
+          <div class="vs-input" id="newTagInput" data-kb data-kb-type="text" data-kb-max="12" data-kb-ph="请输入分组名称">
+            <span class="ph">请输入分组名称</span>
           </div>
         </div>
-        <div class="pm-note">最多 12 个字符；新标签可立即用于左侧筛选与「设置标签」。</div>
+        <div class="pm-note">最多 12 个字符；新分组可立即用于左侧筛选与「设置分组」。</div>
       </div>
       <div class="md-foot">
         <button class="md-btn md-btn-line" data-close-hide>取消</button>
@@ -176,21 +176,21 @@ document.addEventListener('DOMContentLoaded', function () {
   var VS_TOAST = function (s) { if (window.VS && window.VS.toast) window.VS.toast(s); };
 
   /* ---------- 数据（示意） ---------- */
-  var TAGS = ['标签1', '标签2', '标签3'];          // 标签池（无标签为虚拟项）
-  var NONE = '__none';                             // “无标签”筛选哨兵
+  var TAGS = ['分组1', '分组2', '分组3'];          // 分组池（无分组为虚拟项）
+  var NONE = '__none';                             // “无分组”筛选哨兵
   var SKUS = [
-    { id: 'SKU001', name: '商品 SKU 1', tags: ['标签1'] },
-    { id: 'SKU002', name: '商品 SKU 2', tags: ['标签2'] },
-    { id: 'SKU003', name: '商品 SKU 3', tags: ['标签1', '标签2', '标签3'] },
-    { id: 'SKU004', name: '可口可乐', tags: ['标签2'] },
+    { id: 'SKU001', name: '商品 SKU 1', tags: ['分组1'] },
+    { id: 'SKU002', name: '商品 SKU 2', tags: ['分组2'] },
+    { id: 'SKU003', name: '商品 SKU 3', tags: ['分组1', '分组2', '分组3'] },
+    { id: 'SKU004', name: '可口可乐', tags: ['分组2'] },
     { id: 'SKU005', name: '雪碧', tags: [] },
-    { id: 'SKU006', name: '美式咖啡', tags: ['标签1', '标签3'] },
-    { id: 'SKU007', name: '拿铁', tags: ['标签3'] },
+    { id: 'SKU006', name: '美式咖啡', tags: ['分组1', '分组3'] },
+    { id: 'SKU007', name: '拿铁', tags: ['分组3'] },
     { id: 'SKU008', name: '矿泉水', tags: [] },
-    { id: 'SKU009', name: '橙汁', tags: ['标签2'] },
+    { id: 'SKU009', name: '橙汁', tags: ['分组2'] },
     { id: 'SKU010', name: '独立包装薯片', tags: [] },
-    { id: 'SKU011', name: '全麦三明治', tags: ['标签2', '标签3'] },
-    { id: 'SKU012', name: '气泡苏打水', tags: ['标签1'] }
+    { id: 'SKU011', name: '全麦三明治', tags: ['分组2', '分组3'] },
+    { id: 'SKU012', name: '气泡苏打水', tags: ['分组1'] }
   ];
   var selected = { 'SKU001': true };               // 默认选中第一项（与线框一致）
   var activeTag = null;                            // null = 全部
@@ -219,16 +219,16 @@ document.addEventListener('DOMContentLoaded', function () {
   function tagPills(tags) {
     return tags.length
       ? tags.map(function (t) { return '<span class="pm-mini-tag">' + esc(t) + '</span>'; }).join('')
-      : '<span class="pm-tag-none">' + T('无标签') + '</span>';
+      : '<span class="pm-tag-none">' + T('无分组') + '</span>';
   }
   function countOf(key) {
     if (key === NONE) return SKUS.filter(function (s) { return !s.tags.length; }).length;
     return SKUS.filter(function (s) { return s.tags.indexOf(key) >= 0; }).length;
   }
 
-  /* ---------- 左侧标签导航 ---------- */
+  /* ---------- 左侧分组导航 ---------- */
   function renderSidebar() {
-    var items = [{ name: T('无标签'), key: NONE, count: countOf(NONE) }];
+    var items = [{ name: T('无分组'), key: NONE, count: countOf(NONE) }];
     TAGS.forEach(function (t) { items.push({ name: t, key: t, count: countOf(t) }); });
     navListEl.innerHTML = items.map(function (it) {
       return '<button type="button" class="tag-nav-item' + (activeTag === it.key ? ' on' : '') +
@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', function () {
         r.querySelectorAll('.pm-mini-tag').forEach(function (t) { tags.push(t.textContent.trim()); });
         if (tags.join('|') !== s.tags.join('|')) tagsChanged = true;
         s.tags = tags;
-        /* 标签被清空（如「移出标签」）时补上「无标签」占位 */
+        /* 分组被清空（如「移出分组」）时补上「无分组」占位 */
         var box = r.querySelector('.pm-sku-tags');
         if (box && !tags.length && !box.querySelector('.pm-tag-none')) {
           selfRender = true;
@@ -284,14 +284,14 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     countEl.textContent = T('已选择 %s 个').replace('%s', Object.keys(selected).length);
     selAllEl.classList.toggle('on', vis.length > 0 && visOn === vis.length);
-    if (tagsChanged) renderSidebar();   // 标签数随「设置/移出标签」实时刷新
+    if (tagsChanged) renderSidebar();   // 分组数随「设置/移出分组」实时刷新
   }
 
-  /* 引擎接管勾选 / 移除标签后，DOM 变化回流到数据与计数 */
+  /* 引擎接管勾选 / 移出分组后，DOM 变化回流到数据与计数 */
   new MutationObserver(function () { if (!selfRender) syncFromDom(); })
     .observe(listEl, { attributes: true, childList: true, subtree: true });
 
-  /* 可视行原地刷新标签：数据已变（设置/移出标签），只重画标签列，
+  /* 可视行原地刷新分组：数据已变（设置/移出分组），只重画分组列，
      不重新过滤——刚操作完的行不从当前视野中消失 */
   function refreshVisibleTags() {
     Array.prototype.forEach.call(listEl.querySelectorAll('.pm-sku'), function (r) {
@@ -324,7 +324,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   })();
 
-  /* 移出标签：接管引擎默认流程——按数据层全量处理（含被左导航筛掉的已选项），
+  /* 移出分组：接管引擎默认流程——按数据层全量处理（含被左导航筛掉的已选项），
      弹通用二次确认（vs-confirm-tags），确认后才真正移除 */
   document.addEventListener('vs-remove-tags-ask', function (e) {
     syncFromDom();                                      // 先冲刷 DOM→数据（极快连点时 observer 可能未触发）
@@ -332,15 +332,15 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!ids.length) { VS_TOAST(T('请先选择 SKU')); e.preventDefault(); return; }
     e.preventDefault();
     window.VS.confirm('vs-confirm-tags', {
-      title: '移出标签',
-      text: '确定将所选 %s 个 SKU 的全部标签移出吗？',
+      title: '移出分组',
+      text: '确定将所选 %s 个 SKU 的全部分组移出吗？',
       count: ids.length,
       okText: '确认移出',
       onOk: function () {
         ids.forEach(function (id) { var s = byId[id]; if (s) s.tags = []; });
         renderSidebar();
         refreshVisibleTags();
-        VS_TOAST(T('已为所选 SKU 移出标签'));
+        VS_TOAST(T('已为所选 SKU 移出分组'));
       }
     });
   });
@@ -363,7 +363,7 @@ document.addEventListener('DOMContentLoaded', function () {
     syncFromDom();
   });
 
-  /* ---------- 设置标签弹窗 ---------- */
+  /* ---------- 设置分组弹窗 ---------- */
   function renderModalChips(force) {
     if (!force && document.getElementById('tag-modal').classList.contains('show')) return; // 已打开则不重置进行中的选择
     var selTags = [];
@@ -388,26 +388,26 @@ document.addEventListener('DOMContentLoaded', function () {
     renderSidebar();
     refreshVisibleTags();
     hideModal('#tag-modal');
-    VS_TOAST(T('已设置标签'));
+    VS_TOAST(T('已设置分组'));
   });
 
-  /* ---------- 新建标签 ---------- */
+  /* ---------- 新建分组 ---------- */
   function hideModal(sel) {
     var ov = document.querySelector(sel);
     if (ov) ov.classList.remove('show');
   }
   function createTag() {
     var name = (newInput.getAttribute('data-kb-value') || '').trim();
-    if (!name) { VS_TOAST(T('标签名称不能为空')); return; }
+    if (!name) { VS_TOAST(T('分组名称不能为空')); return; }
     if (TAGS.indexOf(name) < 0) TAGS.push(name);
     newInput.removeAttribute('data-kb-value');
     var ph = newInput.querySelector('.ph');
     newInput.textContent = '';
-    if (ph) ph.textContent = T('请输入标签名称');
+    if (ph) ph.textContent = T('请输入分组名称');
     renderSidebar();
     renderModalChips();
     hideModal('#newtag-modal');
-    VS_TOAST(T('已新建标签：%s').replace('%s', name));
+    VS_TOAST(T('已新建分组：%s').replace('%s', name));
   }
   document.getElementById('newTagConfirm').addEventListener('click', createTag);
   newInput.addEventListener('kb-done', createTag);

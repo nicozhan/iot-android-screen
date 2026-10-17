@@ -27,7 +27,7 @@
  *   data-kb-goto / data-kb-toast  键盘“确定”后跳转 / 提示（如登录 → 首页）
  * 键盘行为：点击输入框唤起；键盘开着时点空白处若落点是另一个 data-kb 输入框，
  *   则切换键盘目标（原框内容自动回写不丢失）；确定=回写并派发 'kb-done' 事件
- *   （页面可监听接管，如 46 页新建标签）；取消=放弃本次输入。
+ *   （页面可监听接管，如 46 页新建分组）；取消=放弃本次输入。
  * 自动接管：.np-key 数字键盘 / .vm-ctrl .sq 卡片加减 / .pm-sku 勾选 / .pm-chip（筛选条单选、标签选择多选）/
  *   .pm-sort-list 拖拽排序 / .vs-radio 单选互斥 / .vs-overlay 点遮罩关闭
  * 动态标题：读取 sessionStorage vs-ctx 写入 .vs-section-title[data-ctx]（排序/分类子页）
@@ -745,7 +745,7 @@
         var nSel = document.querySelectorAll('.pm-sku.on').length;
         if (!nSel) { toast(T('请先选择 SKU')); return; }
         /* 文案可经 data-op-title/data-op-text(可含 %s)/data-op-ok/data-op-done 覆盖：
-           分类管理页用“分类”措辞，缺省为“标签”（46 页由脚本整体接管，用不到缺省） */
+           缺省为“标签”（50 页用；46 页由脚本整体接管，改用“分组”措辞，用不到缺省） */
         openConfirm('vs-confirm-tags', {
           title: el.getAttribute('data-op-title') || '移出标签',
           text: el.getAttribute('data-op-text') || '确定将所选 %s 个 SKU 的全部标签移出吗？',
