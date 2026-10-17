@@ -139,7 +139,7 @@
       </div>
       <div class="md-foot">
         <button class="md-btn md-btn-line" data-close-all>取消</button>
-        <button class="md-btn md-btn-dark" id="tagModalConfirm" data-close-all data-toast="已设置标签">确认设置标签</button>
+        <button class="md-btn md-btn-dark" id="tagModalConfirm">确认设置标签</button>
       </div>
     </div>
   </div>
@@ -291,6 +291,20 @@ document.addEventListener('DOMContentLoaded', function () {
   new MutationObserver(function () { if (!selfRender) syncFromDom(); })
     .observe(listEl, { attributes: true, childList: true, subtree: true });
 
+  /* 可视行原地刷新标签：数据已变（设置/移出标签），只重画标签列，
+     不重新过滤——刚操作完的行不从当前视野中消失 */
+  function refreshVisibleTags() {
+    Array.prototype.forEach.call(listEl.querySelectorAll('.pm-sku'), function (r) {
+      var s = byId[r.getAttribute('data-id')];
+      if (!s) return;
+      var box = r.querySelector('.pm-sku-tags');
+      selfRender = true;
+      box.innerHTML = tagPills(s.tags);
+      selfRender = false;
+    });
+    syncFromDom();
+  }
+
   /* ---------- 左侧交互：筛选（单选，再点取消） ---------- */
   navListEl.addEventListener('click', function (e) {
     var item = e.target.closest('.tag-nav-item');
@@ -309,6 +323,27 @@ document.addEventListener('DOMContentLoaded', function () {
       Object.keys(selected).forEach(function (k) { delete selected[k]; });
     });
   })();
+
+  /* 移出标签：接管引擎默认流程——按数据层全量处理（含被左导航筛掉的已选项），
+     弹通用二次确认（vs-confirm-tags），确认后才真正移除 */
+  document.addEventListener('vs-remove-tags-ask', function (e) {
+    syncFromDom();                                      // 先冲刷 DOM→数据（极快连点时 observer 可能未触发）
+    var ids = Object.keys(selected);
+    if (!ids.length) { VS_TOAST(T('请先选择 SKU')); e.preventDefault(); return; }
+    e.preventDefault();
+    window.VS.confirm('vs-confirm-tags', {
+      title: '移出标签',
+      text: '确定将所选 %s 个 SKU 的全部标签移出吗？',
+      count: ids.length,
+      okText: '确认移出',
+      onOk: function () {
+        ids.forEach(function (id) { var s = byId[id]; if (s) s.tags = []; });
+        renderSidebar();
+        refreshVisibleTags();
+        VS_TOAST(T('已为所选 SKU 移出标签'));
+      }
+    });
+  });
 
   /* ---------- 折叠 / 展开左侧 ---------- */
   navToggle.addEventListener('click', function () {
@@ -341,23 +376,19 @@ document.addEventListener('DOMContentLoaded', function () {
     }).join('');
     noteEl.textContent = T('已选择 %s 个 SKU').replace('%s', Object.keys(selected).length);
   }
-  document.getElementById('setTagsBtn').addEventListener('click', function () { renderModalChips(); });
+  document.getElementById('setTagsBtn').addEventListener('click', function () { syncFromDom(); renderModalChips(); });
   document.getElementById('tagModalConfirm').addEventListener('click', function () {
+    syncFromDom();                                      // 先冲刷 DOM→数据，保证拿到最新勾选
+    var ids = Object.keys(selected);
+    if (!ids.length) { VS_TOAST(T('请先选择 SKU')); return; }   // 0 选不关浮层，提示先勾选
     var chosen = [];
     chipsEl.querySelectorAll('.pm-chip.on').forEach(function (c) { chosen.push(c.textContent.trim()); });
-    setTimeout(function () {
-      Array.prototype.forEach.call(listEl.querySelectorAll('.pm-sku.on'), function (r) {
-        var s = byId[r.getAttribute('data-id')];
-        if (!s) return;
-        s.tags = chosen.slice();
-        var box = r.querySelector('.pm-sku-tags');
-        selfRender = true;
-        box.innerHTML = tagPills(s.tags);
-        selfRender = false;
-      });
-      renderSidebar();
-      syncFromDom();
-    }, 0);
+    /* 应用到全部已选 SKU（含被左导航筛掉、当前不在可视列表里的） */
+    ids.forEach(function (id) { var s = byId[id]; if (s) s.tags = chosen.slice(); });
+    renderSidebar();
+    refreshVisibleTags();
+    hideModal('#tag-modal');
+    VS_TOAST(T('已设置标签'));
   });
 
   /* ---------- 新建标签 ---------- */

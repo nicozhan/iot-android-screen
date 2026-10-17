@@ -18,8 +18,9 @@
  *   data-ship="#id"               测试出货：出货按钮（读同卡片货道号/商品名）打开二次确认弹窗
  *   data-ship-go / data-ship-stop / data-ship-done  开始出货（进度条约2.5s自动到完成）/ 终止 / 完成浮窗选择器
  *   data-step="+"/"-"             步进器加减（.stepper 内的 .st-num/.step-val）
- *   data-del                      点击删除所在 .pm-cat-row，先弹二次确认（#vs-confirm-del），确认后才隐藏
- *   data-op="remove-tags|clear-sel"  标签管理底部操作
+ *   data-del                      点击删除所在 .pm-cat-row，先弹二次确认（通用确认浮层），确认后才隐藏
+ *   data-op="remove-tags|clear-sel"  标签管理底部操作；remove-tags 先弹二次确认（#vs-confirm-tags），
+ *                                  确认后才移除标签；页面可监听 'vs-remove-tags-ask'（可取消）整体接管
  *   data-kb[.ph|data-kb-mask|data-kb-max|data-kb-ph]     打开通用数字键盘（输入框用）
  *   data-kb-goto / data-kb-toast  键盘“确定”后跳转 / 提示（如登录 → 首页）
  * 通用数字键盘（data-kb）：点击输入框唤起屏上数字键盘，键盘输入掩码/明文回写到触发框，
@@ -165,7 +166,6 @@
   /* ---------- 页面内浮层 · 工具 ---------- */
   var zTop = 60;                          // 浮层堆叠 z-index 种子（链式弹窗逐层 +1）
   var laneCtx = { lane: '', name: '' };   // 当前货道/商品上下文（浮层动态标题回填）
-  var delTarget = null;                   // 待删除的分类行（二次确认）
 
   function hideOverlay(ov) {
     if (!ov) return;
@@ -229,30 +229,41 @@
     fillLane(ov);
   }
 
-  /* ---------- 删除二次确认（data-del）→ 复用页内浮层 ---------- */
-  /* 危险操作：默认仅按钮可关（非 data-modal-safe），确认后才删除目标行 */
-  function buildDelConfirm() {
-    if (document.getElementById('vs-confirm-del')) return;
+  /* ---------- 通用二次确认（data-del / data-op="remove-tags"）→ 复用页内浮层 ---------- */
+  /* 危险操作：默认仅按钮可关（非 data-modal-safe），确认后才执行；
+     文案按触发动态填充（text 可含 %s，由 count 替换），确认动作由 confirmOnOk 承接 */
+  var confirmOnOk = null;                 // 确认后执行的动作（每次打开重新绑定）
+  function buildConfirm(id) {
+    if (document.getElementById(id)) return;
     var host = document.querySelector('.vs-canvas') || document.body;
     var ov = document.createElement('div');
     ov.className = 'vs-overlay';
-    ov.id = 'vs-confirm-del';
+    ov.id = id;
     ov.innerHTML =
       '<div class="vs-modal" style="width:420px">' +
-        '<div class="vs-modal-head"><div class="vs-modal-title" data-cd="title">删除分类</div>' +
+        '<div class="vs-modal-head"><div class="vs-modal-title" data-cf="title"></div>' +
           '<button class="vs-modal-close" data-close-hide>&#10005;</button></div>' +
-        '<div class="vs-modal-body"><div class="pm-note" data-cd="text">确定删除该分类吗？</div></div>' +
+        '<div class="vs-modal-body"><div class="pm-note" data-cf="text"></div></div>' +
         '<div class="md-foot">' +
-          '<button class="md-btn md-btn-line" data-close-hide data-cd="cancel">取消</button>' +
-          '<button class="md-btn md-btn-red" data-confirm-del data-cd="ok">删除</button>' +
+          '<button class="md-btn md-btn-line" data-close-hide data-cf="cancel"></button>' +
+          '<button class="md-btn md-btn-red" data-confirm-del data-cf="ok"></button>' +
         '</div>' +
       '</div>';
-    // 注入晚于 i18n 初走查：按当前语言填充；后续切语言由 i18n.apply 整体重走查覆盖
-    ov.querySelector('[data-cd="title"]').textContent = T('删除分类');
-    ov.querySelector('[data-cd="text"]').textContent = T('确定删除该分类吗？');
-    ov.querySelector('[data-cd="cancel"]').textContent = T('取消');
-    ov.querySelector('[data-cd="ok"]').textContent = T('删除');
     host.appendChild(ov);
+  }
+  /* cfg: {title, text(可含 %s), count, okText, onOk}；文案经 T() 按当前语言填充 */
+  function openConfirm(id, cfg) {
+    buildConfirm(id);
+    var ov = document.getElementById(id);
+    if (!ov) return;
+    var text = T(cfg.text);
+    if (cfg.count != null) text = text.split('%s').join(cfg.count);
+    ov.querySelector('[data-cf="title"]').textContent = T(cfg.title);
+    ov.querySelector('[data-cf="text"]').textContent = text;
+    ov.querySelector('[data-cf="ok"]').textContent = T(cfg.okText);
+    ov.querySelector('[data-cf="cancel"]').textContent = T('取消');
+    confirmOnOk = cfg.onOk || null;
+    openModal('#' + id);
   }
 
   /* ---------- 自定义时间范围（data-op="custom-range"）→ 复用页内浮层 ---------- */
@@ -672,14 +683,20 @@
     if ((el = t.closest('.vm-ctrl .sq'))) { plusN(el); return; }
     if ((el = t.closest('[data-step]'))) { step(el); return; }
     if ((el = t.closest('[data-del]'))) {
-      delTarget = el.closest('.pm-cat-row');
-      if (delTarget) { buildDelConfirm(); openModal('#vs-confirm-del'); }
+      var row = el.closest('.pm-cat-row');
+      if (row) {
+        openConfirm('vs-confirm-del', {
+          title: '删除分类', text: '确定删除该分类吗？', okText: '删除',
+          onOk: function () { row.style.display = 'none'; toast(T('已删除该分类')); }
+        });
+      }
       return;
     }
     if ((el = t.closest('[data-confirm-del]'))) {
-      if (delTarget) { delTarget.style.display = 'none'; delTarget = null; }
-      hideOverlay(document.getElementById('vs-confirm-del'));
-      toast('已删除该分类');
+      var fn = confirmOnOk;
+      confirmOnOk = null;
+      hideOverlay(el.closest('.vs-overlay'));
+      if (fn) fn();
       return;
     }
     if ((el = t.closest('[data-op]'))) {
@@ -690,8 +707,21 @@
         openModal('#stats-custom-time', { src: el });
         return;
       } else if (kind === 'remove-tags') {
-        document.querySelectorAll('.pm-sku.on .pm-mini-tag').forEach(function (tag) { tag.remove(); });
-        toast('已移除所选 SKU 的标签');
+        /* 页面可整体接管（如 46 页：按数据层处理，含被左导航筛掉的已选项） */
+        var ask = new CustomEvent('vs-remove-tags-ask', { bubbles: true, cancelable: true });
+        if (!document.dispatchEvent(ask)) return;
+        var nSel = document.querySelectorAll('.pm-sku.on').length;
+        if (!nSel) { toast(T('请先选择 SKU')); return; }
+        openConfirm('vs-confirm-tags', {
+          title: '移出标签',
+          text: '确定将所选 %s 个 SKU 的全部标签移出吗？',
+          count: nSel,
+          okText: '确认移出',
+          onOk: function () {
+            document.querySelectorAll('.pm-sku.on .pm-mini-tag').forEach(function (tag) { tag.remove(); });
+            toast(T('已为所选 SKU 移出标签'));
+          }
+        });
       } else if (kind === 'clear-sel') {
         document.querySelectorAll('.pm-sku.on').forEach(function (s) {
           s.classList.remove('on');
@@ -816,7 +846,7 @@
     list.addEventListener('drop', function (e) { e.preventDefault(); });
   });
 
-  /* 对外暴露少量工具（供页面级脚本复用，避免重复实现 toast/跳转） */
-  window.VS = { toast: toast, goto: goto };
+  /* 对外暴露少量工具（供页面级脚本复用，避免重复实现 toast/跳转/确认浮层） */
+  window.VS = { toast: toast, goto: goto, confirm: openConfirm };
 
 })();
