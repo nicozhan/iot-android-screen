@@ -21,10 +21,13 @@
  *   data-del                      点击删除所在 .pm-cat-row，先弹二次确认（通用确认浮层），确认后才隐藏
  *   data-op="remove-tags|clear-sel"  标签管理底部操作；remove-tags 先弹二次确认（#vs-confirm-tags），
  *                                  确认后才移除标签；页面可监听 'vs-remove-tags-ask'（可取消）整体接管
- *   data-kb[.ph|data-kb-mask|data-kb-max|data-kb-ph]     打开通用数字键盘（输入框用）
+ *   data-kb[.ph|data-kb-mask|data-kb-max|data-kb-ph]     打开屏上键盘（输入框用）
+ *   data-kb-type="text"              全键盘：26 字母 + 标点 + 数字（Shift 大小写 / 退格 / 空格）；
+ *                                    缺省为数字键盘（纯数字场景，如口令）
  *   data-kb-goto / data-kb-toast  键盘“确定”后跳转 / 提示（如登录 → 首页）
- * 通用数字键盘（data-kb）：点击输入框唤起屏上数字键盘，键盘输入掩码/明文回写到触发框，
- *   “确定”后可根据 data-kb-goto 跳转（如登录项，账号/口令纯数字场景）。
+ * 键盘行为：点击输入框唤起；键盘开着时点空白处若落点是另一个 data-kb 输入框，
+ *   则切换键盘目标（原框内容自动回写不丢失）；确定=回写并派发 'kb-done' 事件
+ *   （页面可监听接管，如 46 页新建标签）；取消=放弃本次输入。
  * 自动接管：.np-key 数字键盘 / .vm-ctrl .sq 卡片加减 / .pm-sku 勾选 / .pm-chip（筛选条单选、标签选择多选）/
  *   .pm-sort-list 拖拽排序 / .vs-radio 单选互斥 / .vs-overlay 点遮罩关闭
  * 动态标题：读取 sessionStorage vs-ctx 写入 .vs-section-title[data-ctx]（排序/分类子页）
@@ -616,9 +619,9 @@
     if (KB) KB.classList.remove('show');
     kbSrc = null;
   }
-  function kbDone() {
+  function kbWriteBack(fireEvent) {
+    // 把键盘当前内容回写到触发输入框（fireEvent=true 时派发 kb-done，供页面监听接管）
     var raw = KB ? (KB.dataset.raw || '') : '';
-    var href = null, toastMsg = null;
     if (kbSrc) {
       // 回写到触发输入框（优先其内部 .ph 占位，否则自身）
       var target = kbSrc.querySelector('.ph') || kbSrc;
@@ -626,13 +629,20 @@
       if (kbMasked) target.textContent = raw ? kbMask(raw, kbType === 'text') : ph;
       else target.textContent = raw || ph;
       kbSrc.setAttribute('data-kb-value', raw);
+      if (fireEvent) {
+        try { kbSrc.dispatchEvent(new CustomEvent('kb-done', { bubbles: true })); } catch (e) {}
+      }
+    }
+    return raw;
+  }
+  function kbDone() {
+    var href = null, toastMsg = null;
+    if (kbSrc) {
       href = kbSrc.getAttribute('data-kb-goto');
       toastMsg = kbSrc.getAttribute('data-kb-toast');
     }
+    kbWriteBack(true);          // 回写 + 派发 kb-done（必须在 closeKB 置空 kbSrc 之前）
     closeKB();
-    if (kbSrc) {
-      try { kbSrc.dispatchEvent(new CustomEvent('kb-done', { bubbles: true })); } catch (e) {}
-    }
     if (href) goto(href, toastMsg);
     else if (toastMsg) toast(toastMsg);
   }
@@ -651,7 +661,20 @@
     if ((el = t.closest('#vs-kb .kb-key'))) { kbPressText(el); return; }
     /* 键盘内层数字键（先于 .np-key，避免与补货数字键盘混淆） */
     if ((el = t.closest('#vs-kb .np-key'))) { kbPress(el); return; }
-    if ((el = t.closest('#' + 'vs-kb'))) { return; }         // 键盘区域空白不穿透
+    if ((el = t.closest('#' + 'vs-kb'))) {
+      // 键盘开着时点空白处：若落点是另一个 data-kb 输入框，切换键盘目标（原框内容先回写，不丢失）
+      if (KB && KB.classList.contains('show') && t.classList && t.classList.contains('vs-kb-overlay')
+          && typeof ev.clientX === 'number') {
+        try {
+          KB.style.visibility = 'hidden';
+          var under = document.elementFromPoint(ev.clientX, ev.clientY);
+          KB.style.visibility = '';
+          var kb2 = under && under.closest ? under.closest('[data-kb]') : null;
+          if (kb2 && kb2 !== kbSrc) { kbWriteBack(false); openKB(kb2); return; }
+        } catch (e) {}
+      }
+      return;         // 键盘区域空白不穿透
+    }
 
     /* ---- 语言切换（先于 .vs-radio 等，保证单选控件可切语言） ---- */
     if ((el = t.closest('[data-act="set-lang"]'))) {
