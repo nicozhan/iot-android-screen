@@ -6,12 +6,12 @@
 <title>VendSolution · 商品 SKU 标签管理</title>
 <link rel="stylesheet" href="../shared/style.css">
 <style>
-  /* ===== 本页：左侧标签导航 + 右侧 SKU 标签管理（双栏） ===== */
-  .tag-main{flex:1;display:flex;min-height:0;overflow:hidden;padding:0;gap:0;}
+  /* ===== 本页：左侧标签导航 + 右侧 SKU 标签管理（左右 4:6 双栏） ===== */
+  .tag-main{flex:1;display:flex;flex-direction:row;flex-wrap:nowrap;min-height:0;overflow:hidden;padding:0;gap:0;}
 
-  /* ---- 左侧标签导航栏 ---- */
+  /* ---- 左侧标签导航栏（约 40%） ---- */
   .tag-nav{
-    flex:0 0 296px;background:var(--card);
+    flex:0 0 40%;max-width:40%;min-width:0;background:var(--card);
     border-right:1px solid var(--line);
     display:flex;flex-direction:column;min-height:0;
   }
@@ -44,7 +44,7 @@
   .tag-nav.collapsed .tag-nav-list,
   .tag-nav.collapsed .tag-nav-new{display:none;}
 
-  /* ---- 右侧 SKU 面板 ---- */
+  /* ---- 右侧 SKU 面板（约 60%） ---- */
   .sku-pane{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--bg);}
   .sku-scroll{flex:1;overflow:auto;padding:16px 24px 8px;}
   .sku-table-head{
