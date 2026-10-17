@@ -712,14 +712,16 @@
         if (!document.dispatchEvent(ask)) return;
         var nSel = document.querySelectorAll('.pm-sku.on').length;
         if (!nSel) { toast(T('请先选择 SKU')); return; }
+        /* 文案可经 data-op-title/data-op-text(可含 %s)/data-op-ok/data-op-done 覆盖：
+           分类管理页用“分类”措辞，缺省为“标签”（46 页由脚本整体接管，用不到缺省） */
         openConfirm('vs-confirm-tags', {
-          title: '移出标签',
-          text: '确定将所选 %s 个 SKU 的全部标签移出吗？',
+          title: el.getAttribute('data-op-title') || '移出标签',
+          text: el.getAttribute('data-op-text') || '确定将所选 %s 个 SKU 的全部标签移出吗？',
           count: nSel,
-          okText: '确认移出',
+          okText: el.getAttribute('data-op-ok') || '确认移出',
           onOk: function () {
             document.querySelectorAll('.pm-sku.on .pm-mini-tag').forEach(function (tag) { tag.remove(); });
-            toast(T('已为所选 SKU 移出标签'));
+            toast(T(el.getAttribute('data-op-done') || '已为所选 SKU 移出标签'));
           }
         });
       } else if (kind === 'clear-sel') {
