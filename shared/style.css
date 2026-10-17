@@ -128,6 +128,20 @@ html,body{
 .vs-btn-line:hover{background:#FCFCFA;}
 .vs-btn-line:active{background:#F0F0EC;}
 
+/* ---------- 语言切换（三段式：简体中文 / 英文 / 繁体中文） ---------- */
+.lang-switch{display:flex;border:1px solid var(--line-btn);border-radius:6px;overflow:hidden;}
+.lang-switch .lang-seg{
+  height:40px;padding:0 18px;background:var(--card);border:none;
+  border-right:1px solid var(--line-btn);
+  font-family:var(--sans);font-size:15px;font-weight:600;color:var(--sub);
+  cursor:pointer;transition:background .12s ease;
+}
+.lang-switch .lang-seg:last-child{border-right:none;}
+.lang-switch .lang-seg:hover{background:#F4F4EF;}
+.lang-switch .lang-seg:active{background:#ECECE4;}
+.lang-switch .lang-seg.on{background:var(--dark);color:#FFFFFF;}
+.lang-topbar-right{display:flex;align-items:center;gap:14px;margin-left:auto;}
+
 /* ---------- Tab 栏 ---------- */
 .vs-tabs{
   display:flex;background:var(--card);

@@ -66,7 +66,18 @@
       'font-family:var(--sans,sans-serif);}' +
     '.vs-kb-cancel{background:#fff;color:var(--ink,#111);border-top:1px solid var(--line,#d9d9d2);}' +
     '.vs-kb-done{background:var(--dark,#0f0f0f);color:#fff;}' +
-    '.vs-kb-done:active{background:#000;}';
+    '.vs-kb-done:active{background:#000;}' +
+    /* ===== 通用全键盘（data-kb-type="text"）===== */
+    '.vs-kb-body{padding:12px;background:var(--line,#d9d9d2);}' +
+    '.vs-kb-body-inner{display:flex;flex-direction:column;gap:8px;}' +
+    '.vs-kb-row{display:flex;gap:8px;}' +
+    '.vs-kb-row .kb-key{flex:1;min-width:0;height:76px;border:none;border-radius:8px;background:#FFFFFF;' +
+      'font-size:24px;font-weight:600;color:var(--ink,#111);cursor:pointer;font-family:var(--sans,sans-serif);}' +
+    '.vs-kb-row .kb-key:active{background:#DEDED6;}' +
+    '.vs-kb-row .kb-key.kb-fn{background:#E9E9E1;color:var(--sub,#55554e);font-size:20px;}' +
+    '.vs-kb-row .kb-key.kb-fn:active{background:#D8D8CE;}' +
+    '.vs-kb-row .kb-key.kb-shift.on{background:var(--dark,#0f0f0f);color:#FFFFFF;}' +
+    '.vs-kb-row .kb-key.kb-wide{flex:3;font-size:15px;color:var(--sub,#55554e);}';
   document.head.appendChild(css);
 
   /* ---------- 双语（shared/i18n.js，若页面未引入则降级为原文） ---------- */
@@ -444,18 +455,27 @@
   /* =====================================================================
    * 通用数字键盘（data-kb）：屏上键盘，供任意输入框唤起
    * ===================================================================== */
-  var KB = null, kbSrc = null, kbMasked = false, kbMax = 0;
-  function kbMask(s) {
-    // 明文转掩码点（保留符号位提示：空则空）
+  var KB = null, kbSrc = null, kbMasked = false, kbMax = 0, kbType = 'num', kbUpper = false;
+  function kbMask(s, all) {
+    // 明文转掩码点（all=true 时全部字符打点，用于密码；否则仅数字，保留符号提示）
     if (!s) return '';
+    if (all) return s.replace(/[^]/g, '\u2022');
     return s.replace(/[0-9]/g, '\u2022');
   }
   function kbRender() {
     if (!KB) return;
     var raw = KB.dataset.raw || '';
     var disp = KB.querySelector('.np-display');
-    if (kbMasked) disp.textContent = kbMask(raw);
-    else disp.textContent = raw || '0';
+    if (kbType === 'text' && !raw) {
+      disp.style.color = '#B3B3AE';
+      disp.style.letterSpacing = 'normal';
+      disp.textContent = T(kbSrc ? (kbSrc.getAttribute('data-kb-ph') || '') : '');
+      return;
+    }
+    disp.style.color = '';
+    disp.style.letterSpacing = kbType === 'text' ? 'normal' : '2px';
+    if (kbMasked) disp.textContent = kbMask(raw, kbType === 'text');
+    else disp.textContent = kbType === 'text' ? raw : (raw || '0');
   }
   function kbPress(el) {
     if (!KB) return;
@@ -473,19 +493,82 @@
     KB.dataset.raw = cur;
     kbRender();
   }
-  function buildKB() {
-    var ov = document.createElement('div');
-    ov.className = 'vs-kb-overlay';
-    ov.id = 'vs-kb';
+  function numKeyboardEl() {
     var keys = ['1','2','3','4','5','6','7','8','9','.','0','\u232B'];
     var grid = keys.map(function (k) {
       var fn = (k === '.' || k === '\u232B') ? ' np-fn' : '';
       return '<button class="np-key' + fn + '">' + k + '</button>';
     }).join('');
+    var g = document.createElement('div');
+    g.className = 'vs-kb-grid';
+    g.innerHTML = grid;
+    return g;
+  }
+  /* 全键盘（data-kb-type="text"）：数字 + QWERTY + 标点 + Shift + 空格 */
+  function textKeyboardEl() {
+    var L = kbUpper;
+    var html = '<div class="vs-kb-body-inner">';
+    html += '<div class="vs-kb-row">' + '1234567890'.split('').map(function (k) {
+      return '<button class="kb-key" data-k="' + k + '">' + k + '</button>';
+    }).join('') + '</div>';
+    ['qwertyuiop','asdfghjkl'].forEach(function (s) {
+      html += '<div class="vs-kb-row">' + s.split('').map(function (k) {
+        return '<button class="kb-key" data-k="' + k + '">' + (L ? k.toUpperCase() : k) + '</button>';
+      }).join('') + '</div>';
+    });
+    html += '<div class="vs-kb-row">' +
+      '<button class="kb-key kb-fn kb-shift' + (L ? ' on' : '') + '" data-k="shift">&#8679;</button>' +
+      'zxcvbnm'.split('').map(function (k) {
+        return '<button class="kb-key" data-k="' + k + '">' + (L ? k.toUpperCase() : k) + '</button>';
+      }).join('') +
+      '<button class="kb-key kb-fn" data-k="\u232B">&#9003;</button>' +
+      '</div>';
+    html += '<div class="vs-kb-row">' +
+      ['-','_','.','@',',','/'].map(function (k) {
+        return '<button class="kb-key" data-k="' + k + '">' + k + '</button>';
+      }).join('') +
+      '<button class="kb-key kb-wide" data-k=" ">' + T('空格') + '</button>' +
+      '</div>';
+    html += '</div>';
+    var wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    return wrap.firstChild;
+  }
+  function renderKBBody() {
+    if (!KB) return;
+    var body = KB.querySelector('#vs-kb-body');
+    if (!body) return;
+    body.innerHTML = '';
+    body.appendChild(kbType === 'text' ? textKeyboardEl() : numKeyboardEl());
+  }
+  function kbPressText(el) {
+    if (!KB) return;
+    if (el.classList.contains('kb-shift')) {
+      kbUpper = !kbUpper;
+      renderKBBody();
+      return;
+    }
+    var k = el.getAttribute('data-k');
+    var cur = KB.dataset.raw || '';
+    if (k === '\u232B') {                                   // 退格
+      cur = cur.slice(0, -1);
+    } else if (k) {
+      if (k !== ' ' && kbMax && cur.length >= kbMax) return;  // 达到最大长度
+      var ch = (k.length === 1 && k >= 'a' && k <= 'z' && kbUpper) ? k.toUpperCase() : k;
+      cur += ch;
+      if (kbUpper) { kbUpper = false; renderKBBody(); }      // 打一个大写后自动回小写
+    }
+    KB.dataset.raw = cur;
+    kbRender();
+  }
+  function buildKB() {
+    var ov = document.createElement('div');
+    ov.className = 'vs-kb-overlay';
+    ov.id = 'vs-kb';
     ov.innerHTML =
       '<div class="vs-modal vs-kb">' +
-        '<div class="vs-kb-disp"><span class="np-display">0</span><span class="vs-kb-clear">' + T('清空') + '</span></div>' +
-        '<div class="vs-kb-grid">' + grid + '</div>' +
+        '<div class="vs-kb-disp"><span class="np-display">0</span><span class="vs-kb-clear" data-kb-clear>' + T('清空') + '</span></div>' +
+        '<div class="vs-kb-body" id="vs-kb-body"></div>' +
         '<div class="vs-kb-actions">' +
           '<button class="vs-kb-cancel" data-kb-cancel>' + T('取消') + '</button>' +
           '<button class="vs-kb-done" data-kb-done>' + T('确定') + '</button>' +
@@ -497,9 +580,12 @@
   function openKB(src) {
     if (!KB) buildKB();
     kbSrc = src;
+    kbType = src.getAttribute('data-kb-type') === 'text' ? 'text' : 'num';
     kbMasked = src.hasAttribute('data-kb-mask');
     kbMax = parseInt(src.getAttribute('data-kb-max') || '0', 10) || 0;
+    kbUpper = false;
     KB.dataset.raw = src.getAttribute('data-kb-value') || '';
+    renderKBBody();
     var _c = KB.querySelector('.vs-kb-clear'); if (_c) _c.textContent = T('清空');
     var _x = KB.querySelector('[data-kb-cancel]'); if (_x) _x.textContent = T('取消');
     var _o = KB.querySelector('[data-kb-done]'); if (_o) _o.textContent = T('确定');
@@ -517,13 +603,16 @@
       // 回写到触发输入框（优先其内部 .ph 占位，否则自身）
       var target = kbSrc.querySelector('.ph') || kbSrc;
       var ph = T(kbSrc.getAttribute('data-kb-ph') || '');
-      if (kbMasked) target.textContent = raw ? kbMask(raw) : ph;
+      if (kbMasked) target.textContent = raw ? kbMask(raw, kbType === 'text') : ph;
       else target.textContent = raw || ph;
       kbSrc.setAttribute('data-kb-value', raw);
       href = kbSrc.getAttribute('data-kb-goto');
       toastMsg = kbSrc.getAttribute('data-kb-toast');
     }
     closeKB();
+    if (kbSrc) {
+      try { kbSrc.dispatchEvent(new CustomEvent('kb-done', { bubbles: true })); } catch (e) {}
+    }
     if (href) goto(href, toastMsg);
     else if (toastMsg) toast(toastMsg);
   }
@@ -538,14 +627,18 @@
     if ((el = t.closest('#vs-kb [data-kb-done]'))) { kbDone(); return; }
     if ((el = t.closest('#vs-kb [data-kb-cancel]'))) { closeKB(); return; }
     if ((el = t.closest('#vs-kb .vs-kb-clear'))) { if (KB) { KB.dataset.raw = ''; kbRender(); } return; }
+    /* 全键盘按键（data-kb-type="text"） */
+    if ((el = t.closest('#vs-kb .kb-key'))) { kbPressText(el); return; }
+    /* 键盘内层数字键（先于 .np-key，避免与补货数字键盘混淆） */
     if ((el = t.closest('#vs-kb .np-key'))) { kbPress(el); return; }
     if ((el = t.closest('#' + 'vs-kb'))) { return; }         // 键盘区域空白不穿透
 
     /* ---- 语言切换（先于 .vs-radio 等，保证单选控件可切语言） ---- */
     if ((el = t.closest('[data-act="set-lang"]'))) {
-      var lang = el.getAttribute('data-lang') === 'en' ? 'en' : 'zh';
+      var _l = el.getAttribute('data-lang');
+      var lang = (_l === 'en' || _l === 'zh-TW') ? _l : 'zh';
       if (window.I18N) window.I18N.set(lang);
-      toast(T(lang === 'en' ? '已切换为英文' : '已切换为中文'));
+      toast(T(lang === 'en' ? '已切换为英文' : (lang === 'zh-TW' ? '已切换为繁体中文' : '已切换为中文')));
       return;
     }
 
@@ -722,4 +815,8 @@
     });
     list.addEventListener('drop', function (e) { e.preventDefault(); });
   });
+
+  /* 对外暴露少量工具（供页面级脚本复用，避免重复实现 toast/跳转） */
+  window.VS = { toast: toast, goto: goto };
+
 })();

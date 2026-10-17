@@ -77,6 +77,8 @@
   "VendSolution Console · 设置 / 本机设置": "VendSolution Console · Settings / Device",
   "VendSolution Console · 设置 / 用户和权限": "VendSolution Console · Settings / Users & Permissions",
   "VendSolution Console · 运维模式登录": "VendSolution Console · Ops Mode Login",
+  "VendSolution · 商品管理": "VendSolution · Products",
+  "VendSolution Console · 出杯量": "VendSolution Console · Cups Dispensed",
   "VendSolution Console · 运维模式登录 / 口令": "VendSolution Console · Ops Mode Login / Passcode",
   "VendSolution Console · 运营总览": "VendSolution Console · Ops Overview",
   "VendSolution Console · 运营总览 / 补货": "VendSolution Console · Ops Overview / Restock",
@@ -305,6 +307,7 @@
   "已准备清洗液": "Cleaning solution ready",
   "已切换为中文": "Switched to Chinese",
   "已切换为英文": "Switched to English",
+  "已切换为繁体中文": "Switched to Traditional Chinese",
   "已切换到盘点模式": "Switched to inventory mode",
   "已刷新传感器状态": "Sensor status refreshed",
   "已发送停止指令": "Stop command sent",
@@ -563,6 +566,30 @@
   "第二次": "2nd",
   "策略已保存": "Strategy saved",
   "简体中文": "Simplified Chinese",
+  "繁体中文": "Traditional Chinese",
+  "英文": "English",
+  "空格": "Space",
+  "标签": "Tags",
+  "无标签": "No Tag",
+  "新建标签": "New Tag",
+  "请输入标签名称": "Enter tag name",
+  "SKU 名称": "SKU Name",
+  "商品标签管理": "Product Tag Management",
+  "查看与批量管理商品标签": "View and batch-manage product tags",
+  "商品 SKU 标签管理": "Product SKU Tag Management",
+  "已选择 %s 个": "%s selected",
+  "已选择 %s 个 SKU": "%s SKUs selected",
+  "已设置标签": "Tags updated",
+  "取消选择": "Clear selection",
+  "设置标签": "Set tags",
+  "移出标签": "Remove tags",
+  "共 %s 个 SKU": "%s SKUs in total",
+  "收起标签列表": "Collapse tag list",
+  "展开标签列表": "Expand tag list",
+  "没有匹配的 SKU": "No matching SKUs",
+  "标签名称不能为空": "Tag name cannot be empty",
+  "已新建标签：%s": "Tag created: %s",
+  "已为所选 SKU 移出标签": "Tags removed from selected SKUs",
   "管理设备及全部设置": "Manage device and all settings",
   "米糕": "Rice Cake",
   "粉盒 1 校准": "Powder Box 1 Calibration",
@@ -774,15 +801,86 @@
   "补货 · 糖浆": "Restock · Syrup"
 };
 
+/* 简体 → 繁体（繁体中文语言选项用）
+   *  - S2T_PHRASE：词组级，仅收录与逐字转换结果不同的术语（软件→軟體等）
+   *  - S2T_CHAR：字符级兜底
+   * 说明：繁体中文为原型级支持，未覆盖词条按逐字规则转换 */
+  var S2T_PHRASE = {
+    "XX科技园 1号楼  北京市海淀区 XX路":"XX科技園 1號樓  北京市海淀區 XX路","冲泡位置":"沖泡位置","冲泡器清洗":"沖泡器清洗","冲泡器清洗（演示）":"沖泡器清洗（演示）","冲泡器电磁阀":"沖泡器電磁閥","冲泡电机":"沖泡電機",
+    "冲洗全部水路、搅拌器及冲泡器":"沖洗全部水路、攪拌器及沖泡器","冲洗冲泡单元水路":"沖洗沖泡單元水路","冲洗冲泡器":"沖洗沖泡器","冲洗右侧搅拌系统":"沖洗右側攪拌系統","冲洗奶路管道":"沖洗奶路管道","冲洗左侧搅拌系统":"沖洗左側攪拌系統",
+    "备注":"備註","小鱼干":"小魚乾","控制台首页":"控制台首頁","控制台首页（Beats项目）":"控制台首頁（Beats項目）","系统 IoT 日志":"系統 IoT 日誌","清洗周期":"清洗週期",
+    "牛肉干":"牛肉乾","胡萝卜汁":"胡蘿蔔汁","豆干":"豆乾","饭团":"飯糰","饼干":"餅乾","本周":"本週"
+  };
+  var S2T_CHAR = {
+    "项":"項","卖":"賣","机":"機","页":"頁","设":"設","备":"備",
+    "时":"時","间":"間","户":"戶","换":"換","语":"語","录":"錄",
+    "状":"狀","态":"態","区":"區","运":"運","网":"網","络":"絡",
+    "后":"後","销":"銷","纸":"紙","余":"餘","搅":"攪","离":"離",
+    "线":"線","补":"補","货":"貨","价":"價","组":"組","测":"測",
+    "试":"試","账":"賬","号":"號","统":"統","计":"計","预":"預",
+    "确":"確","认":"認","吗":"嗎","将":"將","码":"碼","营":"營",
+    "台":"臺","环":"環","总":"總","览":"覽","当":"當","编":"編",
+    "辑":"輯","点":"點","园":"園","楼":"樓","淀":"澱","电":"電",
+    "话":"話","个":"個","浆":"漿","盖":"蓋","麦":"麥","层":"層",
+    "链":"鏈","访":"訪","问":"問","库":"庫","质":"質","长":"長",
+    "产":"產","满":"滿","弹":"彈","盘":"盤","顺":"順","图":"圖",
+    "选":"選","择":"擇","几":"幾","据":"據","实":"實","际":"際",
+    "结":"結","减":"減","处":"處","数":"數","输":"輸","键":"鍵",
+    "导":"導","准":"準","该":"該","验":"驗","请":"請","启":"啟",
+    "动":"動","击":"擊","侧":"側","称":"稱","并":"並","维":"維",
+    "标":"標","为":"為","开":"開","级":"級","类":"類","与":"與",
+    "传":"傳","参":"參","调":"調","节":"節","进":"進","对":"對",
+    "应":"應","饮":"飲","钮":"鈕","过":"過","随":"隨","终":"終",
+    "温":"溫","热":"熱","无":"無","单":"單","压":"壓","冲":"衝",
+    "阀":"閥","气":"氣","风":"風","废":"廢","关":"關","锅":"鍋",
+    "炉":"爐","内":"內","储":"儲","范":"範","围":"圍","显":"顯",
+    "删":"刪","签":"籤","义":"義","样":"樣","乐":"樂","铁":"鐵",
+    "矿":"礦","划":"劃","诺":"諾","玛":"瑪","浓":"濃","缩":"縮",
+    "栏":"欄","暂":"暫","联":"聯","于":"於","筛":"篩","经":"經",
+    "还":"還","荐":"薦","额":"額","护":"護","记":"記","趋":"趨",
+    "势":"勢","说":"說","权":"權","员":"員","师":"師","仅":"僅",
+    "简":"簡","体":"體","块":"塊","专":"專","业":"業","础":"礎",
+    "铭":"銘","检":"檢","强":"強","连":"連","现":"現","币":"幣",
+    "发":"發","执":"執","鲜":"鮮","条":"條"
+  };
+  var S2T_MAX = 21;
+  function s2t(s) {
+    if (!s) return s;
+    var out = '';
+    for (var i = 0; i < s.length; ) {
+      var hit = null, hl = 0;
+      for (var L = Math.min(S2T_MAX, s.length - i); L >= 2; L--) {
+        var seg = s.substr(i, L);
+        if (Object.prototype.hasOwnProperty.call(S2T_PHRASE, seg)) { hit = S2T_PHRASE[seg]; hl = L; break; }
+      }
+      if (hit) { out += hit; i += hl; continue; }
+      var c = s.charAt(i);
+      out += S2T_CHAR[c] || c;
+      i++;
+    }
+    return out;
+  }
+
   /* Text node → 原文（含前后空白），用于切回中文 */
   var orig = new Map();
 
   function get() {
-    try { return localStorage.getItem(KEY) === 'en' ? 'en' : 'zh'; } catch (e) { return 'zh'; }
+    try {
+      var v = localStorage.getItem(KEY);
+      return (v === 'en' || v === 'zh-TW') ? v : 'zh';
+    } catch (e) { return 'zh'; }
+  }
+  function dispFor(lang, key) {
+    if (lang === 'en') return EN[key] || key;
+    if (lang === 'zh-TW') return s2t(key);
+    return key;
   }
   function t(s) {
     if (!s) return s;
-    return get() === 'en' ? (EN[s] || s) : s;
+    var l = get();
+    if (l === 'en') return EN[s] || s;
+    if (l === 'zh-TW') return s2t(s);
+    return s;
   }
   function save(l) { try { localStorage.setItem(KEY, l); } catch (e) {} }
 
@@ -796,7 +894,7 @@
       keep = { key: key, lead: raw.slice(0, i), trail: raw.slice(i + key.length) };
       orig.set(n, keep);
     }
-    n.nodeValue = keep.lead + (lang === 'en' ? EN[keep.key] : keep.key) + keep.trail;
+    n.nodeValue = keep.lead + dispFor(lang, keep.key) + keep.trail;
   }
 
   function walk(root) {
@@ -818,11 +916,12 @@
 
   function apply() {
     var lang = get();
-    document.documentElement.setAttribute('lang', lang === 'en' ? 'en' : 'zh-CN');
+    document.documentElement.setAttribute('lang',
+      lang === 'en' ? 'en' : (lang === 'zh-TW' ? 'zh-Hant' : 'zh-CN'));
     // 已登记节点先复位，再整体走查（覆盖动态插入的文本）
     orig.forEach(function (keep, n) {
       if (!n.parentNode) { orig.delete(n); return; }
-      n.nodeValue = keep.lead + (lang === 'en' ? EN[keep.key] : keep.key) + keep.trail;
+      n.nodeValue = keep.lead + dispFor(lang, keep.key) + keep.trail;
     });
     walk(document.documentElement);
     // 同步语言切换控件的选中态（data-act="set-lang"）
@@ -832,7 +931,7 @@
   }
 
   function set(l) {
-    if (l !== 'en' && l !== 'zh') return;
+    if (l !== 'en' && l !== 'zh' && l !== 'zh-TW') return;
     save(l);
     apply();
   }
