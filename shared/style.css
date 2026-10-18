@@ -230,6 +230,7 @@ html,body{
 .vs-more-btn{
   height:52px;background:var(--card);
   border:1px solid var(--line-btn);border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
   font-size:16px;font-weight:500;color:var(--ink);
   font-family:var(--sans);cursor:pointer;transition:background .12s ease;
 }
