@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>VendSolution · 测试出货</title>
+<link rel="stylesheet" href="../shared/style.css">
+<style>
+  /* 本页：分类行为导航入口（不拖拽），沿用 pm-cat-row 规格 */
+  .pm-cat-row{cursor:pointer;}
+  .pm-cat-row:hover{background:#FCFCFA;}
+  .pm-cat-go{color:var(--aux);font-size:18px;flex:0 0 24px;text-align:center;}
+
+  /* ---- 模式切换 Tab ---- */
+  .mode-tabs{display:flex;border:1px solid var(--line-btn);border-radius:6px;overflow:hidden;width:fit-content;}
+  .mode-tab{height:44px;padding:0 26px;background:var(--card);border:none;border-right:1px solid var(--line-btn);
+    font-size:16px;font-weight:600;color:var(--sub);cursor:pointer;font-family:var(--sans);transition:background .12s ease;}
+  .mode-tab:last-child{border-right:none;}
+  .mode-tab:hover{background:#F4F4EF;}
+  .mode-tab.on{background:var(--dark);color:#FFFFFF;}
+
+  /* ---- Tab 容器 ---- */
+  .tab-pane{flex:1;min-height:0;display:flex;flex-direction:column;}
+  #tab-lane{overflow-y:auto;}
+
+  /* ---- 货道矩阵 10×8 ---- */
+  .lane-legend{display:flex;gap:20px;align-items:center;font-size:14px;color:var(--sub);margin:2px 0 12px;}
+  .lane-legend span{display:inline-flex;align-items:center;}
+  .lane-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;}
+  .lane-dot.ok{background:var(--green);}
+  .lane-dot.empty{background:var(--track);border:1px solid var(--line-btn);}
+  .lane-dot.fault{background:var(--red);}
+  .lane-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:10px;}
+  .lane-cell{height:72px;border:1px solid var(--line);border-radius:6px;background:var(--card);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    cursor:pointer;font-family:var(--sans);padding:4px;transition:background .12s ease;}
+  .lane-cell:hover{background:#FCFCFA;}
+  .lane-cell .pm-lane-no{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--ink);flex:none;}
+  .lane-cell .pm-lane-name{font-size:12px;color:var(--sub);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:none;}
+  .lane-cell .lane-prod{font-size:12px;color:var(--sub);flex:none;}
+  .lane-cell.empty{background:var(--track);border-style:dashed;color:var(--aux);cursor:not-allowed;}
+  .lane-cell.empty .pm-lane-no,.lane-cell.empty .lane-prod{color:var(--aux);}
+  .lane-cell.fault{background:#FCEDED;border-color:#E7B4B4;cursor:not-allowed;}
+  .lane-cell.fault .pm-lane-no,.lane-cell.fault .lane-prod{color:#C53030;}
+
+  /* ---- 弹窗内文案 / 进度条（三段式浮层） ---- */
+  .modal-desc{font-size:16px;color:var(--ink);line-height:1.7;}
+  .modal-sub{font-size:14px;color:var(--sub);margin-top:8px;}
+  .ship-bar{height:10px;background:var(--track);border-radius:5px;overflow:hidden;margin:18px 0 4px;}
+  .ship-bar-fill{display:block;height:100%;width:0%;background:var(--dark);border-radius:5px;}
+</style>
+</head>
+<body>
+<div class="vs-canvas">
+
+  <div class="vs-topbar">
+    <button class="vs-btn-line" data-href="31-eng-settings.html">&#8592;&nbsp;返回高级设置</button>
+    <div class="page-title">测试出货</div>
+  </div>
+
+  <main class="vs-main" style="gap:16px">
+    <!-- 模式切换 Tab -->
+    <div class="mode-tabs">
+      <button class="mode-tab on" data-tab="goods">按商品出货</button>
+      <button class="mode-tab" data-tab="lane">按货道出货</button>
+    </div>
+
+    <!-- Tab 1：按商品出货（分类列表） -->
+    <section id="tab-goods" class="tab-pane">
+      <div class="pm-note">选择商品分类，进入后点击「出货」可测试对应货道</div>
+      <div class="pm-cat-list">
+        <div class="pm-cat-row" data-href="32b-eng-unit-test-lanes.html"><span class="pm-cat-name">咖啡</span><span class="pm-cat-count">12 个货道</span><span class="pm-cat-go">&#8250;</span></div>
+        <div class="pm-cat-row" data-href="32b-eng-unit-test-lanes.html"><span class="pm-cat-name">饮料</span><span class="pm-cat-count">18 个货道</span><span class="pm-cat-go">&#8250;</span></div>
+        <div class="pm-cat-row" data-href="32b-eng-unit-test-lanes.html"><span class="pm-cat-name">零食</span><span class="pm-cat-count">25 个货道</span><span class="pm-cat-go">&#8250;</span></div>
+        <div class="pm-cat-row" data-href="32b-eng-unit-test-lanes.html"><span class="pm-cat-name">水</span><span class="pm-cat-count">8 个货道</span><span class="pm-cat-go">&#8250;</span></div>
+        <div class="pm-cat-row" data-href="32b-eng-unit-test-lanes.html"><span class="pm-cat-name">早餐</span><span class="pm-cat-count">6 个货道</span><span class="pm-cat-go">&#8250;</span></div>
+        <div class="pm-cat-row" data-href="32b-eng-unit-test-lanes.html"><span class="pm-cat-name">奶茶</span><span class="pm-cat-count">9 个货道</span><span class="pm-cat-go">&#8250;</span></div>
+        <div class="pm-cat-row" data-href="32b-eng-unit-test-lanes.html"><span class="pm-cat-name">其他</span><span class="pm-cat-count">4 个货道</span><span class="pm-cat-go">&#8250;</span></div>
+      </div>
+    </section>
+
+    <!-- Tab 2：按货道出货（10×8 矩阵） -->
+    <section id="tab-lane" class="tab-pane" style="display:none">
+      <div class="pm-note">直接点击货道按钮出货；空格不可点，故障格标红</div>
+      <div class="lane-legend">
+        <span><i class="lane-dot ok"></i>有货</span>
+        <span><i class="lane-dot empty"></i>空</span>
+        <span><i class="lane-dot fault"></i>故障</span>
+      </div>
+      <div class="lane-grid" id="lane-grid"></div>
+    </section>
+  </main>
+
+  <!-- 弹窗1：按货道出货 · 是否出货（二次确认，无配置项） -->
+  <div class="vs-overlay" id="grid-confirm">
+    <div class="vs-modal" style="width:460px">
+      <div class="vs-modal-head">
+        <div class="vs-modal-title">是否出货？</div>
+        <button class="vs-modal-close" data-close-hide>&#10005;</button>
+      </div>
+      <div class="vs-modal-body">
+        <div class="modal-desc" data-ship-text="confirm"></div>
+        <div class="modal-sub">点击「确认出货」后将直接对该货道执行出货。</div>
+      </div>
+      <div class="md-foot">
+        <button class="md-btn md-btn-line" data-close-hide>取消</button>
+        <button class="md-btn md-btn-dark" data-ship-go="#grid-running" data-ship-done="#grid-done">确认出货</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗2：出货中（进度条 + 可终止） -->
+  <div class="vs-overlay" id="grid-running">
+    <div class="vs-modal" style="width:520px">
+      <div class="vs-modal-head">
+        <div class="vs-modal-title">出货中</div>
+      </div>
+      <div class="vs-modal-body">
+        <div class="modal-desc" data-ship-text="running"></div>
+        <div class="ship-bar"><span class="ship-bar-fill"></span></div>
+        <div class="md-foot" style="justify-content:flex-start;padding:0;margin-top:18px;">
+          <button class="md-btn md-btn-orange" data-ship-stop="#grid-running">终止出货</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗3：出货完成 -->
+  <div class="vs-overlay" id="grid-done" data-modal-safe>
+    <div class="vs-modal" style="width:460px">
+      <div class="vs-modal-head">
+        <div class="vs-modal-title">出货完成</div>
+      </div>
+      <div class="vs-modal-body">
+        <div class="modal-desc" data-ship-text="done"></div>
+      </div>
+      <div class="md-foot">
+        <button class="md-btn md-btn-dark" data-close-hide>确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* 按货道出货：渲染 10×8 货道矩阵（演示数据；状态由设备实时数据驱动） */
+(function () {
+  var POOL = ['美式','拿铁','卡布奇诺','摩卡','可乐','雪碧','薯片','矿泉水','三明治','珍珠奶茶',
+              '橙汁','坚果','乌龙茶','气泡水','饭团','抹茶拿铁','能量饮料','口香糖','纯净水','布丁奶茶',
+              '燕麦拿铁','柠檬茶','海苔','瓜子'];
+  var OVERRIDES = { '5-3':'fault', '7-5':'empty', '3-7':'empty', '9-2':'fault', '10-8':'empty', '2-4':'fault' };
+
+  function renderLanes() {
+    var grid = document.getElementById('lane-grid');
+    if (!grid) return;
+    var html = '', idx = 0;
+    for (var r = 1; r <= 10; r++) {
+      for (var c = 1; c <= 8; c++) {
+        var id = r + '-' + c;
+        var st = OVERRIDES[id] || 'ok';
+        var prod = POOL[idx % POOL.length]; idx++;
+        if (st === 'ok') {
+          html += '<button class="pm-lane-card lane-cell ok" data-ship="#grid-confirm">' +
+                    '<span class="pm-lane-no">' + id + '</span>' +
+                    '<span class="pm-lane-name">' + prod + '</span>' +
+                  '</button>';
+        } else if (st === 'empty') {
+          html += '<button class="lane-cell empty" data-toast="货道 ' + id + ' 为空，暂不可出货">' +
+                    '<span class="pm-lane-no">' + id + '</span>' +
+                    '<span class="lane-prod">空</span>' +
+                  '</button>';
+        } else {
+          html += '<button class="lane-cell fault" data-toast="货道 ' + id + ' 故障，无法出货">' +
+                    '<span class="pm-lane-no">' + id + '</span>' +
+                    '<span class="lane-prod">故障</span>' +
+                  '</button>';
+        }
+      }
+    }
+    grid.innerHTML = html;
+  }
+
+  /* 模式 Tab 切换 */
+  function bindTabs() {
+    var tabs = document.querySelectorAll('.mode-tab');
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        tabs.forEach(function (t) { t.classList.remove('on'); });
+        tab.classList.add('on');
+        var which = tab.getAttribute('data-tab');
+        document.getElementById('tab-goods').style.display = (which === 'goods') ? 'flex' : 'none';
+        document.getElementById('tab-lane').style.display  = (which === 'lane')  ? 'flex' : 'none';
+      });
+    });
+  }
+
+  renderLanes();
+  bindTabs();
+})();
+</script>
+<script src="../shared/i18n.js" defer></script>
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>

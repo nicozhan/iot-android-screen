@@ -159,7 +159,9 @@ for (const g of GROUPS) {
   for (const [no, name, href] of g.items) {
     const a = document.createElement("a");
     a.className = "nav-item" + (href ? "" : " todo");
-    if (href) a.href = g.base + href;
+const BEATS = new Set(["01-beats-home.html","13-vm-ops-overview.html","31-eng-settings.html","32-eng-unit-test.html","32b-eng-unit-test-lanes.html","34-eng-sensors.html","35-eng-params.html","36-products.html","42-products-price-1.html","45-products-sort-1.html","49-products-sort-5.html","53-stats.html","53a-stats-cups.html","53b-stats-sales.html","53c-stats-maintenance.html","53d-stats-log.html","54-alerts.html","02-settings-device.html","03-settings-users.html","04-login.html","05-login-passcode.html","09-device-info.html"]);
+const COFFEE = new Set(["01-home.html","16-cleaning.html","17-cleaning-strategy-remind.html","18-cleaning-strategy-cups.html","19-cleaning-strategy-timer.html","20-cleaning-confirm.html","21-cleaning-progress.html"]);
+    if (href) a.href = BEATS.has(href) ? "beats/" + href : (COFFEE.has(href) ? "coffee/" + href : "backups/" + href);
     a.innerHTML = `<span class="nav-no">${no}</span>
       <span class="nav-name">${I18N.t(name)}</span>
       <span class="nav-dot"></span>
