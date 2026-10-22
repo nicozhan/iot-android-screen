@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# Figma 导出工作产物（内含真实 Figma token，禁止入库）
+/figma-export/
+
+# Python
+__pycache__/
+*.pyc

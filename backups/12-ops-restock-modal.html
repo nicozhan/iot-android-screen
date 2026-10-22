@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>VendSolution Console · 运营总览 / 补货</title>
+<link rel="stylesheet" href="../shared/style.css">
+<style>
+  /* ---- 运营信息卡片 ---- */
+  .info-grid{display:grid;grid-template-columns:1fr 2fr;gap:16px;margin-bottom:16px;}
+  .info-card{
+    background:var(--card);border:1px solid var(--line);border-radius:6px;
+    padding:18px 22px;display:flex;flex-direction:column;gap:12px;
+  }
+  .info-card.full{margin-bottom:16px;}
+  .info-title{font-size:17px;font-weight:700;}
+  .info-value{display:flex;align-items:baseline;justify-content:space-between;gap:16px;font-size:15px;color:var(--sub);line-height:1.6;}
+  .edit-link{font-size:14px;color:var(--ink);font-weight:600;white-space:nowrap;cursor:pointer;flex:0 0 auto;}
+  .edit-link:hover{color:var(--blue);}
+  .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .sec-head .count{font-size:15px;color:var(--sub);font-weight:600;}
+
+  /* ---- 货道卡片 ---- */
+  .lane-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .lane-card{
+    background:var(--card);border:1px solid var(--line-btn);border-radius:6px;
+    padding:14px 18px 16px;cursor:pointer;display:flex;flex-direction:column;gap:5px;
+  }
+  .lane-card:hover{background:#FCFCFA;}
+  .lane-head{display:flex;align-items:center;justify-content:space-between;}
+  .lane-id{font-size:17px;font-weight:700;font-family:var(--mono);}
+  .lane-arrow{color:var(--aux);font-size:16px;}
+  .lane-name{font-size:15px;color:var(--sub);}
+  .lane-meta{display:flex;align-items:baseline;justify-content:space-between;margin-top:2px;}
+  .lane-qty{font-size:14px;color:var(--sub);font-family:var(--mono);}
+  .lane-pct{font-size:15px;font-weight:700;font-family:var(--mono);}
+  .lane-bar{height:6px;border-radius:3px;background:var(--track);overflow:hidden;margin-top:2px;}
+  .lane-bar i{display:block;height:100%;background:var(--ink);border-radius:3px;}
+  .lane-card.low .lane-bar i{background:var(--orange);}
+  .lane-card.low .lane-pct{color:var(--orange);}
+
+  /* ---- 统一弹窗（与商品页同套） ---- */
+  .vs-overlay{position:absolute;inset:0;background:transparent;display:flex;align-items:center;justify-content:center;z-index:10;}
+  .vs-modal{width:560px;background:var(--card);border:1px solid var(--ink);border-radius:6px;overflow:hidden;}
+  .vs-modal-head{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid var(--line);font-size:17px;font-weight:700;}
+  .vs-modal-close{font-size:18px;color:var(--aux);cursor:pointer;background:none;border:none;line-height:1;}
+  .vs-modal-body{display:block;padding:28px;}
+  .md-foot{display:flex;justify-content:center;gap:14px;padding:0 28px 28px;}
+  .md-btn{height:52px;padding:0 26px;border-radius:4px;font-size:16px;font-weight:600;font-family:var(--sans);cursor:pointer;border:1px solid transparent;}
+  .md-btn-line{background:var(--card);border-color:var(--line-btn);color:var(--ink);}
+  .md-btn-orange{background:var(--card);border-color:var(--orange);color:var(--orange);}
+  .md-btn-green{background:var(--card);border-color:var(--green);color:var(--green);}
+  .md-btn-dark{background:var(--dark);border-color:var(--dark);color:#FFF;}
+
+  /* ---- 补货弹窗内容（页内专用） ---- */
+  .m-label{font-size:15px;font-weight:600;margin-bottom:6px;}
+  .m-value{font-size:18px;font-weight:700;font-family:var(--mono);margin-bottom:20px;}
+  .m-value.green{color:var(--green);}
+  .m-input{
+    height:56px;border:1px solid var(--line-btn);border-radius:4px;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 18px;font-size:18px;font-family:var(--mono);font-weight:600;
+    margin-bottom:20px;cursor:text;background:var(--card);
+  }
+  .m-input .unit{color:var(--sub);font-size:15px;font-weight:500;}
+  .m-sub{font-size:14px;color:var(--sub);margin-bottom:4px;}
+  .m-result{font-size:16px;font-weight:700;font-family:var(--mono);}
+  .m-shelf{margin-top:20px;border-top:1px solid var(--line-soft);padding-top:18px;}
+  .m-radios{display:flex;gap:32px;margin-bottom:14px;}
+  .m-input-row{display:flex;gap:12px;margin-bottom:10px;}
+  .m-input-row .m-input{flex:1;margin-bottom:0;}
+  .m-unit-select{
+    flex:0 0 120px;height:56px;border:1px solid var(--line-btn);border-radius:4px;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 16px;font-size:15px;background:var(--card);cursor:pointer;color:var(--ink);
+  }
+  .m-unit-select .chev{color:var(--aux);font-size:13px;}
+  .m-expire{font-size:14px;color:var(--sub);}
+  .m-expire .mono{color:var(--ink);font-weight:600;}
+</style>
+</head>
+<body>
+<div class="vs-canvas">
+
+  <div class="vs-topbar">
+    <button class="vs-btn-line" data-href="01-beats-home.html">&#8592;&nbsp;返回首页</button>
+    <div class="page-title">运营总览</div>
+    <button class="vs-btn-line" style="margin-left:auto" data-toast="运营设置（演示）">运营设置</button>
+  </div>
+
+  <main class="vs-main" style="gap:24px">
+    <!-- 当前运营信息 -->
+    <section>
+      <div class="vs-section-title">当前运营信息</div>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-title">运营模式</div>
+          <div class="info-value"><span>售卖展示</span><span class="edit-link">编辑&nbsp;&#8250;</span></div>
+        </div>
+        <div class="info-card">
+          <div class="info-title">支付方式</div>
+          <div class="info-value"><span>MomoPay（默认）· Alipay+</span><span class="edit-link">编辑&nbsp;&#8250;</span></div>
+        </div>
+      </div>
+      <div class="info-card full">
+        <div class="info-title">点位</div>
+        <div class="info-value"><span>XX科技园 1号楼&nbsp;&nbsp;北京市海淀区 XX路</span><span>客服电话：<span class="mono">138 0000</span></span></div>
+      </div>
+      <div class="info-card full" style="margin-bottom:0">
+        <div class="info-title">售卖界面语言</div>
+        <div class="info-value"><span>中文（默认）· English</span><span class="edit-link">编辑&nbsp;&#8250;</span></div>
+      </div>
+    </section>
+
+    <hr class="vs-divider" style="margin:0">
+
+    <!-- 补货 -->
+    <section>
+      <div class="sec-head">
+        <span class="vs-section-title" style="margin:0">补货</span>
+        <span class="count">共 10 个货道</span>
+      </div>
+      <div class="lane-grid">
+        <div class="lane-card low"><div class="lane-head"><span class="lane-id">L1</span><span class="lane-arrow">&#8594;</span></div><span class="lane-name">咖啡豆</span><div class="lane-meta"><span class="lane-qty">150 / 1000 g</span><span class="lane-pct">15%</span></div><div class="lane-bar"><i style="width:15%"></i></div></div>
+        <div class="lane-card"><div class="lane-head"><span class="lane-id">L2</span><span class="lane-arrow">&#8594;</span></div><span class="lane-name">奶粉</span><div class="lane-meta"><span class="lane-qty">420 / 1200 g</span><span class="lane-pct">35%</span></div><div class="lane-bar"><i style="width:35%"></i></div></div>
+        <div class="lane-card low"><div class="lane-head"><span class="lane-id">L3</span><span class="lane-arrow">&#8594;</span></div><span class="lane-name">糖浆</span><div class="lane-meta"><span class="lane-qty">180 / 1000 ml</span><span class="lane-pct">18%</span></div><div class="lane-bar"><i style="width:18%"></i></div></div>
+        <div class="lane-card"><div class="lane-head"><span class="lane-id">L4</span><span class="lane-arrow">&#8594;</span></div><span class="lane-name">纸杯</span><div class="lane-meta"><span class="lane-qty">250 / 500 个</span><span class="lane-pct">50%</span></div><div class="lane-bar"><i style="width:50%"></i></div></div>
+        <div class="lane-card"><div class="lane-head"><span class="lane-id">L5</span><span class="lane-arrow">&#8594;</span></div><span class="lane-name">搅拌棒</span><div class="lane-meta"><span class="lane-qty">800 / 1000 个</span><span class="lane-pct">80%</span></div><div class="lane-bar"><i style="width:80%"></i></div></div>
+        <div class="lane-card"><div class="lane-head"><span class="lane-id">L6</span><span class="lane-arrow">&#8594;</span></div><span class="lane-name">巧克力粉</span><div class="lane-meta"><span class="lane-qty">300 / 1000 g</span><span class="lane-pct">30%</span></div><div class="lane-bar"><i style="width:30%"></i></div></div>
+        <div class="lane-card"><div class="lane-head"><span class="lane-id">L7</span><span class="lane-arrow">&#8594;</span></div><span class="lane-name">杯盖</span><div class="lane-meta"><span class="lane-qty">320 / 500 个</span><span class="lane-pct">64%</span></div><div class="lane-bar"><i style="width:64%"></i></div></div>
+        <div class="lane-card"><div class="lane-head"><span class="lane-id">L8</span><span class="lane-arrow">&#8594;</span></div><span class="lane-name">可可粉</span><div class="lane-meta"><span class="lane-qty">180 / 600 g</span><span class="lane-pct">30%</span></div><div class="lane-bar"><i style="width:30%"></i></div></div>
+        <div class="lane-card"><div class="lane-head"><span class="lane-id">L9</span><span class="lane-arrow">&#8594;</span></div><span class="lane-name">燕麦奶</span><div class="lane-meta"><span class="lane-qty">4 / 12 盒</span><span class="lane-pct">33%</span></div><div class="lane-bar"><i style="width:33%"></i></div></div>
+        <div class="lane-card"><div class="lane-head"><span class="lane-id">L10</span><span class="lane-arrow">&#8594;</span></div><span class="lane-name">纸袋</span><div class="lane-meta"><span class="lane-qty">50 / 200 个</span><span class="lane-pct">25%</span></div><div class="lane-bar"><i style="width:25%"></i></div></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- L3 补货弹窗 -->
+<div class="vs-overlay">
+  <div class="vs-modal">
+    <div class="vs-modal-head"><span>L3 · 糖浆</span><button class="vs-modal-close" data-close-go="11-ops-overview.html">&#10005;</button></div>
+    <div class="vs-modal-body">
+      <div class="m-label">当前库存</div>
+      <div class="m-value green">180 ml</div>
+      <div class="m-label">补货量</div>
+      <div class="m-input"><span>500</span><span class="unit">ml</span></div>
+      <div class="m-sub">补货后库存/总容量</div>
+      <div class="m-result">680 ml/1000 ml</div>
+      <!-- 保质期 -->
+      <div class="m-shelf">
+        <div class="m-label">保质期</div>
+        <div class="m-radios">
+          <label class="vs-radio on"><span class="dot"></span>按保质期时长</label>
+          <label class="vs-radio" data-href="12b-ops-restock-shelflife-date.html"><span class="dot"></span>按生产日期</label>
+        </div>
+        <div class="m-input-row" data-href="14-ops-restock-numpad.html">
+          <div class="m-input"><span>24</span></div>
+          <div class="m-unit-select"><span>小时</span><span class="chev">&#9662;</span></div>
+        </div>
+        <div class="m-expire">到期时间：<span class="mono">2026/08/31 14:30</span></div>
+      </div>
+    </div>
+    <div class="md-foot">
+      <button class="md-btn md-btn-line" data-close-go="11-ops-overview.html">取消</button>
+      <button class="md-btn md-btn-orange" data-close-go="11-ops-overview.html" data-toast="已清空当前库存">清空当前库存</button>
+      <button class="md-btn md-btn-green" data-close-go="11-ops-overview.html" data-toast="已全部补满">全部补满</button>
+      <button class="md-btn md-btn-dark" data-href="14-ops-restock-numpad.html">确认补货</button>
+    </div>
+  </div>
+</div>
+<script src="../shared/i18n.js" defer></script>
+
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>

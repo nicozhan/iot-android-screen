@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>VendSolution · 价格管理</title>
+<link rel="stylesheet" href="../shared/style.css">
+<style>
+
+  /* ---- 浮层内容样式（自弹窗页合并） ---- */
+  
+
+  
+  .md-product{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:22px;}
+  
+  .md-product-img{width:220px;height:150px;background:var(--track);border-radius:4px;
+    display:flex;align-items:center;justify-content:center;color:var(--aux);font-size:14px;}
+  
+  .md-product-name{font-size:20px;font-weight:700;margin-top:4px;}
+  
+  .md-product-sku{font-family:var(--mono);font-size:13px;color:var(--aux);letter-spacing:1px;}
+  
+  
+  .md-field{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:18px;}
+  
+  .md-field-label{font-size:14px;font-weight:600;color:var(--ink);}
+  
+  .md-field-label .opt{font-weight:400;color:var(--aux);margin-left:6px;}
+  
+  .md-field-input{width:420px;height:56px;border:1px solid var(--line-btn);border-radius:4px;
+    background:var(--card);display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);}
+</style>
+</head>
+<body>
+<div class="vs-canvas">
+<div class="vs-topbar"><a class="vs-btn-line" href="36-products.html">&#8592;&nbsp;返回</a><div class="page-title">价格管理</div><span style="margin-left:auto"></span></div>
+<main class="vs-main" style="gap:16px">
+  <div class="vs-section-title">商品价格</div>
+  <div class="pm-list"><a class="pm-row" data-modal="#price-modal"><div class="pm-thumb">商品图片</div><div class="pm-name">可乐</div><div><span class="pm-price">$2.00</span> <span class="pm-strike">$2.50</span></div></a><a class="pm-row" data-modal="#price-modal"><div class="pm-thumb">商品图片</div><div class="pm-name">雪碧</div><div><span class="pm-price">$3.00</span> <span class="pm-strike">$3.50</span></div></a><a class="pm-row" data-modal="#price-modal"><div class="pm-thumb">商品图片</div><div class="pm-name">橙汁</div><div><span class="pm-price">$3.00</span> <span class="pm-strike">$3.50</span></div></a><a class="pm-row" data-modal="#price-modal"><div class="pm-thumb">商品图片</div><div class="pm-name">咖啡</div><div><span class="pm-price">$4.50</span> <span class="pm-strike">$5.00</span></div></a><a class="pm-row" data-modal="#price-modal"><div class="pm-thumb">商品图片</div><div class="pm-name">拿铁</div><div><span class="pm-price">$6.00</span></div></a><a class="pm-row" data-modal="#price-modal"><div class="pm-thumb">商品图片</div><div class="pm-name">美式咖啡</div><div><span class="pm-price">$4.00</span> <span class="pm-strike">$4.80</span></div></a><a class="pm-row" data-modal="#price-modal"><div class="pm-thumb">商品图片</div><div class="pm-name">摩卡</div><div><span class="pm-price">$5.50</span> <span class="pm-strike">$6.50</span></div></a><a class="pm-row" data-modal="#price-modal"><div class="pm-thumb">商品图片</div><div class="pm-name">矿泉水</div><div><span class="pm-price">$1.50</span></div></a></div>
+</main>
+</div>
+
+<!-- 浮层 · price-modal（源自 43-products-price-2.html，深链仍可访问） -->
+<div class="vs-overlay" id="price-modal">
+  <div class="vs-modal" style="width:640px;">
+    <div class="vs-modal-head">
+      <div class="vs-modal-title">修改价格</div>
+      <button class="vs-modal-close" data-close-hide>&#10005;</button>
+    </div>
+    <div class="vs-modal-body">
+      <div class="md-product">
+        <div class="md-product-img">商品图片</div>
+        <div class="md-product-name" data-fill-name>雪碧</div>
+        <div class="md-product-sku">SKU-002</div>
+      </div>
+      <div class="md-field">
+        <span class="md-field-label">销售价</span>
+        <div class="md-field-input" data-modal-stack data-modal="#price-numpad">$ 2.00</div>
+      </div>
+      <div class="md-field">
+        <span class="md-field-label">划线价<span class="opt">（非必填）</span></span>
+        <div class="md-field-input" data-modal-stack data-modal="#price-numpad">$ 2.50</div>
+      </div>
+    </div>
+    <div class="md-foot md-foot-center">
+      <button class="md-btn md-btn-line" data-close-hide>取消</button>
+      <button class="md-btn md-btn-line" data-close-hide data-toast="已应用到本机同款">应用到本机同款</button>
+      <button class="md-btn md-btn-dark" data-close-hide data-toast="已保存">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 浮层 · price-numpad（源自 44-products-price-3.html，深链仍可访问） -->
+<div class="vs-overlay" id="price-numpad">
+  <div class="vs-modal np-modal">
+    <div class="vs-modal-head"><div class="vs-modal-title">输入</div><button class="vs-modal-close" data-close-hide>&#10005;</button></div>
+    <div class="vs-modal-body">
+      <div class="np-display">500</div>
+      <div class="np-grid"><button class="np-key">1</button><button class="np-key">2</button><button class="np-key">3</button><button class="np-key">4</button><button class="np-key">5</button><button class="np-key">6</button><button class="np-key">7</button><button class="np-key">8</button><button class="np-key">9</button><button class="np-key">.</button><button class="np-key">0</button><button class="np-key action">&#9003;</button></div>
+    </div>
+    <div class="md-foot"><button class="md-btn md-btn-line" data-close-hide>取消</button><button class="md-btn md-btn-dark" data-close-hide data-toast="已设置">确定</button></div>
+  </div>
+</div>
+<script src="../shared/i18n.js" defer></script>
+
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>

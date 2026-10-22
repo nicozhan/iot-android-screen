@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="PDIHutnFs5jCzfXotXP2Bl">
+<head data-page-node-id="cUABW30Uz3ZC8gboRRcL0o">
+<meta charset="UTF-8" data-page-node-id="1giPZObugCueo84vWVUaKD">
+<title>清洗 · VendSolution</title>
+<link rel="stylesheet" href="../shared/style.css" data-page-node-id="IVnH9TeD4jZHmfw8y0Jl7o">
+<style>
+  .cl-status-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .cl-card{
+    background:var(--card);border:1px solid var(--line);border-radius:6px;
+    padding:24px 28px;display:flex;flex-direction:column;gap:12px;
+  }
+  .cl-card-label{font-size:15px;color:var(--sub);font-weight:500;}
+  .cl-card-value{font-size:32px;font-weight:700;font-family:var(--mono);letter-spacing:-.5px;}
+  .cl-card-sub{font-size:14px;color:var(--aux);}
+  .cl-card-sub .mono{color:var(--ink);font-weight:600;}
+
+  .cl-section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .cl-section-head .vs-section-title{margin-bottom:0;}
+  .cl-link{font-size:15px;color:var(--blue);font-weight:600;cursor:pointer;text-decoration:none;}
+
+  .cl-strategy-card{
+    background:var(--card);border:1px solid var(--line);border-radius:6px;
+    padding:24px 28px;display:flex;align-items:center;gap:64px;
+  }
+  .cl-strategy-cur{display:flex;align-items:center;gap:12px;font-size:20px;font-weight:700;}
+  .cl-dot-on{width:14px;height:14px;border-radius:50%;background:var(--green);flex:0 0 14px;}
+  .cl-strategy-item{font-size:15px;color:var(--sub);}
+  .cl-strategy-item b{color:var(--ink);font-weight:600;margin-left:6px;}
+  .cl-strategy-item .mono{font-weight:600;}
+
+  .cl-actions{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .cl-action-btn{
+    height:120px;background:var(--card);border:1px solid var(--line);border-radius:6px;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 36px;text-align:left;
+    font-family:var(--sans);cursor:pointer;position:relative;overflow:hidden;
+  }
+  .cl-action-btn::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--dark);border-radius:6px 0 0 6px;}
+  .cl-action-btn:hover{background:#FCFCFA;}
+  .cl-action-btn:active{background:#F2F2EE;}
+  .cl-action-btn .arrow{color:var(--aux);font-size:24px;}
+  .cl-btn-name{font-size:26px;font-weight:700;color:var(--ink);}
+  .cl-btn-sub{font-size:15px;color:var(--sub);margin-top:8px;}
+
+
+  /* ---- 浮层内容样式（自弹窗页合并） ---- */
+  
+  .vs-m-label{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:14px;}
+  
+  .cl-radio-row{display:flex;flex-direction:column;gap:18px;}
+  
+  .cl-btn{flex:1;height:56px;border-radius:4px;font-size:17px;font-weight:600;font-family:var(--sans);cursor:pointer;}
+  
+  .cl-btn-line{background:var(--card);border:1px solid var(--line-btn);color:var(--ink);}
+  
+  .cl-btn-dark{background:var(--dark);border:1px solid var(--dark);color:#FFF;}
+  
+  .cl-radio-inline{display:flex;gap:48px;}
+  
+  .cl-input{height:56px;border:1px solid var(--line-btn);border-radius:4px;display:flex;align-items:center;padding:0 18px;font-size:18px;font-family:var(--mono);font-weight:600;background:var(--card);}
+  
+  .cl-input .unit{font-family:var(--sans);font-weight:400;color:var(--sub);margin-left:10px;font-size:15px;}
+  
+  .cl-next{font-size:14px;color:var(--sub);}
+  
+  .cl-next .mono{color:var(--ink);font-weight:600;}
+  
+  .cl-check-list{display:flex;flex-direction:column;gap:14px;font-size:16px;color:var(--ink);}
+  
+  .cl-check-item{display:flex;gap:10px;align-items:flex-start;line-height:1.5;}
+  
+  .cl-check-item .bullet{color:var(--ink);font-weight:700;}
+  
+  .cl-step{font-size:15px;color:var(--sub);}
+  
+  .cl-step .mono{font-weight:700;color:var(--ink);font-size:16px;}
+  
+  .cl-task{font-size:24px;font-weight:700;}
+  
+  .cl-progress{width:100%;height:14px;background:var(--track);border-radius:7px;overflow:hidden;}
+  
+  .cl-progress-bar{height:100%;width:60%;background:var(--green);border-radius:7px;}
+  
+  .cl-pct{font-family:var(--mono);font-size:16px;font-weight:700;}
+  
+  .cl-warn{font-size:14px;color:var(--orange);font-weight:600;}
+  
+  .cl-stop-btn{width:240px;height:56px;background:var(--card);border:1px solid var(--red);border-radius:4px;color:var(--red);font-size:17px;font-weight:600;font-family:var(--sans);cursor:pointer;}
+</style>
+</head>
+<body data-page-node-id="sloFmfB5e2W326xMB7lDVR">
+<div class="vs-canvas" data-page-node-id="L5fcWgoAJe4yVbmaPbmNzF">
+
+  <div class="vs-topbar" data-page-node-id="B3eXPFLEzYSY3VxT5XuzCR">
+    <button class="vs-btn-line" data-page-node-id="JzscP7T5E7zBx0r14AmuEy" data-href="../draft/01-beats-home.html">← 返回首页</button>
+    <div class="page-title" data-page-node-id="gb6x7kgDyCeaAxPRGsV2sU">清洗</div>
+  </div>
+
+  <div class="vs-main" style="gap:24px;" data-page-node-id="xpflhiHNUzJQAtXwLGuhR0">
+
+    <!-- 清洗状态 -->
+    <section data-page-node-id="G8TR39IWiLoBJidK7PcRBu">
+      <div class="cl-section-head" data-page-node-id="yZThxzDNKW6zMhdvcwQTGa">
+        <div class="vs-section-title" data-page-node-id="UB4oG1elwxQJwqS2snuSAh">清洗状态</div>
+      </div>
+      <div class="cl-status-grid" data-page-node-id="MTU3WzvbOq37y6AWj9Vi2l">
+        <div class="cl-card" data-page-node-id="JDi3fo4Vs2pgCpl3LukhPJ">
+          <div class="cl-card-label" data-page-node-id="kBn1lgercZ6Hy96U0VOMl4">上次清洗时间</div>
+          <div class="cl-card-value" data-page-node-id="xWoc97aGkcc32XxjuG9ReG">2026/08/28 14:30</div>
+          <div class="cl-card-sub" data-page-node-id="TrO6tLyg8zWhdIGUU9oD4Y">整机清洗 · 自动执行</div>
+        </div>
+        <div class="cl-card" data-page-node-id="4hdyICafHBcGxHALrh5MzQ">
+          <div class="cl-card-label" data-page-node-id="4S5ESDVrQbyLGA3MvB3K7B">距下次清洗</div>
+          <div class="cl-card-value" data-page-node-id="sGm7pjfFaPlCZn7rgLIq5f">12 小时</div>
+          <div class="cl-card-sub" data-page-node-id="r6nqfKAIoZX2ZgIbl15Nbm">或 <span class="mono" data-page-node-id="AtediTbC5aFHqxng8g58Mh">86</span> 杯（以先到者为准）</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 清洗策略 -->
+    <section data-page-node-id="lHEwtSZmqo71Y1OEzRPPbo">
+      <div class="cl-section-head" data-page-node-id="kflO2Hwfjyzj5TJW38jn4n">
+        <div class="vs-section-title" data-page-node-id="9brh84osAYJLVfA39b5PP8">清洗策略</div>
+        <a class="cl-link" data-page-node-id="rrhIha8xTs042JQ2eYPTN0" data-modal="#strategy-remind">修改策略 →</a>
+      </div>
+      <div class="cl-strategy-card" data-page-node-id="tN0Kwy9QA5JUoPGAX6fy7m">
+        <div class="cl-strategy-cur" data-page-node-id="S5bRaUkApNSbqEAwcCJho3"><span class="cl-dot-on" data-page-node-id="DLqUKEZdf6g72F3TAQ0pkm"></span>当前策略：自动</div>
+        <div class="cl-strategy-item" data-page-node-id="gd5QLoJndiw3TiDQQsOuGF">清洗方式<b data-page-node-id="hv13OUpZID1DzEjDdyMMBo">按定时</b></div>
+        <div class="cl-strategy-item" data-page-node-id="0oFUQAF9Qv4z7s53kxPo4u">清洗周期<b class="mono" data-page-node-id="So0WHznDFL2eB4dHlxCZFN">每日 02:00</b></div>
+      </div>
+    </section>
+
+    <!-- 清洗动作 -->
+    <section style="flex:1;display:flex;flex-direction:column;" data-page-node-id="hUCi2583M3Y3rBSacuPiWK">
+      <div class="cl-section-head" data-page-node-id="QSGp0z8btjt5fD0jgLzrqA">
+        <div class="vs-section-title" data-page-node-id="U3Pt7JgnU2bp01EDdFjOeP">清洗动作</div>
+      </div>
+      <div class="cl-actions" data-page-node-id="6lDlq96Dd0UaM8RpUNQmDE">
+        <button class="cl-action-btn" data-page-node-id="tGL99HHA1EvlH7s2xHb7Vq" data-modal="#clean-confirm"><div><div class="cl-btn-name">整机清洗</div><div class="cl-btn-sub">冲洗全部水路、搅拌器及冲泡器</div></div><span class="arrow" data-page-node-id="OS4rtsiDVESE49c8iXUYu8">→</span></button>
+        <button class="cl-action-btn" data-page-node-id="J4OnUSKIai7GwFGN76hh9f" data-toast="右搅拌器清洗（演示）"><div><div class="cl-btn-name">右搅拌器清洗</div><div class="cl-btn-sub">冲洗右侧搅拌系统</div></div><span class="arrow" data-page-node-id="EG3bukXuLzo5oKooWD6A5K">→</span></button>
+        <button class="cl-action-btn" data-page-node-id="rtYbCDaV63GxZo40KUo6YW" data-toast="冲泡器清洗（演示）"><div><div class="cl-btn-name">冲泡器清洗</div><div class="cl-btn-sub">冲洗冲泡单元水路</div></div><span class="arrow" data-page-node-id="r58CWNkp9hJTlP7O9TmcNb">→</span></button>
+        <button class="cl-action-btn" data-page-node-id="gLPbwlk2xn5h3AWBV81giE" data-toast="清洗鲜奶系统（演示）"><div><div class="cl-btn-name">清洗鲜奶系统</div><div class="cl-btn-sub">冲洗奶路管道</div></div><span class="arrow" data-page-node-id="cmaOmtXXN41DNd2BIVI30n">→</span></button>
+        <button class="cl-action-btn" data-page-node-id="sK5SDKw9Cqcy2lCRp0fFKd" data-toast="左搅拌器清洗（演示）"><div><div class="cl-btn-name">左搅拌器清洗</div><div class="cl-btn-sub">冲洗左侧搅拌系统</div></div><span class="arrow" data-page-node-id="T7FtlwH3tw8RteBA99G6eA">→</span></button>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- 浮层 · strategy-remind（源自 17-cleaning-strategy-remind.html，深链仍可访问） -->
+<div class="vs-overlay" id="strategy-remind">
+    <div class="vs-modal" style="width:560px">
+      <div class="vs-modal-head">清洗策略</div>
+      <div class="vs-modal-body">
+        <div>
+          <div class="vs-m-label">清洗方式</div>
+          <div class="cl-radio-row">
+            <label class="vs-radio on"><span class="dot"></span>只提醒</label>
+            <label class="vs-radio" data-modal-stack data-modal="#strategy-timer"><span class="dot"></span>自动</label>
+          </div>
+        </div>
+      </div>
+      <div class="vs-modal-foot">
+        <button class="cl-btn cl-btn-line" data-close-hide>取消</button>
+        <button class="cl-btn cl-btn-dark" data-close-all data-toast="策略已保存">确定</button>
+      </div>
+    </div>
+  </div>
+
+<!-- 浮层 · strategy-timer（源自 19-cleaning-strategy-timer.html，深链仍可访问） -->
+<div class="vs-overlay" id="strategy-timer">
+    <div class="vs-modal" style="width:560px">
+      <div class="vs-modal-head">清洗策略</div>
+      <div class="vs-modal-body">
+        <div>
+          <div class="vs-m-label">清洗方式</div>
+          <div class="cl-radio-row">
+            <label class="vs-radio" data-modal-stack data-modal="#strategy-remind"><span class="dot"></span>只提醒</label>
+            <label class="vs-radio on"><span class="dot"></span>自动</label>
+          </div>
+        </div>
+        <div>
+          <div class="vs-m-label">自动清洗条件</div>
+          <div class="cl-radio-inline">
+            <label class="vs-radio on"><span class="dot"></span>按定时</label>
+            <label class="vs-radio" data-modal-stack data-modal="#strategy-cups"><span class="dot"></span>按杯数</label>
+          </div>
+        </div>
+        <div>
+          <div class="vs-m-label">清洗周期</div>
+          <div class="cl-input" data-kb data-kb-ph="48"><span class="ph">48</span><span class="unit">小时</span></div>
+        </div>
+        <div class="cl-next">下次清洗：还剩 <span class="mono">48</span> 小时</div>
+      </div>
+      <div class="vs-modal-foot">
+        <button class="cl-btn cl-btn-line" data-close-hide>取消</button>
+        <button class="cl-btn cl-btn-dark" data-close-all data-toast="策略已保存">确定</button>
+      </div>
+    </div>
+  </div>
+
+<!-- 浮层 · strategy-cups（源自 18-cleaning-strategy-cups.html，深链仍可访问） -->
+<div class="vs-overlay" id="strategy-cups">
+    <div class="vs-modal" style="width:560px">
+      <div class="vs-modal-head">清洗策略</div>
+      <div class="vs-modal-body">
+        <div>
+          <div class="vs-m-label">清洗方式</div>
+          <div class="cl-radio-row">
+            <label class="vs-radio" data-modal-stack data-modal="#strategy-remind"><span class="dot"></span>只提醒</label>
+            <label class="vs-radio on"><span class="dot"></span>自动</label>
+          </div>
+        </div>
+        <div>
+          <div class="vs-m-label">自动清洗条件</div>
+          <div class="cl-radio-inline">
+            <label class="vs-radio" data-modal-stack data-modal="#strategy-timer"><span class="dot"></span>按定时</label>
+            <label class="vs-radio on"><span class="dot"></span>按杯数</label>
+          </div>
+        </div>
+        <div>
+          <div class="vs-m-label">清洗周期</div>
+          <div class="cl-input" data-kb data-kb-ph="100"><span class="ph">100</span><span class="unit">杯</span></div>
+        </div>
+        <div class="cl-next">下次清洗：还剩 <span class="mono">100</span> 杯</div>
+      </div>
+      <div class="vs-modal-foot">
+        <button class="cl-btn cl-btn-line" data-close-hide>取消</button>
+        <button class="cl-btn cl-btn-dark" data-close-all data-toast="策略已保存">确定</button>
+      </div>
+    </div>
+  </div>
+
+<!-- 浮层 · clean-confirm（源自 20-cleaning-confirm.html，深链仍可访问） -->
+<div class="vs-overlay" id="clean-confirm">
+    <div class="vs-modal" style="width:560px">
+      <div class="vs-modal-head">整机清洗</div>
+      <div class="vs-modal-body">
+        <div style="font-size:20px;font-weight:700;">准备开始清洗</div>
+        <div style="font-size:15px;color:var(--sub);">请确认：</div>
+        <div class="cl-check-list">
+          <div class="cl-check-item"><span class="bullet">·</span>机器处于可维护状态</div>
+          <div class="cl-check-item"><span class="bullet">·</span>已准备清洗液</div>
+          <div class="cl-check-item"><span class="bullet">·</span>清洗过程中请勿操作机器</div>
+        </div>
+      </div>
+      <div class="vs-modal-foot">
+        <button class="cl-btn cl-btn-line" data-close-hide>取消</button>
+        <button class="cl-btn cl-btn-dark" data-modal-stack data-modal="#clean-progress">开始清洗</button>
+      </div>
+    </div>
+  </div>
+
+<!-- 浮层 · clean-progress（源自 21-cleaning-progress.html，深链仍可访问） -->
+<div class="vs-overlay" id="clean-progress">
+    <div class="vs-modal" style="width:560px">
+      <div class="vs-modal-head">整机清洗</div>
+      <div class="vs-modal-body">
+        <div class="cl-step">正在清洗 <span class="mono">② / ⑤</span></div>
+        <div class="cl-task">冲洗冲泡器</div>
+        <div class="cl-progress"><div class="cl-progress-bar"></div></div>
+        <div class="cl-pct">60%</div>
+        <div class="cl-warn">请勿操作机器</div>
+      </div>
+      <div class="vs-modal-foot">
+        <button class="cl-stop-btn" data-close-all data-toast="已停止清洗">停止</button>
+      </div>
+    </div>
+  </div>
+<script src="../shared/i18n.js" defer></script>
+
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>

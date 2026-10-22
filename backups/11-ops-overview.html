@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="oDZ60UrAPiSVUqaGAWcHqJ">
+<head data-page-node-id="G4VHVnvNq3Bf9FIlsGcQWD">
+<meta charset="UTF-8" data-page-node-id="tWS8DVKjNKeDINbMY2WsrF">
+<meta name="viewport" content="width=1280" data-page-node-id="pzF8N22Mq7XqeBkfBFaN7B">
+<title>VendSolution Console · 运营总览</title>
+<link rel="stylesheet" href="../shared/style.css" data-page-node-id="W2MynyvcWJvpbHGezlsA9R">
+<style>
+  /* ---- 运营信息卡片 ---- */
+  .info-grid{display:grid;grid-template-columns:1fr 2fr;gap:16px;margin-bottom:16px;}
+  .info-card{
+    background:var(--card);border:1px solid var(--line);border-radius:6px;
+    padding:18px 22px;display:flex;flex-direction:column;gap:12px;
+  }
+  .info-card.full{margin-bottom:16px;}
+  .info-title{font-size:17px;font-weight:700;}
+  .info-value{display:flex;align-items:baseline;justify-content:space-between;gap:16px;font-size:15px;color:var(--sub);line-height:1.6;}
+  .edit-link{font-size:14px;color:var(--ink);font-weight:600;white-space:nowrap;cursor:pointer;flex:0 0 auto;}
+  .edit-link:hover{color:var(--blue);}
+  .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .sec-head .count{font-size:15px;color:var(--sub);font-weight:600;}
+
+  /* ---- 货道卡片 ---- */
+  .lane-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .lane-card{
+    background:var(--card);border:1px solid var(--line-btn);border-radius:6px;
+    padding:14px 18px 16px;cursor:pointer;display:flex;flex-direction:column;gap:5px;
+  }
+  .lane-card:hover{background:#FCFCFA;}
+  .lane-head{display:flex;align-items:center;justify-content:space-between;}
+  .lane-id{font-size:17px;font-weight:700;font-family:var(--mono);}
+  .lane-arrow{color:var(--aux);font-size:16px;}
+  .lane-name{font-size:15px;color:var(--sub);}
+  .lane-meta{display:flex;align-items:baseline;justify-content:space-between;margin-top:2px;}
+  .lane-qty{font-size:14px;color:var(--sub);font-family:var(--mono);}
+  .lane-pct{font-size:15px;font-weight:700;font-family:var(--mono);}
+  .lane-bar{height:6px;border-radius:3px;background:var(--track);overflow:hidden;margin-top:2px;}
+  .lane-bar i{display:block;height:100%;background:var(--ink);border-radius:3px;}
+  .lane-card.low .lane-bar i{background:var(--orange);}
+  .lane-card.low .lane-pct{color:var(--orange);}
+
+
+
+  /* ---- 浮层内容样式（自弹窗页合并） ---- */
+  
+
+  
+  .m-label{font-size:15px;font-weight:600;margin-bottom:6px;}
+  
+  .m-value{font-size:18px;font-weight:700;font-family:var(--mono);margin-bottom:20px;}
+  
+  .m-value.green{color:var(--green);}
+  
+  .m-input{
+    height:56px;border:1px solid var(--line-btn);border-radius:4px;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 18px;font-size:18px;font-family:var(--mono);font-weight:600;
+    margin-bottom:20px;cursor:text;background:var(--card);
+  }
+  
+  .m-input .unit{color:var(--sub);font-size:15px;font-weight:500;}
+  
+  .m-sub{font-size:14px;color:var(--sub);margin-bottom:4px;}
+  
+  .m-result{font-size:16px;font-weight:700;font-family:var(--mono);}
+  
+  .m-shelf{margin-top:20px;border-top:1px solid var(--line-soft);padding-top:18px;}
+  
+  .m-radios{display:flex;gap:32px;margin-bottom:14px;}
+  
+  .m-input-row{display:flex;gap:12px;margin-bottom:10px;}
+  
+  .m-input-row .m-input{flex:1;margin-bottom:0;}
+  
+  .m-unit-select{
+    flex:0 0 120px;height:56px;border:1px solid var(--line-btn);border-radius:4px;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 16px;font-size:15px;background:var(--card);cursor:pointer;color:var(--ink);
+  }
+  
+  .m-unit-select .chev{color:var(--aux);font-size:13px;}
+  
+  .m-expire{font-size:14px;color:var(--sub);}
+  
+  .m-expire .mono{color:var(--ink);font-weight:600;}
+  
+  .np-key:nth-child(3n){border-right:none;}
+  
+  .np-key:active{background:#F0F0EC;}
+</style>
+</head>
+<body data-page-node-id="bADp6cmBlBkGGhJtHTDEXW">
+<div class="vs-canvas" data-page-node-id="wHDbqPNimod32bPacisZIX">
+
+  <div class="vs-topbar" data-page-node-id="d4a8gLR84cvcRIRifo7Erp">
+    <button class="vs-btn-line" data-page-node-id="mQTneC11a5pMh9AHpbWqRH" data-href="01-beats-home.html">&#8592;&nbsp;返回首页</button>
+    <div class="page-title" data-page-node-id="UGlaKE8iOtqy5j6luzvgN2">运营总览</div>
+    <button class="vs-btn-line" style="margin-left:auto" data-page-node-id="0x4yaQheRx0g4KgLcfOG2c" data-toast="运营设置（演示）">运营设置</button>
+  </div>
+
+  <main class="vs-main" style="gap:24px" data-page-node-id="73tpMq2YfK9RCHv55ncFWz">
+    <!-- 当前运营信息 -->
+    <section data-page-node-id="whR7uOzVyL9yDr6vf9lW60">
+      <div class="vs-section-title" data-page-node-id="nj7hdN6aqdn9dtHGruM5Yt">当前运营信息</div>
+      <div class="info-grid" data-page-node-id="0JgTanE3OSEOjDRTrl6hvx">
+        <div class="info-card" data-page-node-id="5HFt5oQZ6FdWEph3aF6jll">
+          <div class="info-title" data-page-node-id="XZmAXuLStj75ROtQkf2ol2">运营模式</div>
+          <div class="info-value" data-page-node-id="vHL6oulEbmjhEHaPZC58Ir"><span data-page-node-id="oaJlcElaFGo7ebY9P6spwN">售卖展示</span><span class="edit-link" data-page-node-id="EhzBfbKkbq0CVLLOzPxQpl" data-toast="编辑功能（演示）">编辑&nbsp;&#8250;</span></div>
+        </div>
+        <div class="info-card" data-page-node-id="BdVLX9NlpMCMZnl5FXaPky">
+          <div class="info-title" data-page-node-id="38vRjkFrywau6yHoB1nhAu">支付方式</div>
+          <div class="info-value" data-page-node-id="GmwsIwhPHFXKG8YjSGtfog"><span data-page-node-id="egbsCXOrTO9qEBalSb4UYE">MomoPay（默认）· Alipay+</span><span class="edit-link" data-page-node-id="a89oCqx1q0d1tDsI0WpQ4v" data-toast="编辑功能（演示）">编辑&nbsp;&#8250;</span></div>
+        </div>
+      </div>
+      <div class="info-card full" data-page-node-id="HFhbVCibQyGA7jjJMZddIg">
+        <div class="info-title" data-page-node-id="KOwmsSp9SuuafaXDRMoFnz">点位</div>
+        <div class="info-value" data-page-node-id="NsFHEB96ZLvHpA8Jkv8NUl"><span data-page-node-id="N0uBXV3VnuVLHzDUxY5jEQ">XX科技园 1号楼&nbsp;&nbsp;北京市海淀区 XX路</span><span data-page-node-id="9cdzbwIOekSg2Gs3kIioX5">客服电话：<span class="mono" data-page-node-id="4mbFIN9AYMw64XHK7fEjbY">138 0000</span></span></div>
+      </div>
+      <div class="info-card full" style="margin-bottom:0" data-page-node-id="NmcXcNH3rXPSwereGX7M1V">
+        <div class="info-title" data-page-node-id="XCRskFQtB4gf5PKAllu6Ta">售卖界面语言</div>
+        <div class="info-value" data-page-node-id="vQAv7LeoGTAQtBvIaGlV0G"><span data-page-node-id="SDEuRTpIFK0qCqxFINr2xn">中文（默认）· English</span><span class="edit-link" data-page-node-id="aghNCfm0jxcfvM0n9DTI8X" data-toast="编辑功能（演示）">编辑&nbsp;&#8250;</span></div>
+      </div>
+    </section>
+
+    <hr class="vs-divider" style="margin:0" data-page-node-id="fDAqx5m03BMnzXsG2Uorc9">
+
+    <!-- 补货 -->
+    <section data-page-node-id="ZLhp0do8z5xFQCfQlfnj3R">
+      <div class="sec-head" data-page-node-id="ziF8lep4bAKJFcitfCivzi">
+        <span class="vs-section-title" style="margin:0" data-page-node-id="AADeptqgub0iPWvfaycrqy">补货</span>
+        <span class="count" data-page-node-id="Wf6vx68vCAXS9YcRSniQM1">共 10 个货道</span>
+      </div>
+      <div class="lane-grid" data-page-node-id="RWBapjhLFycZxJEWtblHBV">
+        <div data-modal="#restock-modal" class="lane-card low" data-page-node-id="lDqo5LEPGJKmgRiVHiAyb2"><div class="lane-head" data-page-node-id="WtBudjCdP7ZHrODBiXyBXc"><span class="lane-id" data-page-node-id="Yv6vS9ugDoWRmEqevUybHp">L1</span><span class="lane-arrow" data-page-node-id="7LcxEhBqSWC0DaWxhHdbdf">&#8594;</span></div><span class="lane-name" data-page-node-id="9LotgUPwLr2dgQhM18yMke">咖啡豆</span><div class="lane-meta" data-page-node-id="rHohKS9kjH0H6kjOG4sWil"><span class="lane-qty" data-page-node-id="5jCBUDxVqCQr5aj1T0UxZt">150 / 1000 g</span><span class="lane-pct" data-page-node-id="PX3tR0mzA5owQ8AYpzPLhG">15%</span></div><div class="lane-bar" data-page-node-id="oIEU9TX05EaG4CVOd2Dm0T"><i style="width:15%" data-page-node-id="asaTc4C2BVHeXBcmkydJKJ"></i></div></div>
+        <div data-modal="#restock-modal" class="lane-card" data-page-node-id="f6xAHiyvddckQYq6mSEsXT"><div class="lane-head" data-page-node-id="YnUbQTZ6b1baeluvOO9N0D"><span class="lane-id" data-page-node-id="II72BtVwn70TtMHxYl2XQj">L2</span><span class="lane-arrow" data-page-node-id="RlnNC1FPOds0kgCiP3Zbtn">&#8594;</span></div><span class="lane-name" data-page-node-id="M7SzwuZNs9kmYMV20ocHlz">奶粉</span><div class="lane-meta" data-page-node-id="CmXF7rEhoXXoMMpnWbxBOo"><span class="lane-qty" data-page-node-id="HiqSLBouY5KsgmWq50fld5">420 / 1200 g</span><span class="lane-pct" data-page-node-id="jrljN5aERpHO2FqjaVkL11">35%</span></div><div class="lane-bar" data-page-node-id="O62nuBH6I8ytlRbiy1zW7g"><i style="width:35%" data-page-node-id="InWXIfgXVC2HclUN9OvLmi"></i></div></div>
+        <div data-modal="#restock-modal" class="lane-card low" data-page-node-id="mB8T3yicSFwuHspueGp1aL"><div class="lane-head" data-page-node-id="KJ8lYbB1tHDDs0xATDxlMh"><span class="lane-id" data-page-node-id="EGaGyltKbA5KvCV6eCiWVz">L3</span><span class="lane-arrow" data-page-node-id="w4EAz2UHgRhbXCVdETP5GF">&#8594;</span></div><span class="lane-name" data-page-node-id="eYEaiLup4zIafBodDfHuJ1">糖浆</span><div class="lane-meta" data-page-node-id="tAK19xySugjmULFADDCKih"><span class="lane-qty" data-page-node-id="SDxzcDRv69VCDIgJfDkEdk">180 / 1000 ml</span><span class="lane-pct" data-page-node-id="G1e4RBD8yj3FtmIRs1oA9M">18%</span></div><div class="lane-bar" data-page-node-id="sweW64tTY9asrVND1Q0QRh"><i style="width:18%" data-page-node-id="lWeHNvX5SFD9OMTCJcqUI4"></i></div></div>
+        <div data-modal="#restock-modal" class="lane-card" data-page-node-id="EcTcBHRx8UchrKPgYwz9hw"><div class="lane-head" data-page-node-id="HdZht7zScRDp4ei76uOBdT"><span class="lane-id" data-page-node-id="2bmGeugta6BgFaGHu3cZ5K">L4</span><span class="lane-arrow" data-page-node-id="CX0l4IVHQ7Cq0mhuOkp3rU">&#8594;</span></div><span class="lane-name" data-page-node-id="N1hcekDKYzpRDdA7FDdKAA">纸杯</span><div class="lane-meta" data-page-node-id="scvITWGDjgGbQfbXYDjCmP"><span class="lane-qty" data-page-node-id="oKiMHgogJweYdq9wh4c8JB">250 / 500 个</span><span class="lane-pct" data-page-node-id="umNreKrkxrEHCvCMW07Xy1">50%</span></div><div class="lane-bar" data-page-node-id="xrKYatOmENjkc5o9vmOPwF"><i style="width:50%" data-page-node-id="k2xMxyncEGwsOGgisAbv5H"></i></div></div>
+        <div data-modal="#restock-modal" class="lane-card" data-page-node-id="BIRvZzbi8M62X55lPo7CYS"><div class="lane-head" data-page-node-id="EiuZYFWOvv4G322hal0lyn"><span class="lane-id" data-page-node-id="S9Lz5fMg44yPkGOo9iozQL">L5</span><span class="lane-arrow" data-page-node-id="1N6hC31stSyxTn8iOD2dph">&#8594;</span></div><span class="lane-name" data-page-node-id="phUxOrFXxiECBMlYjoV7kA">搅拌棒</span><div class="lane-meta" data-page-node-id="eKwnIsOAGAAoZvYbFMrKmw"><span class="lane-qty" data-page-node-id="n0EzLId8kF34EKXuqrs8Aa">800 / 1000 个</span><span class="lane-pct" data-page-node-id="0HiY1XaeGRwdtviU5q1WOt">80%</span></div><div class="lane-bar" data-page-node-id="ix0bt84hU3vvlQiADHYRGM"><i style="width:80%" data-page-node-id="ytpjERlZxyJBk2ZH2QxRvR"></i></div></div>
+        <div data-modal="#restock-modal" class="lane-card" data-page-node-id="4ABzWrzM0ZsOfLUfGE6iSs"><div class="lane-head" data-page-node-id="nAzwfN4SRFkrGP6IKwcPJQ"><span class="lane-id" data-page-node-id="uN4FDCBaiHbwbNSOXtmYQ4">L6</span><span class="lane-arrow" data-page-node-id="z609y7LMvrDhTpbvWTDDiC">&#8594;</span></div><span class="lane-name" data-page-node-id="sJ5M78oOVOpyClv3uDUsz7">巧克力粉</span><div class="lane-meta" data-page-node-id="92C7gVq40bgqDUNnDJ8gq2"><span class="lane-qty" data-page-node-id="MghpJf7GWYYBcO2XKByiZZ">300 / 1000 g</span><span class="lane-pct" data-page-node-id="Q5F2RorXTS98BwzuxWcMz7">30%</span></div><div class="lane-bar" data-page-node-id="0ycsbLMwUXbwc8hlgYTLVZ"><i style="width:30%" data-page-node-id="5xwHnkp1J6JXXkcU0xLI8R"></i></div></div>
+        <div data-modal="#restock-modal" class="lane-card" data-page-node-id="6MNdoBUm4Rk9FuJ5KA6n5C"><div class="lane-head" data-page-node-id="Bp0sZKLAnVt6fitJO8nEqZ"><span class="lane-id" data-page-node-id="dj9JFfhKgYC8fI6VN6w7hk">L7</span><span class="lane-arrow" data-page-node-id="quzBzNwx907ZYChg74V20t">&#8594;</span></div><span class="lane-name" data-page-node-id="5np5k9lJ2a37BPYVAZW0Hr">杯盖</span><div class="lane-meta" data-page-node-id="n9At0ZClPbf6euk7oGQGuR"><span class="lane-qty" data-page-node-id="g7BR68LPGJIaY7as5HUT18">320 / 500 个</span><span class="lane-pct" data-page-node-id="za2yCpd1QA9CXgCbARIqJa">64%</span></div><div class="lane-bar" data-page-node-id="AfCDnF5dPeBMtHDD3rGCjZ"><i style="width:64%" data-page-node-id="cf4nv5siGnammttFTkzG2c"></i></div></div>
+        <div data-modal="#restock-modal" class="lane-card" data-page-node-id="VTQYspnrcvWLSMQeVJKpPo"><div class="lane-head" data-page-node-id="6nDbRWs18gIjkqmrGs4CZb"><span class="lane-id" data-page-node-id="8w54Eqpwy8vxRGHkxlg8bD">L8</span><span class="lane-arrow" data-page-node-id="DCNhcD37Npes2fQPi1ejDe">&#8594;</span></div><span class="lane-name" data-page-node-id="4YHE8fULSFKIMUxWJ1Gw4X">可可粉</span><div class="lane-meta" data-page-node-id="ecgA4vzS9p0eQvI9wQ6miF"><span class="lane-qty" data-page-node-id="XOQNE6imNm3TjhIW78Q4q3">180 / 600 g</span><span class="lane-pct" data-page-node-id="EMSBmLFXTuaLTfKQwxfsW5">30%</span></div><div class="lane-bar" data-page-node-id="V1SrZJkdLVduuO7VSz0fuP"><i style="width:30%" data-page-node-id="Q2vrXZznJM8EspMT1tYM1f"></i></div></div>
+        <div data-modal="#restock-modal" class="lane-card" data-page-node-id="UcHSAXY8f3mg9EuBNw6oUR"><div class="lane-head" data-page-node-id="X0U7LO0SdtE6L9RIMgvSRS"><span class="lane-id" data-page-node-id="FLtjT4wCDKTF1yKODgUQUc">L9</span><span class="lane-arrow" data-page-node-id="0av8H8ulGkJ0tUUCxNWSwa">&#8594;</span></div><span class="lane-name" data-page-node-id="GqORXAiA8a4SQPP4rFhVWW">燕麦奶</span><div class="lane-meta" data-page-node-id="TAidATnV5GEjzYZHDXNWC7"><span class="lane-qty" data-page-node-id="hMm5NDcUFYZzXIHMMXOe1M">4 / 12 盒</span><span class="lane-pct" data-page-node-id="yalvVxUIKsef04zYxIkZXH">33%</span></div><div class="lane-bar" data-page-node-id="SdkQ90RRJyir7P28MX0aEW"><i style="width:33%" data-page-node-id="wt3cCVrULygznxzV5DHSjg"></i></div></div>
+        <div data-modal="#restock-modal" class="lane-card" data-page-node-id="VrZdcoJnyePwpINvVpVYGJ"><div class="lane-head" data-page-node-id="Hgn8A8dOTBM5wtlxkHY74b"><span class="lane-id" data-page-node-id="5dkIv54BoFGGNDJceF4Hrf">L10</span><span class="lane-arrow" data-page-node-id="E82CDZFIQQsVIMDm1sAcGM">&#8594;</span></div><span class="lane-name" data-page-node-id="6hIZN6KYq3BccJ8JeoDHFU">纸袋</span><div class="lane-meta" data-page-node-id="fnoDupSfJxhpGqUvsz1Pdj"><span class="lane-qty" data-page-node-id="A7ayxvJSrumxajl78PYGiQ">50 / 200 个</span><span class="lane-pct" data-page-node-id="AZWpagnNpVjAyXV7tIvsoQ">25%</span></div><div class="lane-bar" data-page-node-id="7pIeECXT1ptoc5hy8rOJ0D"><i style="width:25%" data-page-node-id="BsIhH76YLLTJJzrl1Y0bCj"></i></div></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- 浮层 · restock-modal（源自 12-ops-restock-modal.html，深链仍可访问） -->
+<div class="vs-overlay" id="restock-modal">
+  <div class="vs-modal" style="width:560px">
+    <div class="vs-modal-head"><span data-fill-lane>L3 · 糖浆</span><button class="vs-modal-close" data-close-hide>&#10005;</button></div>
+    <div class="vs-modal-body">
+      <div class="m-label">当前库存</div>
+      <div class="m-value green">180 ml</div>
+      <div class="m-label">补货量</div>
+      <div class="m-input"><span>500</span><span class="unit">ml</span></div>
+      <div class="m-sub">补货后库存/总容量</div>
+      <div class="m-result">680 ml/1000 ml</div>
+      <!-- 保质期 -->
+      <div class="m-shelf">
+        <div class="m-label">保质期</div>
+        <div class="m-radios">
+          <label class="vs-radio on"><span class="dot"></span>按保质期时长</label>
+          <label class="vs-radio" data-modal-stack data-modal="#shelf-date-modal"><span class="dot"></span>按生产日期</label>
+        </div>
+        <div class="m-input-row" data-modal-stack data-modal="#restock-numpad">
+          <div class="m-input"><span>24</span></div>
+          <div class="m-unit-select"><span>小时</span><span class="chev">&#9662;</span></div>
+        </div>
+        <div class="m-expire">到期时间：<span class="mono">2026/08/31 14:30</span></div>
+      </div>
+    </div>
+    <div class="md-foot">
+      <button class="md-btn md-btn-line" data-close-hide>取消</button>
+      <button class="md-btn md-btn-orange" data-close-all data-toast="已清空当前库存">清空当前库存</button>
+      <button class="md-btn md-btn-green" data-close-all data-toast="已全部补满">全部补满</button>
+      <button class="md-btn md-btn-dark" data-modal-stack data-modal="#restock-numpad">确认补货</button>
+    </div>
+  </div>
+</div>
+
+<!-- 浮层 · shelf-date-modal（源自 12b-ops-restock-shelflife-date.html，深链仍可访问） -->
+<div class="vs-overlay" id="shelf-date-modal">
+  <div class="vs-modal" style="width:560px">
+    <div class="vs-modal-head"><span data-fill-lane>L3 · 糖浆</span><button class="vs-modal-close" data-close-hide>&#10005;</button></div>
+    <div class="vs-modal-body">
+      <div class="m-label">当前库存</div>
+      <div class="m-value green">180 ml</div>
+      <div class="m-label">补货量</div>
+      <div class="m-input"><span>500</span><span class="unit">ml</span></div>
+      <div class="m-sub">补货后库存/总容量</div>
+      <div class="m-result">680 ml/1000 ml</div>
+      <!-- 保质期 -->
+      <div class="m-shelf">
+        <div class="m-label">保质期</div>
+        <div class="m-radios">
+          <label class="vs-radio" data-close-hide><span class="dot"></span>按保质期时长</label>
+          <label class="vs-radio on"><span class="dot"></span>按生产日期</label>
+        </div>
+        <div class="m-label" style="margin-bottom:6px;">生产日期</div>
+        <div class="m-input" style="margin-bottom:10px;"><span>2026/08/30</span><span class="chev" style="color:var(--aux);font-size:13px;">&#9662;</span></div>
+        <div class="m-expire">到期时间：<span class="mono">2026/08/31 14:30</span></div>
+      </div>
+    </div>
+    <div class="md-foot">
+      <button class="md-btn md-btn-line" data-close-hide>取消</button>
+      <button class="md-btn md-btn-orange" data-close-all data-toast="已清空当前库存">清空当前库存</button>
+      <button class="md-btn md-btn-green" data-close-all data-toast="已全部补满">全部补满</button>
+      <button class="md-btn md-btn-dark" data-modal-stack data-modal="#restock-numpad">确认补货</button>
+    </div>
+  </div>
+</div>
+
+<!-- 浮层 · restock-numpad（源自 14-ops-restock-numpad.html，深链仍可访问） -->
+<div class="vs-overlay" id="restock-numpad">
+  <div class="vs-modal" style="width:560px">
+    <div class="vs-modal-head"><span data-fill-lane="补货量">L3 · 糖浆</span><button class="vs-modal-close" data-close-hide>&#10005;</button></div>
+    <div class="np-display">500 ml</div>
+    <div class="np-grid">
+      <button class="np-key">1</button><button class="np-key">2</button><button class="np-key">3</button>
+      <button class="np-key">4</button><button class="np-key">5</button><button class="np-key">6</button>
+      <button class="np-key">7</button><button class="np-key">8</button><button class="np-key">9</button>
+      <button class="np-key">&#8722;</button><button class="np-key">0</button><button class="np-key">&#9003;</button>
+    </div>
+    <div class="md-foot">
+      <button class="md-btn md-btn-line" data-close-hide>取消</button>
+      <button class="md-btn md-btn-dark" data-close-all data-toast="补货已提交">确定</button>
+    </div>
+  </div>
+</div>
+<script src="../shared/i18n.js" defer></script>
+
+
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>
