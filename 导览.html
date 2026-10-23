@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>页面导览 · coffee / beats 两套原型</title>
+<link rel="stylesheet" href="shared/style.css">
+<style>
+  body{background:var(--bg);}
+  .wrap{max-width:1440px;margin:0 auto;padding:36px 32px 72px;}
+
+  /* 顶部 */
+  .head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:6px;flex-wrap:wrap;}
+  .h-title{font-size:28px;font-weight:700;letter-spacing:-.2px;}
+  .h-ver{font-family:var(--mono);font-size:13px;color:var(--aux);font-weight:400;margin-left:10px;}
+  .h-sub{font-size:14px;color:var(--sub);margin-bottom:26px;line-height:1.7;}
+  .h-sub code{font-family:var(--mono);background:#EDEDE8;border-radius:3px;padding:1px 5px;font-size:13px;color:#333;}
+
+  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:26px;}
+  .stat{background:var(--card);border:1px solid var(--line-soft);border-radius:8px;padding:16px 20px;position:relative;overflow:hidden;}
+  .stat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--line-btn);}
+  .stat.s-beats::before{background:var(--blue);}
+  .stat.s-coffee::before{background:var(--orange);}
+  .stat.s-bad::before{background:var(--red);}
+  .stat-num{font-family:var(--mono);font-size:30px;font-weight:700;line-height:1.1;}
+  .stat-lab{font-size:13px;color:var(--sub);margin-top:4px;}
+
+  /* 工具条 */
+  .tools{position:sticky;top:0;z-index:20;background:rgba(246,246,243,.94);backdrop-filter:blur(6px);padding:12px 0;margin-bottom:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--line-soft);}
+  .chip{font-size:14px;font-weight:500;border:1px solid var(--line-btn);background:var(--card);color:var(--ink);border-radius:100px;padding:7px 16px;cursor:pointer;transition:.12s;}
+  .chip:hover{border-color:#8a8a85;}
+  .chip.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .chip .cnt{font-family:var(--mono);font-size:12px;opacity:.6;margin-left:5px;}
+  .search{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line-btn);border-radius:100px;padding:7px 16px;min-width:240px;}
+  .search input{border:0;outline:0;background:transparent;font-family:var(--sans);font-size:14px;color:var(--ink);width:100%;}
+  .search span{color:var(--aux);font-size:14px;}
+
+  /* 大区 */
+  .zone{margin-top:34px;}
+  .zone-head{display:flex;align-items:center;gap:12px;margin-bottom:6px;}
+  .zone-badge{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.06em;color:#fff;border-radius:5px;padding:5px 11px;}
+  .zone-badge.b-beats{background:var(--blue);}
+  .zone-badge.b-coffee{background:var(--orange);}
+  .zone-title{font-size:22px;font-weight:700;}
+  .zone-meta{font-family:var(--mono);font-size:13px;color:var(--aux);}
+  .zone-path{font-size:13px;color:var(--sub);margin-left:auto;font-family:var(--mono);}
+
+  .grp{margin-top:22px;}
+  .grp-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .grp-bar{width:4px;height:15px;border-radius:2px;}
+  .b-beats-bar{background:var(--blue);}
+  .b-coffee-bar{background:var(--orange);}
+  .grp-title{font-size:15px;font-weight:700;color:var(--ink);}
+  .grp-cnt{font-family:var(--mono);font-size:12px;color:var(--aux);}
+
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+  @media(max-width:1180px){.grid{grid-template-columns:repeat(3,1fr);}}
+  @media(max-width:880px){.grid{grid-template-columns:repeat(2,1fr);}.stat-row{grid-template-columns:repeat(2,1fr);}}
+
+  .card{position:relative;display:block;background:var(--card);border:1px solid var(--line-soft);border-radius:8px;padding:14px 16px 13px 18px;text-decoration:none;color:inherit;transition:.13s;overflow:hidden;}
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--line-btn);}
+  .card.c-beats::before{background:var(--blue);}
+  .card.c-coffee::before{background:var(--orange);}
+  .card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.08);border-color:#b5b5af;}
+  .card-no{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--aux);letter-spacing:.04em;}
+  .card-t{font-size:15px;font-weight:600;margin:3px 0 5px;line-height:1.35;}
+  .card-f{font-family:var(--mono);font-size:11px;color:var(--aux);margin-bottom:7px;word-break:break-all;}
+  .card-d{font-size:12px;color:var(--sub);line-height:1.55;min-height:34px;}
+  .card-b{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px;}
+  .tag{font-size:11px;font-weight:600;border-radius:4px;padding:2px 7px;white-space:nowrap;line-height:1.6;}
+  .t-entry{background:#E6F4EA;color:#12703a;}
+  .t-self{background:#E7F0F9;color:#0a5d99;}
+  .t-deep{background:#EEEEEA;color:#6b6b66;}
+  .t-orphan{background:#FDF0DC;color:#9a5b00;}
+  .t-dead{background:#FBE4E7;color:#a80021;}
+  .t-cross{background:#FCE9DC;color:#9a4400;}
+  .t-tab{background:#F3E8FD;color:#6621a8;}
+
+  /* 问题清单 */
+  .issues{margin-top:52px;border-top:2px solid var(--ink);padding-top:26px;}
+  .is-title{font-size:20px;font-weight:700;margin-bottom:4px;}
+  .is-sub{font-size:13px;color:var(--sub);margin-bottom:20px;}
+  .is-cols{display:grid;grid-template-columns:1fr 1fr;gap:26px;}
+  @media(max-width:1000px){.is-cols{grid-template-columns:1fr;}}
+  .is-box{background:var(--card);border:1px solid var(--line-soft);border-radius:8px;overflow:hidden;}
+  .is-box-head{display:flex;align-items:center;gap:10px;padding:13px 18px;border-bottom:1px solid var(--line-soft);background:#FBFBF8;}
+  .is-item{display:flex;gap:11px;padding:13px 18px;border-bottom:1px solid var(--line-soft);font-size:13px;line-height:1.6;}
+  .is-item:last-child{border-bottom:0;}
+  .is-no{font-family:var(--mono);font-size:11px;font-weight:700;color:#fff;background:var(--line-btn);border-radius:4px;padding:2px 7px;height:19px;flex:0 0 auto;}
+  .is-box.b-beats .is-no{background:var(--blue);}
+  .is-box.b-coffee .is-no{background:var(--orange);}
+  .is-body strong{font-weight:600;}
+  .is-file{font-family:var(--mono);font-size:12px;color:#333;background:#F1F1EC;border-radius:3px;padding:1px 5px;}
+  .is-fix{color:var(--green);font-weight:600;}
+  .hide{display:none !important;}
+  .empty{text-align:center;color:var(--aux);font-size:14px;padding:60px 0;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="head">
+    <div class="h-title">页面导览 <span class="h-ver">60 个页面 · 2026-10-23</span></div>
+  </div>
+  <div class="h-sub">
+    两套原型：<code>coffee/</code> 咖啡机（橙色）与 <code>beats/</code> 售卖机（蓝色）。点击卡片在新标签打开对应页面。<br>
+    侧边色条即归属色；徽章标出「入口 / 自包含浮层 / 深链 / 孤儿 / 有死链 / 跨目录引用」。
+  </div>
+
+  <div class="stat-row">
+    <div class="stat s-coffee"><div class="stat-num" id="n-coffee">29</div><div class="stat-lab">coffee/ 咖啡机</div></div>
+    <div class="stat s-beats"><div class="stat-num" id="n-beats">31</div><div class="stat-lab">beats/ 售卖机</div></div>
+    <div class="stat s-bad"><div class="stat-num" id="n-dead">3</div><div class="stat-lab">死链（点不动）</div></div>
+    <div class="stat"><div class="stat-num" id="n-orphan">5</div><div class="stat-lab">孤儿页（无任何入链）</div></div>
+  </div>
+
+  <div class="tools">
+    <button class="chip on" data-f="all">全部<span class="cnt">58</span></button>
+    <button class="chip" data-f="coffee">只看 coffee<span class="cnt">29</span></button>
+    <button class="chip" data-f="beats">只看 beats<span class="cnt">31</span></button>
+    <button class="chip" data-f="issue">只看有问题的<span class="cnt">7</span></button>
+    <div class="search"><span>&#128269;</span><input id="q" placeholder="搜索页面名 / 文件名 / 描述…" autocomplete="off"></div>
+  </div>
+
+  <div id="root"></div>
+  <div class="empty hide" id="empty">没有匹配的页面</div>
+
+  <!-- ============ 问题清单 ============ -->
+  <div class="issues" id="issues">
+    <div class="is-title">需要处理的问题</div>
+    <div class="is-sub">左边是 beats 侧（你说要先看一眼的那部分），右边是 coffee 侧。全站 3 条死链<strong>全部在 beats 侧</strong>，coffee/ 目录内已<strong>零死链、零跨目录跳转</strong>。本轮从 coffee/01 首页做了一次完整可达性走查：16 个可达页面全部能在 coffee/ 内互相跳转、且都能回到首页（13 个直接返回，49 / 33 / 34 / 35 经父页返回）；新增 coffee/09 设备信息本地副本，修正 16~21、23 的返回键，死链 10 → 3。</div>
+
+    <div class="is-cols">
+
+      <div class="is-box b-beats">
+        <div class="is-box-head"><span class="zone-badge b-beats">BEATS</span><strong style="font-size:14px">beats/ 待修 8 条</strong></div>
+
+        <div class="is-item"><span class="is-no">B1</span><div class="is-body">
+          <span class="is-file">01-beats-home.html</span> 的「测试出货」按钮指向 <span class="is-file">../backups/32-eng-unit-test.html</span>，backups 已删 → <strong>死链</strong>。
+          beats 目录里<strong>没有 32</strong>（只有 32b 按货道）。<div class="is-fix">建议：新建 beats/32，或先改指 coffee/32。</div>
+        </div></div>
+
+        <div class="is-item"><span class="is-no">B2</span><div class="is-body">
+          <span class="is-file">31-eng-settings.html</span> 的「单动测试」指向 <span class="is-file">../backups/33-eng-unit-test-running.html</span> → <strong>死链</strong>。
+          <div class="is-fix">建议：coffee/33 是现成页，可复制过来或改指。</div>
+        </div></div>
+
+        <div class="is-item"><span class="is-no">B3</span><div class="is-body">
+          <span class="is-file">32b-eng-unit-test-lanes.html</span> 返回键指向 <span class="is-file">../backups/32-eng-unit-test.html</span> → <strong>死链</strong>。
+          <div class="is-fix">同 B1，与 32 缺失是同一个根因。</div>
+        </div></div>
+
+        <div class="is-item"><span class="is-no">B4</span><div class="is-body">
+          <span class="is-file">02-settings-device.html</span> 是全站<strong>唯一还留着三 tab 栏</strong>的设置页（本机设置 / 设备信息 / 应用权限），与已拆成独立页的 02b、09、03 结构冲突；页内还留着「单位(本期不做)」整块。
+          <div class="is-fix">建议：对齐 coffee/02b 的独立页形态。</div>
+        </div></div>
+
+        <div class="is-item"><span class="is-no">B5</span><div class="is-body">
+          <span class="is-file">49-products-sort-5.html</span> 顶栏标题写的是「分类管理」，但内容和文件名都是 <strong>SKU 排序</strong>。（复制到 coffee 时已把副本标题改为「SKU 排序」，beats 原件仍是旧标题）
+          <div class="is-fix">建议：beats 原件标题也改「SKU 排序」。</div>
+        </div></div>
+
+        <div class="is-item"><span class="is-no">B6</span><div class="is-body">
+          <span class="is-file">13-vm-ops-overview.html</span> 已<strong>自带 10 个浮层</strong>（补货 / 保质期 / 键盘 / 批处理 / 全部补满 / 全部清空 / 补满 / 清空 / 下架 / 盘点确认），同目录还留着 15、15b、15c、16~22 共 <strong>11 个深链副本</strong>。
+          <div class="is-fix">建议：确认是否保留，不保留可整批归档。</div>
+        </div></div>
+
+        <div class="is-item"><span class="is-no">B7</span><div class="is-body">
+          <span class="is-file">09-device-info.html</span> 在 beats 侧<strong>只有 1 个入口</strong> —— <span class="is-file">02-settings-device.html</span> 的 tab 栏（另一个入链来自 coffee/01）。首页「基本设置 / 账号设置」都有，唯独没有「设备信息」。
+          <div class="is-fix">建议：02 一旦按 B4 去掉 tab，09 立刻变孤儿页，需在首页补入口。</div>
+        </div></div>
+
+        <div class="is-item"><span class="is-no">B8</span><div class="is-body">
+          <span class="is-file">32b-eng-unit-test-lanes.html</span> 在 beats 侧<strong>没有任何入口</strong> —— <span class="is-file">31-eng-settings.html</span> 的工程工具只有「单动测试 / 传感器状态 / 参数调节」三项，缺「测试出货」。它原来只靠 coffee/32 跨目录跳转才点得到，coffee 侧改版后就成了孤儿页。
+          <div class="is-fix">建议：31 补一项「测试出货」入口指向 32b。</div>
+        </div></div>
+      </div>
+
+      <div class="is-box b-coffee">
+        <div class="is-box-head"><span class="zone-badge b-coffee">COFFEE</span><strong style="font-size:14px">coffee/ 9 条（8 条已解决 · 仅 C7 孤儿待办）</strong></div>
+
+        <div class="is-item"><span class="is-no">C1</span><div class="is-body">
+          <s>01-home.html 的「测试打杯」指向 ../backups/32-eng-unit-test.html（死链）</s> —— <strong>已解决</strong>：按钮已删除，首页还原为原版看板（不再有左右结构的测试打杯界面）。
+          <div class="is-fix">已修：coffee/01 不再有指向 backups 的跳转；剩余死链集中在 16~21（指向已删除的 draft/）与 23。</div>
+        </div></div>
+
+        <div class="is-item"><span class="is-no">C2</span><div class="is-body">
+          <s>01-home.html 还有 1 处跳去 beats：设备信息(09)</s> —— <strong>已解决</strong>：已把 beats/09 复制为 <span class="is-file">coffee/09-device-info.html</span>（返回键改 01-home），首页入口改指本地。现在 coffee/ 内<strong>没有任何跨目录跳转</strong>。
+          <div class="is-fix">已修：coffee/09 入链来自首页「更多功能 · 设备信息」；全站跨目录引用 1 → 0。</div>
+        </div></div>
+
+        <div class="is-item"><span class="is-no">C3</span><div class="is-body">
+          <s>16 / 17 / 18 / 19 / 20 / 21 六页的「← 返回首页」指向 ../draft/01-beats-home.html（6 条死链）</s> —— <strong>已解决</strong>：六页返回键统一改为 <span class="is-file">01-home.html</span>。
+          <div class="is-fix">已修：其中 16 从首页「快捷操作 · 清洗」可直接进入并返回。</div>
+        </div></div>
+
+        <div class="is-item"><span class="is-no">C4</span><div class="is-body">
+          <s>23-calibration.html 返回键写 01-beats-home.html（解析成 coffee/01-beats-home.html → 死链）</s> —— <strong>已解决</strong>：改为 <span class="is-file">01-home.html</span>。
+          <div class="is-fix">已修：coffee/ 目录内死链彻底清零（16 条 → 0）。</div>
+        </div></div>
+
+        <div class="is-item"><span class="is-no">C5</span><div class="is-body">
+          <s>43-products-price-2.html 返回键指向 42-products-price-1.html，coffee 里没有 42</s> —— <strong>已解决</strong>：已复制 42 到 coffee（返回键改指 01-home），coffee/43、44 的返回键与首页「商品价格」入口现在都通。
+          <div class="is-fix">已修：coffee 新增 42-products-price-1.html；首页「商品价格」由 ../beats/42 改成本地。</div>
+        </div></div>
+
+        <div class="is-item"><span class="is-no">C6</span><div class="is-body">
+          <s>32 / 33 共 9 处跳去 beats（31 高级IoT、32b 分货道）</s> —— <strong>已解决</strong>：coffee 补上 31 后，32 / 33 的返回键都改成本地 31，coffee 侧不再跨目录跳 beats。
+          <div class="is-fix">已修：32、33 返回 31；31 内部「单动测试」指向本地 33，返回首页指向 01-home。</div>
+        </div></div>
+
+        <div class="is-item"><span class="is-no">C7</span><div class="is-body">
+          <strong>孤儿页 4 个</strong>：11 运营总览、20 清洗确认、24 研磨量校准、32 测试出货 —— 没有任何页面链到它们，只能手输地址。它们的返回键现在都有效（指向 01-home 或上一级），只是缺少入口。（33 / 34 / 35 已挂到 coffee/31 下，不是孤儿）
+          <div class="is-fix">建议：由你决定是否接入口 —— 32 测试出货可挂在 31 的工程工具里，11 / 24 可挂在首页「更多功能」，20 已被 16 的浮层取代可归档。</div>
+        </div></div>
+
+        <div class="is-item"><span class="is-no">C8</span><div class="is-body">
+          咖啡的「补货」已落 <span class="is-file">13-vm-ops-overview.html</span>（coffee 版：料道 + g/ml 单位），首页入口已改指它；<span class="is-file">11-ops-overview.html</span> 的补货板块保持删除，只做运营信息。
+          <div class="is-fix">已定：补货走 13，11 不再承载补货。</div>
+        </div></div>
+
+        <div class="is-item"><span class="is-no">C9</span><div class="is-body">
+          <s>coffee 侧缺 31-eng-settings.html（高级IoT设置）</s> —— <strong>已解决</strong>：已从 beats/31 复制为 <span class="is-file">coffee/31-eng-settings.html</span>，并把内部两处跳转改为咖啡本地（返回首页 01-home、单动测试 33）。
+          <div class="is-fix">已修：34 / 35 / 32 / 33 返回键、首页「高级（IoT）」入口全部落到 coffee 本地 31。</div>
+        </div></div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+const DATA = [
+  { folder:"coffee", name:"咖啡机", groups:[
+    { g:"首页与设置", items:[
+      { no:"01", f:"01-home.html", t:"控制台首页", d:"原版看板：页首四项（品牌 / 设备ID / 时间 / 用户）等间距铺满；设备状态（正常运行 / 网络 / 最后同步）+ 今日出杯 55 杯；告警只列当前正在发生的 2 条（纸杯余量不足、右搅拌器清洗提醒）；快捷操作 5 项一行（清洗、商品价格、补货、商品排序、出货测试；OTA升级已删）；更多功能 7 键一行（本机设置、设备信息、账号设置、高级（IoT）、开门、复位、同步参数）；用户菜单含语言切换（纵向左对齐 5 行：简体中文 / English 可选，繁體中文 / 日本語 / 한국어 灰显「预留」，后续语言只往下加行）、返回售卖页面、退出登录。全部入口均为 coffee 本地页。", tags:["entry"] },
+      { no:"02b", f:"02b-settings-other.html", t:"本机设置", d:"独立页无 tab：运维语言、日期时间、购物车上限（默认 4）。", tags:[] },
+      { no:"09", f:"09-device-info.html", t:"设备信息", d:"品牌 / 型号（Coffee Machine X）/ 铭牌号 / IMEI / App 版本 / 网络状态 / 信号强度，含「更新」「测试」两个加载浮层。coffee 本地副本（返回键改 01-home）。", tags:[] },
+      { no:"11", f:"11-ops-overview.html", t:"运营总览", d:"当前运营信息 4 卡：运营模式、支付方式、点位、售卖界面语言。", tags:["orphan"] }
+    ]},
+    { g:"补货", items:[
+      { no:"13", f:"13-vm-ops-overview.html", t:"补货", d:"8 个物料料道（5 粉料 g / 3 液体 ml），每料道总量 1000 g 或 1000 ml；点卡片开补货浮层（当前库存 / 补货量 / 补货后库存 / 总容量），含数字键盘、批处理、全部补满 / 清空、盘点；卡片图片为 130×130 方形缩略图（原「图片模式」开关已移除）。", tags:["self"] }
+    ]},
+    { g:"用户与登录", items:[
+      { no:"03", f:"03-settings-users.html", t:"用户和权限", d:"角色表格（店长/店员/工程师）+ 改口令浮层，独立页无 tab。", tags:[] },
+      { no:"04", f:"04-login.html", t:"运维模式登录 · 账号", d:"三语切换（各语言项用母语自称：简体中文 / English / 繁體中文，不随界面语言翻译）+ 口令/账号密码两种方式。", tags:[] },
+      { no:"05", f:"05-login-passcode.html", t:"运维模式登录 · 口令", d:"口令输入态，与 04 互跳；语言项同样用母语自称。", tags:[] }
+    ]},
+    { g:"清洗", items:[
+      { no:"16", f:"16-cleaning.html", t:"清洗主页", d:"自包含 5 浮层：清洗策略、确认、进度全在这一页。", tags:["self"] },
+      { no:"17", f:"17-cleaning-strategy-remind.html", t:"清洗策略 · 只提醒", d:"深链快照：策略弹窗切成「只提醒」态。", tags:["deep"] },
+      { no:"18", f:"18-cleaning-strategy-cups.html", t:"清洗策略 · 自动 · 按杯数", d:"深链快照：按杯数触发。", tags:["deep"] },
+      { no:"19", f:"19-cleaning-strategy-timer.html", t:"清洗策略 · 自动 · 按定时", d:"深链快照：按定时触发。", tags:["deep"] },
+      { no:"20", f:"20-cleaning-confirm.html", t:"整机清洗 · 确认", d:"深链快照：清洗二次确认。", tags:["deep","orphan"] },
+      { no:"21", f:"21-cleaning-progress.html", t:"整机清洗 · 进行中", d:"深链快照：冲洗进度条。", tags:["deep"] }
+    ]},
+    { g:"校准", items:[
+      { no:"23", f:"23-calibration.html", t:"校准主页", d:"校准项目：研磨粉、水量、粉盒 1-4。首页「校准」入口已随更多功能改版移除，现在只能从孤儿页 24 进入（本身仍有入链，不算严格意义的孤儿）。", tags:[] },
+      { no:"24", f:"24-calibration-grind.html", t:"研磨量校准", d:"三次称重录入 + 校验方法说明。", tags:["orphan"] },
+      { no:"24b", f:"24b-calibration-water.html", t:"水量校准", d:"水料校准的子页。", tags:[] }
+    ]},
+    { g:"工程测试", items:[
+      { no:"31", f:"31-eng-settings.html", t:"高级IoT设置", d:"工程工具三入口：单动测试 / 传感器状态 / 参数调节。coffee 副本：返回首页改 01-home、单动测试指向本地 33（原件指已删除的 ../backups/33）。", tags:[] },
+      { no:"32", f:"32-eng-unit-test.html", t:"测试出货", d:"8 个物料料道清单（咖啡豆/奶粉/糖/抹茶/可可/红茶/豆浆/果味），逐个测下料；返回键已改指本地 31。", tags:["orphan"] },
+      { no:"33", f:"33-eng-unit-test-running.html", t:"单动测试 · 运行中", d:"电机 / 水泵 / 电磁阀逐个启停；返回键已改指本地 31。", tags:[] },
+      { no:"34", f:"34-eng-sensors.html", t:"传感器状态", d:"12 行设备传感器（废渣盒开关、锅炉水位/温度、冲泡位置、杯传感器…），10 行正常 + 2 行温度读数，底部刷新。返回键指 31。", tags:[] },
+      { no:"35", f:"35-eng-params.html", t:"参数调节", d:"5 个参数行 + 步进器（范围 1–50）、取消 / 保存。参数名仍是 Figma 占位的 Item 1–5，待定名。返回与取消均指 31。", tags:[] }
+    ]},
+    { g:"告警", items:[
+      { no:"54", f:"54-alerts.html", t:"告警", d:"设备类 12 条 / 运营类 12 条，筛选 chip + 每页 10 条分页；支持 ?tab=device|ops 深链预选（首页告警块即为入口）。", tags:["self"] }
+    ]},
+    { g:"商品排序", items:[
+      { no:"45", f:"45-products-sort-1.html", t:"商品排序", d:"改为与 42 价格管理同版式：左栏 5 个分组（经典咖啡 8 / 热饮 6 / 奶茶 5 / 冰饮 3 / 茶饮 4，不含「全部商品」）+ 右栏 26 个商品行（行首序号 + 缩略图 + 名称/SKU + SKU 排序入口 + ≡ 把手）。拖动行在分组内排序、序号自动重排、顶部「顺序已修改 · 未保存」提示、保存后清除；不涉及价格。", tags:["self"] },
+      { no:"49", f:"49-products-sort-5.html", t:"SKU 排序", d:"「美式 · 12 个SKU」逐条拖拽；顶栏标题已由「分类管理」改为「SKU 排序」。", tags:["self"] }
+    ]},
+    { g:"价格", items:[
+      { no:"42", f:"42-products-price-1.html", t:"价格管理 · 左右结构", d:"左栏分组（全部 26 / 经典咖啡 8 / 热饮 6 / 奶茶 5 / 冰饮 3 / 茶饮 4）+ 右栏商品行（缩略图、SKU、右对齐等宽价格）；切组即时换列、单条改价浮层 + 数字键盘、顶栏按百分比批量调价。返回键指 01-home（coffee 无 36 商品管理中间层）。", tags:[] },
+      { no:"43", f:"43-products-price-2.html", t:"价格管理 · 修改价格弹窗", d:"价格列表 + 单品改价浮层（深链，已被 42 的浮层取代）；返回键现已通到 coffee/42。", tags:["deep"] },
+      { no:"44", f:"44-products-price-3.html", t:"价格输入 · 数字键盘", d:"改价的数字键盘浮层（深链）。", tags:["deep"] }
+    ]},
+    { g:"出货测试", items:[
+      { no:"55", f:"55-dispense-test.html", t:"出货测试", d:"与 42 价格管理同版式：左栏 6 个分组（全部 26 / 经典咖啡 8 / 热饮 6 / 奶茶 5 / 冰饮 3 / 茶饮 4）+ 右栏商品行（缩略图、SKU、制作工艺、约 N 秒），不涉及价格。点商品行开一个浮卡三态切换：①二次配置（180² 方图 + 糖量 少/中/多/正常 + 浓度 正常/低/中/高，四选一互斥）→ ②出货中（百分比 + 进度条 + 研磨/萃取/加糖·落杯/出杯完成四步，可停止）→ ③出货完成（绿勾 + 配置回显 + 用时/时刻，可再来一杯）。咖啡类走研磨萃取，热饮/奶茶/茶饮走落料注水且浓度措辞改为「茶底浓度」。首页「快捷操作」第 5 项为入口。", tags:["self"] }
+    ]}
+  ]},
+
+  { folder:"beats", name:"售卖机", groups:[
+    { g:"首页入口", items:[
+      { no:"01", f:"01-beats-home.html", t:"控制台首页", d:"Beats 售卖机主入口（base 页，17 个跳转）。", tags:["entry","dead:1"] }
+    ]},
+    { g:"设置与登录", items:[
+      { no:"02", f:"02-settings-device.html", t:"设置 · 本机设置", d:"全站唯一还带三 tab 栏的设置页。", tags:["tab"] },
+      { no:"03", f:"03-settings-users.html", t:"用户和权限", d:"角色表格（店长/店员/工程师）+ 改口令浮层，已去 tab。coffee 侧已有副本。", tags:[] },
+      { no:"09", f:"09-device-info.html", t:"设备信息", d:"基础信息 8 行 + 网络测试 / 检查更新浮层，已去 tab、已删高级块。", tags:[] },
+      { no:"04", f:"04-login.html", t:"运维模式登录 · 账号", d:"三语切换（语言项用母语自称：简体中文 / English / 繁體中文）+ 口令/账号密码两种方式。coffee 侧已有副本。", tags:[] },
+      { no:"05", f:"05-login-passcode.html", t:"运维模式登录 · 口令", d:"口令输入态；语言项同样用母语自称。coffee 侧已有副本。", tags:[] }
+    ]},
+    { g:"售卖机补货", items:[
+      { no:"13", f:"13-vm-ops-overview.html", t:"补货 / 运营总览", d:"自包含 10 浮层的主页：12 个货道、盘点、批处理全在页内；卡片图片为 132×132 方形缩略图（原「图片模式」开关已移除）。", tags:["self"] },
+      { no:"15", f:"15-vm-ops-restock-modal.html", t:"补货弹窗（含保质期）", d:"深链副本。", tags:["deep"] },
+      { no:"15b", f:"15b-vm-ops-restock-shelflife-date.html", t:"补货弹窗 · 保质期按生产日期", d:"深链副本。", tags:["deep"] },
+      { no:"15c", f:"15c-vm-ops-restock-numpad.html", t:"补货量数字键盘", d:"深链副本。", tags:["deep"] },
+      { no:"16", f:"16-vm-switch-inventory-confirm.html", t:"切换到盘点模式", d:"二次确认（深链）。", tags:["deep"] },
+      { no:"17", f:"17-vm-batch-restock-modal.html", t:"批处理", d:"多选货道批量补货 / 下架 / 清空（深链）。", tags:["deep"] },
+      { no:"18", f:"18-vm-confirm-fill-all.html", t:"二次确认 · 全部补满", d:"绿色确认（深链）。", tags:["deep"] },
+      { no:"19", f:"19-vm-confirm-clear-all.html", t:"二次确认 · 全部清空", d:"橙色确认（深链）。", tags:["deep"] },
+      { no:"20", f:"20-vm-confirm-fill.html", t:"二次确认 · 补满", d:"单货道补满（深链）。", tags:["deep"] },
+      { no:"21", f:"21-vm-confirm-clear.html", t:"二次确认 · 清空", d:"单货道清空（深链）。", tags:["deep"] },
+      { no:"22", f:"22-vm-confirm-remove.html", t:"二次确认 · 下架", d:"粉色确认（深链）。", tags:["deep"] }
+    ]},
+    { g:"工程模式", items:[
+      { no:"31", f:"31-eng-settings.html", t:"高级IoT设置", d:"工程工具三入口：单动测试 / 传感器状态 / 参数调节。", tags:["dead:1"] },
+      { no:"32b", f:"32b-eng-unit-test-lanes.html", t:"测试出货 · 分货道", d:"12 个货道逐个出货 + 配置浮层。beats 侧无入口。", tags:["self","dead:1","orphan"] },
+      { no:"34", f:"34-eng-sensors.html", t:"传感器状态", d:"14 个传感器实时状态表。", tags:[] },
+      { no:"35", f:"35-eng-params.html", t:"参数调节", d:"Item 1-5 步进调节 + 取消/保存。", tags:[] }
+    ]},
+    { g:"商品管理", items:[
+      { no:"36", f:"36-products.html", t:"商品管理", d:"中间层：商品排序 / 价格管理两个入口。", tags:[] },
+      { no:"42", f:"42-products-price-1.html", t:"价格管理 · 左右结构", d:"左分组（300）/ 右商品（884）：切分组即时换列、单条改价浮层（数字键盘）、顶栏按百分比批量调价。26 件演示商品。", tags:[] },
+      { no:"45", f:"45-products-sort-1.html", t:"商品排序", d:"长按拖动调整分类内商品顺序。coffee 侧已有副本。", tags:[] },
+      { no:"49", f:"49-products-sort-5.html", t:"SKU 排序", d:"分类内 SKU 拖拽排序（顶栏标题误写「分类管理」，coffee 副本已修）。", tags:[] }
+    ]},
+    { g:"统计与告警", items:[
+      { no:"53", f:"53-stats.html", t:"统计主页", d:"时间范围 + 出杯量 / 销售额 / 维护 / 操作记录四入口。", tags:[] },
+      { no:"53a", f:"53a-stats-cups.html", t:"出杯量", d:"折线趋势 + SKU 排行。", tags:[] },
+      { no:"53b", f:"53b-stats-sales.html", t:"销售额", d:"折线趋势 + SKU 排行。", tags:[] },
+      { no:"53c", f:"53c-stats-maintenance.html", t:"维护记录", d:"维护操作流水表。", tags:[] },
+      { no:"53d", f:"53d-stats-log.html", t:"操作记录 Log", d:"筛选 + 分页。", tags:[] },
+      { no:"54", f:"54-alerts.html", t:"告警", d:"设备类 / 运营类告警表。", tags:[] }
+    ]}
+  ]}
+];
+
+const TAGMAP = {
+  entry:  ["入口", "t-entry"],
+  self:   ["自包含浮层", "t-self"],
+  deep:   ["深链", "t-deep"],
+  orphan: ["孤儿页", "t-orphan"],
+  tab:    ["仍带 tab 栏", "t-tab"]
+};
+
+const root = document.getElementById("root");
+const allCards = [];
+
+for (const zone of DATA) {
+  const zEl = document.createElement("div");
+  zEl.className = "zone";
+  const zc = zone.folder === "coffee" ? "b-coffee" : "b-beats";
+  const total = zone.groups.reduce((a,g)=>a+g.items.length,0);
+  zEl.innerHTML = `<div class="zone-head">
+      <span class="zone-badge ${zc}">${zone.folder.toUpperCase()}</span>
+      <span class="zone-title">${zone.name}套 · ${zone.folder}/</span>
+      <span class="zone-meta">${total} 个页面</span>
+      <span class="zone-path">${zone.folder}/</span>
+    </div>`;
+
+  for (const g of zone.groups) {
+    const gEl = document.createElement("div");
+    gEl.className = "grp";
+    gEl.innerHTML = `<div class="grp-head"><span class="grp-bar ${zc}-bar"></span>
+        <span class="grp-title">${g.g}</span><span class="grp-cnt">${g.items.length}</span></div>`;
+    const grid = document.createElement("div");
+    grid.className = "grid";
+
+    for (const it of g.items) {
+      const a = document.createElement("a");
+      a.className = "card c-" + zone.folder;
+      a.href = zone.folder + "/" + it.f;
+      a.target = "_blank";
+      a.rel = "noopener";
+
+      const tags = [];
+      let hasIssue = false;
+      for (const tg of it.tags) {
+        if (tg.startsWith("dead:")) { tags.push(`<span class="tag t-dead">死链 ${tg.split(":")[1]}</span>`); hasIssue = true; }
+        else if (tg.startsWith("cross:")) { tags.push(`<span class="tag t-cross">跳去 beats ${tg.split(":")[1]}</span>`); hasIssue = true; }
+        else if (TAGMAP[tg]) {
+          tags.push(`<span class="tag ${TAGMAP[tg][1]}">${TAGMAP[tg][0]}</span>`);
+          if (tg === "orphan") hasIssue = true;
+        }
+      }
+
+      a.innerHTML = `<div class="card-no">${it.no}</div>
+        <div class="card-t">${it.t}</div>
+        <div class="card-f">${it.f}</div>
+        <div class="card-d">${it.d}</div>
+        <div class="card-b">${tags.join("")}</div>`;
+
+      a.dataset.folder = zone.folder;
+      a.dataset.issue = hasIssue ? "1" : "0";
+      a.dataset.search = (it.no + " " + it.f + " " + it.t + " " + it.d + " " + g.g).toLowerCase();
+      allCards.push(a);
+      grid.appendChild(a);
+    }
+    gEl.appendChild(grid);
+    zEl.appendChild(gEl);
+  }
+  root.appendChild(zEl);
+}
+
+// 筛选
+let filter = "all";
+const qEl = document.getElementById("q");
+function apply() {
+  const q = qEl.value.trim().toLowerCase();
+  let shown = 0;
+  for (const c of allCards) {
+    let ok = true;
+    if (filter === "coffee" || filter === "beats") ok = c.dataset.folder === filter;
+    else if (filter === "issue") ok = c.dataset.issue === "1";
+    if (ok && q) ok = c.dataset.search.includes(q);
+    c.classList.toggle("hide", !ok);
+    if (ok) shown++;
+  }
+  // 空组 / 空区收起
+  document.querySelectorAll(".grp").forEach(g => {
+    g.classList.toggle("hide", !g.querySelector(".card:not(.hide)"));
+  });
+  document.querySelectorAll(".zone").forEach(z => {
+    z.classList.toggle("hide", !z.querySelector(".card:not(.hide)"));
+  });
+  document.getElementById("empty").classList.toggle("hide", shown > 0);
+}
+document.querySelectorAll(".chip").forEach(ch => {
+  ch.addEventListener("click", () => {
+    document.querySelectorAll(".chip").forEach(x => x.classList.remove("on"));
+    ch.classList.add("on");
+    filter = ch.dataset.f;
+    apply();
+  });
+});
+qEl.addEventListener("input", apply);
+</script>
+</body>
+</html>

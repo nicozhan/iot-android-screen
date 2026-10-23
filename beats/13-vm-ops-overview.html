@@ -49,7 +49,7 @@
     padding:12px 14px;display:flex;flex-direction:column;cursor:pointer;min-height:0;}
   .vm-card:hover{background:#FCFCFA;}
   .vm-lid{font-size:16px;font-weight:700;font-family:var(--mono);}
-  .vm-img{flex:1;min-height:100px;background:var(--track);border-radius:4px;
+  .vm-img{flex:0 0 auto;width:132px;height:132px;background:var(--track);border-radius:4px;
     display:flex;align-items:center;justify-content:center;color:var(--aux);font-size:14px;margin:8px 0;}
   .vm-row{display:flex;align-items:baseline;justify-content:space-between;}
   .vm-name{font-size:16px;font-weight:700;}
@@ -157,7 +157,6 @@
       <span class="vm-count">共 12 个货道</span>
       <div class="vm-tools">
         <button class="tool-btn" data-menu="#sort-menu">&#8645;&nbsp;<span id="sort-label">货道顺序</span><span class="chev">&#9662;</span></button>
-        <button class="tool-btn active" data-toggle="active">&#9638;&nbsp;图片模式</button>
         <button class="tool-btn" data-modal="#batch-modal">多选</button>
         <button class="tool-btn" data-modal="#fill-all">全部补满</button>
         <button class="tool-btn" data-modal="#clear-all">全部清空</button>

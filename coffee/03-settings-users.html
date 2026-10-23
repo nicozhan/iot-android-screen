@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="RzhIbNI4YOotGf27OiHDFe">
+<head data-page-node-id="kWa4diw1V0PJ93U4u4soEf">
+<meta charset="UTF-8" data-page-node-id="etKn2OlHENG517p0IWtDGh">
+<meta name="viewport" content="width=1280" data-page-node-id="t4AA4rdjiKEPB1Gfuk9Dsm">
+<title>VendSolution Console · 用户和权限</title>
+<link rel="stylesheet" href="../shared/style.css" data-page-node-id="lhtKYRCcvk2Q7Or8zY1rMn">
+<style>
+  .role-table{background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden;}
+  .role-row{display:flex;align-items:center;padding:0 28px;border-bottom:1px solid var(--line-soft);}
+  .role-row:last-child{border-bottom:none;}
+  .role-row.head{height:56px;background:#FAFAF7;border-bottom:1px solid var(--line);font-size:15px;font-weight:700;color:var(--sub);}
+  .role-row.item{height:96px;}
+  .role-col-name{flex:0 0 220px;font-size:19px;font-weight:700;}
+  .role-row.head .role-col-name{font-size:15px;font-weight:700;color:var(--sub);}
+  .role-col-desc{flex:1;font-size:16px;color:var(--sub);}
+  .role-col-act{flex:0 0 160px;display:flex;justify-content:flex-end;}
+  .role-pwd-btn{height:48px;padding:0 22px;background:var(--card);border:1px solid var(--orange);border-radius:4px;color:var(--orange);font-size:15px;font-weight:600;font-family:var(--sans);cursor:pointer;}
+  .role-pwd-btn:hover{background:#FFF7F2;}
+  .role-pwd-btn:active{background:#FDEEE4;}
+  .role-note{margin-top:20px;font-size:14px;color:var(--aux);}
+
+
+  /* ---- 浮层内容样式（自弹窗页合并，统一 vs-modal-head / vs-modal-body / md-foot 三段式） ---- */
+
+  .modal-head{
+    display:flex;align-items:flex-start;justify-content:space-between;
+    padding:24px 28px 0;
+  }
+  
+  .modal-tag{
+    font-family:var(--mono);
+    font-size:12px;font-weight:700;letter-spacing:2px;
+    color:var(--orange);
+  }
+  
+  .modal-title{font-size:20px;font-weight:700;}
+  
+  .modal-divider{border:none;border-top:1px solid var(--line);margin:16px 0 0;}
+
+  /* ---- 修改口令弹窗 ---- */
+  .pwd-role-chip{
+    display:inline-block;margin-left:10px;padding:2px 12px;
+    border:1px solid var(--orange);border-radius:999px;
+    font-size:13px;font-weight:600;color:var(--orange);
+    font-family:var(--sans);vertical-align:middle;transform:translateY(-2px);
+  }
+  .pwd-role-chip:empty{display:none;}
+  #pwd-modal .vs-field{max-width:none;margin-bottom:18px;}
+  #pwd-modal .vs-field:last-child{margin-bottom:0;}
+  #pwd-modal .vs-input .ph{color:#B3B3AE;}
+  .vs-input .kb-ico{flex:0 0 auto;margin-left:10px;color:var(--aux);}
+  .vs-input.err{border-color:var(--red);}
+  .vs-input.err .kb-ico{color:var(--red);}
+  .pwd-note{margin-top:8px;font-size:13px;color:var(--aux);line-height:1.5;}
+</style>
+</head>
+<body data-page-node-id="MR9C3BMnu8KvGAojD0QZoT">
+<div class="vs-canvas" data-page-node-id="LNWmDVtZqL8wQDBppN19tw">
+
+  <div class="vs-topbar" data-page-node-id="aV1VzXqZPoUW6GlUAV8WTs">
+    <button class="vs-btn-line" data-page-node-id="LH3l0JFEVYHUP0OYzyjFM8" data-href="01-home.html">&#8592;&nbsp;返回首页</button>
+    <div class="page-title" data-page-node-id="6DkWWwbYtdmnaZjgcUDGNB">用户和权限</div>
+  </div>
+
+  <main class="vs-main-pad" data-page-node-id="sSkUbF5EfOG3D1jWzf9Rh2">
+    <div class="vs-section-title" data-page-node-id="jQL3YyD1ZoTBSxjwWVBr7j">人员设置</div>
+
+    <div class="vs-sub-title" style="margin-top:0" data-page-node-id="eNJphHkJ1HChMRz6uLdOVY">角色权限</div>
+    <div class="role-table">
+      <div class="role-row head">
+        <span class="role-col-name">角色</span>
+        <span class="role-col-desc">权限说明</span>
+        <span class="role-col-act">操作</span>
+      </div>
+      <div class="role-row item">
+        <span class="role-col-name">店长</span>
+        <span class="role-col-desc">管理设备及全部设置</span>
+        <span class="role-col-act"><button class="role-pwd-btn" data-modal="#pwd-modal">修改口令</button></span>
+      </div>
+      <div class="role-row item">
+        <span class="role-col-name">店员</span>
+        <span class="role-col-desc">日常运营操作</span>
+        <span class="role-col-act"><button class="role-pwd-btn" data-modal="#pwd-modal">修改口令</button></span>
+      </div>
+      <div class="role-row item">
+        <span class="role-col-name">工程师</span>
+        <span class="role-col-desc">校准 / 工程模式</span>
+        <span class="role-col-act"><button class="role-pwd-btn" data-modal="#pwd-modal">修改口令</button></span>
+      </div>
+    </div>
+
+    <div class="role-note">注：仅店长可以修改其他角色的口令和权限。</div>
+  </main>
+
+</div>
+
+<!-- 浮层 · pwd-modal（源自 06-users-password-modal.html，深链仍可访问） -->
+<div class="vs-overlay" id="pwd-modal" data-page-node-id="aEJXELh76IUNf8A1Aqt8N1">
+  <div class="vs-modal" style="width:480px" data-page-node-id="nw89glSpqyPZVz9CPPircW">
+    <div class="modal-head" data-page-node-id="zcP4swyz0GEHFx17F6NoKd">
+      <div data-page-node-id="RucU0n2cRHARsThdTdPX3u">
+        <div class="modal-tag" data-page-node-id="EXLRoeGvecOBXTB6mDYjlm">SECURITY</div>
+        <div class="modal-title" style="margin-top:6px" data-page-node-id="y9LrmLOtQ8obrAABDmvEIA">修改口令<span class="pwd-role-chip" data-pwd-role></span></div>
+      </div>
+      <button class="vs-modal-close" data-page-node-id="w6H5DsCRBGCCLUNOVyCz4m" data-close-hide>&#10005;</button>
+    </div>
+    <hr class="modal-divider" data-page-node-id="UKEOgtmKGryp0RPBpJtOBk">
+    <div class="vs-modal-body">
+      <div class="vs-field" data-page-node-id="LCsD1zHFm75RD9YSxebrlf">
+        <span class="vs-field-label" data-page-node-id="KEmwQXx1t50xYJUj8SwEqR">原口令</span>
+        <div class="vs-input" data-page-node-id="CnOB5xUpEV0HKxLcgng6Uu" data-kb data-kb-type="text" data-kb-mask data-kb-max="20" data-kb-ph="请输入原口令"><span class="ph" data-page-node-id="OjFriMrEKLCPEVvSd9PyIA">请输入原口令</span><svg class="kb-ico" viewBox="0 0 22 22" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="18" height="13" rx="2.5"/><path d="M5.5 9h.01M9 9h.01M12.5 9h.01M16 9h.01M7.5 14.5h7"/></svg></div>
+      </div>
+      <div class="vs-field" data-page-node-id="xHnNeEJuGAVm6R8tsRjEex">
+        <span class="vs-field-label" data-page-node-id="vFqUCS2dE8k5ePUpHQwG1Q">新口令</span>
+        <div class="vs-input" data-page-node-id="2YUrKuWxrSBu8qbLjMZBPD" data-kb data-kb-type="text" data-kb-mask data-kb-max="20" data-kb-ph="请输入新口令"><span class="ph" data-page-node-id="PoLrwLbgad8XL0aw7KHABJ">请输入新口令</span><svg class="kb-ico" viewBox="0 0 22 22" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="18" height="13" rx="2.5"/><path d="M5.5 9h.01M9 9h.01M12.5 9h.01M16 9h.01M7.5 14.5h7"/></svg></div>
+        <div class="pwd-note" data-page-node-id="pwdRuleNote01">6-20 位，支持字母 / 数字 / 标点</div>
+      </div>
+      <div class="vs-field" data-page-node-id="cfmNewPwdFld01">
+        <span class="vs-field-label" data-page-node-id="cfmNewPwdLbl01">确认新口令</span>
+        <div class="vs-input" data-page-node-id="cfmNewPwdInp01" data-kb data-kb-type="text" data-kb-mask data-kb-max="20" data-kb-ph="请再次输入新口令"><span class="ph" data-page-node-id="cfmNewPwdPh01">请再次输入新口令</span><svg class="kb-ico" viewBox="0 0 22 22" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="18" height="13" rx="2.5"/><path d="M5.5 9h.01M9 9h.01M12.5 9h.01M16 9h.01M7.5 14.5h7"/></svg></div>
+      </div>
+    </div>
+    <div class="md-foot" data-page-node-id="aYkoNwDM6kXNATGYHnk1hq">
+      <button class="md-btn md-btn-line" data-page-node-id="cEoHzDjRAkVKIuBUB9df3s" data-close-hide>取消</button>
+      <button class="md-btn md-btn-dark" id="pwd-confirm" data-page-node-id="ljYwq3JQ32nwlHYFwkhCcy">确认修改</button>
+    </div>
+  </div>
+</div>
+<script src="../shared/i18n.js" defer></script>
+
+<script src="../shared/interactions.js" defer></script>
+<script>
+/* 修改口令弹窗 · 页面级逻辑：角色上下文回填 + 表单校验（引擎负责键盘/浮层/提示） */
+(function () {
+  var modal = document.getElementById('pwd-modal');
+  if (!modal) return;
+  var roleChip = modal.querySelector('[data-pwd-role]');
+  var fields = {
+    old: modal.querySelector('[data-kb-ph="请输入原口令"]'),
+    neu: modal.querySelector('[data-kb-ph="请输入新口令"]'),
+    cfm: modal.querySelector('[data-kb-ph="请再次输入新口令"]')
+  };
+  function T(x) { return window.I18N ? window.I18N.t(x) : x; }
+  function val(inp) { return inp.getAttribute('data-kb-value') || ''; }
+  function resetField(inp) {
+    inp.removeAttribute('data-kb-value');
+    var ph = inp.querySelector('.ph');
+    if (ph) ph.textContent = T(inp.getAttribute('data-kb-ph') || '');
+    inp.classList.remove('err');
+  }
+  function resetAll() {
+    Object.keys(fields).forEach(function (k) { resetField(fields[k]); });
+  }
+  function fail(inp, msg) {
+    if (window.VS) window.VS.toast(T(msg));
+    inp.click();                       // 重新唤起键盘，聚焦到出错的输入框
+    inp.classList.add('err');          // click 会触发清错，故最后再加
+  }
+  /* 点某行「修改口令」→ 标题徽标回填角色名，并清空上次填写 */
+  document.querySelectorAll('.role-pwd-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var row = btn.closest('.role-row');
+      var nameEl = row && row.querySelector('.role-col-name');
+      if (roleChip) roleChip.textContent = nameEl ? nameEl.textContent.trim() : '';
+      resetAll();
+    });
+  });
+  /* 手动点输入框即清除该框错误态 */
+  Object.keys(fields).forEach(function (k) {
+    fields[k].addEventListener('click', function () { fields[k].classList.remove('err'); });
+  });
+  /* 确认修改：校验 → 通过则关闭 + toast；失败则红框 + toast + 聚焦出错框 */
+  var okBtn = document.getElementById('pwd-confirm');
+  if (okBtn) okBtn.addEventListener('click', function () {
+    var o = val(fields.old), n = val(fields.neu), c = val(fields.cfm);
+    if (!o) return fail(fields.old, '请输入原口令');
+    if (!n) return fail(fields.neu, '请输入新口令');
+    if (n.length < 6) return fail(fields.neu, '新口令至少 6 位');
+    if (n !== c) return fail(fields.cfm, '两次输入的新口令不一致');
+    modal.classList.remove('show');
+    resetAll();
+    if (window.VS) window.VS.toast(T('口令已修改'));
+  });
+})();
+</script>
+</body>
+</html>

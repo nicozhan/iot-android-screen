@@ -94,8 +94,8 @@ const GROUPS = [
   ]},
   { name: "终端后台 Demo", base: "demo/", items: [
     ["02", "设置 · 本机设置", "02-settings-device.html"],
-    ["02b", "设置 · 其他设置预留（右栏）", "02b-settings-other.html"],
-    ["03", "设置 · 用户和权限", "03-settings-users.html"],
+    ["02b", "本机设置（独立页 · 无 tab）", "02b-settings-other.html"],
+    ["03", "用户和权限", "03-settings-users.html"],
     ["04", "登录 · 账号", "04-login.html"],
     ["05", "登录 · 密码", "05-login-passcode.html"],
     ["06", "用户 · 修改密码弹窗（深链）", "06-users-password-modal.html"],
@@ -105,7 +105,7 @@ const GROUPS = [
     ["10", "关机确认弹窗（深链）", "10-power-off-modal.html"],
   ]},
   { name: "咖啡机补货", base: "draft/", items: [
-    ["11", "运营总览（浮层入口）", "11-ops-overview.html"],
+    ["11", "运营总览", "11-ops-overview.html"],
     ["12", "运营总览 · 补货弹窗（含保质期）（深链）", "12-ops-restock-modal.html"],
     ["12b", "补货弹窗 · 保质期按生产日期（深链）", "12b-ops-restock-shelflife-date.html"],
     ["14", "运营总览 · 补货数字键盘（深链）", "14-ops-restock-numpad.html"],
@@ -118,6 +118,7 @@ const GROUPS = [
     ["19", "清洗策略 · 自动 · 按定时（深链）", "19-cleaning-strategy-timer.html"],
     ["20", "整机清洗 · 确认（深链）", "20-cleaning-confirm.html"],
     ["21", "整机清洗 · 进行中（深链）", "21-cleaning-progress.html"],
+    ["55", "出货测试", "55-dispense-test.html"],
   ]},
   { name: "校准", base: "draft/", items: [
     ["23", "校准主页", "23-calibration.html"],
@@ -160,7 +161,7 @@ for (const g of GROUPS) {
     const a = document.createElement("a");
     a.className = "nav-item" + (href ? "" : " todo");
 const BEATS = new Set(["01-beats-home.html","13-vm-ops-overview.html","31-eng-settings.html","32b-eng-unit-test-lanes.html","34-eng-sensors.html","35-eng-params.html","36-products.html","42-products-price-1.html","45-products-sort-1.html","49-products-sort-5.html","53-stats.html","53a-stats-cups.html","53b-stats-sales.html","53c-stats-maintenance.html","53d-stats-log.html","54-alerts.html","02-settings-device.html","03-settings-users.html","04-login.html","05-login-passcode.html","09-device-info.html"]);
-const COFFEE = new Set(["01-home.html","16-cleaning.html","17-cleaning-strategy-remind.html","18-cleaning-strategy-cups.html","19-cleaning-strategy-timer.html","20-cleaning-confirm.html","21-cleaning-progress.html"]);
+const COFFEE = new Set(["01-home.html","16-cleaning.html","17-cleaning-strategy-remind.html","18-cleaning-strategy-cups.html","19-cleaning-strategy-timer.html","20-cleaning-confirm.html","21-cleaning-progress.html","55-dispense-test.html"]);
     if (href) a.href = BEATS.has(href) ? "beats/" + href : (COFFEE.has(href) ? "coffee/" + href : "backups/" + href);
     a.innerHTML = `<span class="nav-no">${no}</span>
       <span class="nav-name">${I18N.t(name)}</span>

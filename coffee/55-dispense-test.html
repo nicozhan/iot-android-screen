@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>VendSolution · 出货测试</title>
+<link rel="stylesheet" href="../shared/style.css">
+<style>
+
+  /* ---- 左右分栏：左分组 300 / 间距 32 / 右商品 884（与价格管理同版式） ---- */
+  .pr-wrap{flex:1;display:flex;gap:32px;min-height:0;}
+
+  .pr-nav{width:300px;flex:0 0 300px;background:var(--card);border:1px solid var(--line);
+    border-radius:6px;display:flex;flex-direction:column;overflow:hidden;}
+
+  .pr-nav-head{height:56px;flex:0 0 56px;display:flex;align-items:center;padding:0 20px;
+    font-size:15px;color:var(--aux);border-bottom:1px solid var(--line-soft);}
+
+  .pr-nav-list{flex:1;min-height:0;overflow-y:auto;padding:6px 0;}
+
+  .pr-g{display:flex;align-items:center;justify-content:space-between;width:100%;height:64px;
+    padding:0 20px;background:none;border:none;border-left:3px solid transparent;
+    font-family:var(--sans);font-size:17px;font-weight:400;color:var(--sub);
+    text-align:left;cursor:pointer;}
+  .pr-g:hover{background:#FAFAF7;}
+  .pr-g .n{font-family:var(--mono);font-size:14px;color:var(--aux);}
+  .pr-g.on{background:#ECECE7;border-left-color:var(--ink);color:var(--ink);font-weight:700;}
+  .pr-g.on .n{color:var(--sub);}
+
+  .pr-nav-foot{padding:14px 20px 18px;border-top:1px solid var(--line-soft);
+    font-size:13px;color:var(--aux);line-height:1.65;}
+
+  .pr-body{flex:1;min-width:0;display:flex;flex-direction:column;}
+
+  .pr-head{display:flex;align-items:baseline;gap:14px;padding-bottom:16px;
+    border-bottom:1px solid var(--line-soft);margin-bottom:18px;}
+  .pr-title{font-size:22px;font-weight:700;}
+  .pr-count{font-size:14px;color:var(--aux);}
+  .pr-hint{margin-left:auto;font-size:13px;color:var(--aux);}
+
+  .pr-list{flex:1;min-height:0;overflow-y:auto;background:var(--card);
+    border:1px solid var(--line);border-radius:6px;}
+
+  .pr-list::-webkit-scrollbar,.pr-nav-list::-webkit-scrollbar{width:8px;}
+  .pr-list::-webkit-scrollbar-thumb,.pr-nav-list::-webkit-scrollbar-thumb{
+    background:#D6D6D0;border-radius:4px;}
+
+  /* 商品行 104px：缩略图 / 名称+SKU / 制作时长 / 箭头 */
+  .pr-row{height:104px;gap:20px;}
+  .pr-row .pm-thumb{width:64px;height:64px;flex:0 0 64px;}
+  .pr-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;}
+  .pr-info .pm-name{flex:none;}
+  .pr-sub{font-family:var(--mono);font-size:13px;color:var(--aux);letter-spacing:.5px;}
+  .pr-time{font-family:var(--mono);font-size:15px;color:var(--sub);min-width:72px;text-align:right;}
+  .pr-go{font-size:22px;color:var(--aux);}
+
+  .pr-empty{display:none;flex:1;align-items:center;justify-content:center;
+    background:var(--card);border:1px solid var(--line);border-radius:6px;
+    font-size:16px;color:var(--aux);}
+  .pr-empty.on{display:flex;}
+
+  /* ---- 浮层：商品信息（方形图，与价格弹窗一致） ---- */
+  .md-product{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:22px;}
+  .md-product-img{width:180px;height:180px;flex:0 0 180px;background:var(--track);border-radius:4px;
+    display:flex;align-items:center;justify-content:center;color:var(--aux);font-size:14px;}
+  .md-product-name{font-size:20px;font-weight:700;margin-top:4px;}
+  .md-product-sku{font-family:var(--mono);font-size:13px;color:var(--aux);letter-spacing:1px;}
+
+  /* ---- 浮层：二次配置（糖量 / 浓度 四选一） ---- */
+  .dt-state{display:none;}
+  .dt-state.on{display:block;}
+
+  .dt-field{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+  .dt-label{font-size:14px;font-weight:600;color:var(--ink);}
+  .dt-label .opt{font-weight:400;color:var(--aux);margin-left:6px;}
+
+  .dt-seg{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+  .dt-opt{height:54px;background:var(--card);border:1px solid var(--line-btn);border-radius:4px;
+    font-family:var(--sans);font-size:16px;font-weight:500;color:var(--ink);cursor:pointer;
+    transition:background .12s ease,border-color .12s ease;}
+  .dt-opt:hover{background:#FCFCFA;}
+  .dt-opt.on{background:var(--ink);border-color:var(--ink);color:#FFFFFF;font-weight:700;}
+
+  .dt-note{font-size:13px;color:var(--aux);line-height:1.65;padding-top:2px;}
+
+  .md-foot-center{justify-content:center;}
+
+  /* ---- 浮层：出货中 ---- */
+  .dt-run-head{text-align:center;margin-bottom:20px;}
+  .dt-run-title{font-size:22px;font-weight:700;}
+  .dt-run-sub{font-size:14px;color:var(--aux);margin-top:8px;}
+
+  .dt-pct{font-family:var(--mono);font-size:58px;font-weight:700;line-height:1;text-align:center;}
+  .dt-pct i{font-style:normal;font-size:22px;color:var(--sub);margin-left:4px;}
+
+  .dt-bar{height:10px;background:var(--track);border-radius:5px;overflow:hidden;margin:18px 0 22px;}
+  .dt-bar-fill{display:block;height:100%;width:0%;background:var(--ink);border-radius:5px;}
+
+  .dt-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:0 2px;}
+  .dt-step{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--aux);
+    white-space:nowrap;}
+  .dt-step .dot{width:10px;height:10px;flex:0 0 10px;border-radius:50%;
+    border:1px solid var(--line-btn);background:var(--card);}
+  .dt-step.on{color:var(--ink);font-weight:600;}
+  .dt-step.on .dot{background:var(--ink);border-color:var(--ink);}
+  .dt-step.done{color:var(--sub);}
+  .dt-step.done .dot{background:var(--green);border-color:var(--green);}
+
+  /* ---- 浮层：出货完成 ---- */
+  .dt-done{display:flex;flex-direction:column;align-items:center;text-align:center;
+    padding:6px 0 2px;}
+  .dt-check{width:78px;height:78px;border-radius:50%;background:var(--green);color:#FFFFFF;
+    font-size:40px;line-height:1;display:flex;align-items:center;justify-content:center;
+    margin-bottom:18px;}
+  .dt-done-title{font-size:24px;font-weight:700;}
+  .dt-done-sub{font-size:18px;font-weight:600;margin-top:14px;}
+  .dt-done-meta{font-size:14px;color:var(--sub);margin-top:8px;}
+  .dt-done-time{font-family:var(--mono);font-size:13px;color:var(--aux);margin-top:16px;}
+</style>
+</head>
+<body>
+<div class="vs-canvas">
+<div class="vs-topbar"><a class="vs-btn-line" href="01-home.html">&#8592;&nbsp;返回</a><div class="page-title">出货测试</div><button class="vs-btn-line" id="rec-btn" style="margin-left:auto" data-toast="本机最近 3 次出货测试均通过">测试记录</button></div>
+<main class="vs-main" style="gap:0">
+  <div class="pr-wrap">
+    <aside class="pr-nav">
+      <div class="pr-nav-head">商品分组</div>
+      <div class="pr-nav-list" id="pr-groups"></div>
+      <div class="pr-nav-foot">出货测试只驱动本机料道，不会生成订单、<br>不计入销售额与出杯量。</div>
+    </aside>
+    <section class="pr-body">
+      <div class="pr-head">
+        <div class="pr-title" id="pr-title">经典咖啡</div>
+        <div class="pr-count" id="pr-count"></div>
+        <div class="pr-hint">点击商品行进行出货测试</div>
+      </div>
+      <div class="pr-list" id="pr-list"></div>
+      <div class="pr-empty" id="pr-empty">该分组暂无商品</div>
+    </section>
+  </div>
+</main>
+</div>
+
+<!-- 浮层 · dt-modal：一次配置 → 出货中 → 出货完成（三态共用一个浮卡） -->
+<div class="vs-overlay" id="dt-modal">
+  <div class="vs-modal" style="width:640px;">
+    <div class="vs-modal-head">
+      <div class="vs-modal-title" id="dt-title">出货测试</div>
+      <button class="vs-modal-close" data-close-hide>&#10005;</button>
+    </div>
+
+    <!-- 状态 1：二次配置 -->
+    <div class="dt-state on" data-state="config">
+      <div class="vs-modal-body">
+        <div class="md-product">
+          <div class="md-product-img">商品图片</div>
+          <div class="md-product-name" id="dt-name">拿铁咖啡</div>
+          <div class="md-product-sku" id="dt-sku">SKU-CL-01 · 约 26 秒</div>
+        </div>
+        <div class="dt-field">
+          <div class="dt-label">糖量<span class="opt">（可选 4 档）</span></div>
+          <div class="dt-seg" id="dt-sugar">
+            <button class="dt-opt" data-v="少">少</button>
+            <button class="dt-opt" data-v="中">中</button>
+            <button class="dt-opt" data-v="多">多</button>
+            <button class="dt-opt on" data-v="正常">正常</button>
+          </div>
+        </div>
+        <div class="dt-field">
+          <div class="dt-label" id="dt-conc-label">咖啡浓度<span class="opt">（可选 4 档）</span></div>
+          <div class="dt-seg" id="dt-conc">
+            <button class="dt-opt on" data-v="正常">正常</button>
+            <button class="dt-opt" data-v="低">低</button>
+            <button class="dt-opt" data-v="中">中</button>
+            <button class="dt-opt" data-v="高">高</button>
+          </div>
+        </div>
+        <div class="dt-note">确认后立即开始制作，制作过程可在浮窗内中止。</div>
+      </div>
+      <div class="md-foot">
+        <button class="md-btn md-btn-line" data-close-hide>取消</button>
+        <button class="md-btn md-btn-dark" id="dt-go">确定出货</button>
+      </div>
+    </div>
+
+    <!-- 状态 2：出货中 -->
+    <div class="dt-state" data-state="running">
+      <div class="vs-modal-body">
+        <div class="dt-run-head">
+          <div class="dt-run-title">出货中</div>
+          <div class="dt-run-sub" id="dt-run-sub">拿铁咖啡 · 糖 正常 · 咖啡浓度 正常</div>
+        </div>
+        <div class="dt-pct"><span id="dt-pct">0</span><i>%</i></div>
+        <div class="dt-bar"><span class="dt-bar-fill" id="dt-fill"></span></div>
+        <div class="dt-steps" id="dt-steps"></div>
+      </div>
+      <div class="md-foot">
+        <button class="md-btn md-btn-line" id="dt-stop">停止出货</button>
+      </div>
+    </div>
+
+    <!-- 状态 3：出货完成 -->
+    <div class="dt-state" data-state="done">
+      <div class="vs-modal-body">
+        <div class="dt-done">
+          <div class="dt-check">&#10003;</div>
+          <div class="dt-done-title">出货完成</div>
+          <div class="dt-done-sub" id="dt-done-name">拿铁咖啡</div>
+          <div class="dt-done-meta" id="dt-done-meta">糖量 正常 · 咖啡浓度 正常</div>
+          <div class="dt-done-time" id="dt-done-time">用时 4.2 秒 · 09:41</div>
+        </div>
+      </div>
+      <div class="md-foot md-foot-center">
+        <button class="md-btn md-btn-line" id="dt-again">再来一杯</button>
+        <button class="md-btn md-btn-dark" data-close-hide>完成</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  /* ---------------- 数据 ---------------- */
+  var GROUPS = [
+    { id: 'all',     name: '全部商品' },
+    { id: 'classic', name: '经典咖啡' },
+    { id: 'hot',     name: '热饮' },
+    { id: 'milk',    name: '奶茶' },
+    { id: 'ice',     name: '冰饮' },
+    { id: 'tea',     name: '茶饮' }
+  ];
+
+  /* kind：coffee = 走研磨萃取；tea = 落料注水。
+     t   ：标称制作时长（秒），只用于列表展示与完成页文案 */
+  var PRODUCTS = [
+    { sku: 'SKU-CL-01', name: '拿铁咖啡',     group: 'classic', kind: 'coffee', t: 26 },
+    { sku: 'SKU-CL-02', name: '卡布奇诺',     group: 'classic', kind: 'coffee', t: 24 },
+    { sku: 'SKU-CL-03', name: '美式咖啡',     group: 'classic', kind: 'coffee', t: 20 },
+    { sku: 'SKU-CL-04', name: '摩卡',         group: 'classic', kind: 'coffee', t: 28 },
+    { sku: 'SKU-CL-05', name: '澳白',         group: 'classic', kind: 'coffee', t: 25 },
+    { sku: 'SKU-CL-06', name: '浓缩',         group: 'classic', kind: 'coffee', t: 16 },
+    { sku: 'SKU-CL-07', name: '燕麦拿铁',     group: 'classic', kind: 'coffee', t: 27 },
+    { sku: 'SKU-CL-08', name: '香草拿铁',     group: 'classic', kind: 'coffee', t: 27 },
+
+    { sku: 'SKU-HT-01', name: '热巧克力',     group: 'hot', kind: 'tea', t: 22 },
+    { sku: 'SKU-HT-02', name: '热牛奶',       group: 'hot', kind: 'tea', t: 18 },
+    { sku: 'SKU-HT-03', name: '姜茶',         group: 'hot', kind: 'tea', t: 20 },
+    { sku: 'SKU-HT-04', name: '桂圆红枣茶',   group: 'hot', kind: 'tea', t: 23 },
+    { sku: 'SKU-HT-05', name: '热抹茶拿铁',   group: 'hot', kind: 'tea', t: 25 },
+    { sku: 'SKU-HT-06', name: '热红茶',       group: 'hot', kind: 'tea', t: 18 },
+
+    { sku: 'SKU-MT-01', name: '珍珠奶茶',     group: 'milk', kind: 'tea', t: 26 },
+    { sku: 'SKU-MT-02', name: '芝士奶盖茶',   group: 'milk', kind: 'tea', t: 25 },
+    { sku: 'SKU-MT-03', name: '黑糖奶茶',     group: 'milk', kind: 'tea', t: 24 },
+    { sku: 'SKU-MT-04', name: '港式奶茶',     group: 'milk', kind: 'tea', t: 22 },
+    { sku: 'SKU-MT-05', name: '芋泥啵啵奶茶', group: 'milk', kind: 'tea', t: 28 },
+
+    { sku: 'SKU-IC-01', name: '冰美式',       group: 'ice', kind: 'coffee', t: 20 },
+    { sku: 'SKU-IC-02', name: '冰拿铁',       group: 'ice', kind: 'coffee', t: 25 },
+    { sku: 'SKU-IC-03', name: '气泡柠檬水',   group: 'ice', kind: 'tea', t: 16 },
+
+    { sku: 'SKU-TE-01', name: '茉莉绿茶',     group: 'tea', kind: 'tea', t: 18 },
+    { sku: 'SKU-TE-02', name: '白桃乌龙',     group: 'tea', kind: 'tea', t: 20 },
+    { sku: 'SKU-TE-03', name: '桂花乌龙',     group: 'tea', kind: 'tea', t: 20 },
+    { sku: 'SKU-TE-04', name: '鲜柠红茶',     group: 'tea', kind: 'tea', t: 19 }
+  ];
+
+  /* 四步工艺：咖啡走研磨萃取，其余走落料注水 */
+  var STEPS = {
+    coffee: ['研磨 18g', '萃取 26s', '加糖 · 落杯', '出杯完成'],
+    tea:    ['落料', '注水 240ml', '调配 · 落杯', '出杯完成']
+  };
+  var DURATION = { coffee: 4200, tea: 3600 };   /* 演示用：几秒走完 */
+  var MARKS = [30, 60, 85, 100];                /* 每步完成的进度阈值 */
+
+  /* ---------------- 状态 ---------------- */
+  var cur = 'classic';
+  var prod = null;
+  var sugar = '正常';
+  var conc = '正常';
+  var timer = null;
+  var startTs = 0;
+  var dur = 4200;
+
+  var groupsEl = document.getElementById('pr-groups');
+  var listEl   = document.getElementById('pr-list');
+  var emptyEl  = document.getElementById('pr-empty');
+  var titleEl  = document.getElementById('pr-title');
+  var countEl  = document.getElementById('pr-count');
+
+  var modal    = document.getElementById('dt-modal');
+  var dtName   = document.getElementById('dt-name');
+  var dtSku    = document.getElementById('dt-sku');
+  var dtConcLb = document.getElementById('dt-conc-label');
+  var dtRunSub = document.getElementById('dt-run-sub');
+  var dtPct    = document.getElementById('dt-pct');
+  var dtFill   = document.getElementById('dt-fill');
+  var dtSteps  = document.getElementById('dt-steps');
+  var dtDoneNm = document.getElementById('dt-done-name');
+  var dtDoneMt = document.getElementById('dt-done-meta');
+  var dtDoneTm = document.getElementById('dt-done-time');
+
+  /* ---------------- 工具 ---------------- */
+  function groupOf(id) {
+    for (var i = 0; i < GROUPS.length; i++) if (GROUPS[i].id === id) return GROUPS[i];
+    return GROUPS[1];
+  }
+  function rowsOf(id) {
+    if (id === 'all') return PRODUCTS.slice();
+    return PRODUCTS.filter(function (p) { return p.group === id; });
+  }
+  function productOf(sku) {
+    for (var i = 0; i < PRODUCTS.length; i++) if (PRODUCTS[i].sku === sku) return PRODUCTS[i];
+    return null;
+  }
+  function toast(msg) { if (window.VS && window.VS.toast) window.VS.toast(msg); }
+  function pad2(n) { return (n < 10 ? '0' : '') + n; }
+  function clock() {
+    var d = new Date();
+    return pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+  }
+  /* 浓度名词：咖啡类叫「咖啡浓度」，其余叫「茶底浓度」 */
+  function concLabel() { return (prod && prod.kind === 'coffee') ? '咖啡浓度' : '茶底浓度'; }
+
+  /* ---------------- 渲染列表 ---------------- */
+  function renderGroups() {
+    groupsEl.innerHTML = GROUPS.map(function (g) {
+      return '<button class="pr-g' + (g.id === cur ? ' on' : '') + '" data-g="' + g.id + '">' +
+               '<span>' + g.name + '</span>' +
+               '<span class="n">' + rowsOf(g.id).length + '</span>' +
+             '</button>';
+    }).join('');
+  }
+
+  function renderList() {
+    var g = groupOf(cur);
+    var list = rowsOf(cur);
+
+    titleEl.textContent = g.name;
+    countEl.textContent = list.length + ' 件商品';
+
+    listEl.innerHTML = list.map(function (p) {
+      return '<a class="pm-row pr-row" data-modal="#dt-modal" data-sku="' + p.sku + '">' +
+               '<div class="pm-thumb">商品图片</div>' +
+               '<div class="pr-info">' +
+                 '<div class="pm-name">' + p.name + '</div>' +
+                 '<div class="pr-sub">' + p.sku + ' · ' + (p.kind === 'coffee' ? '研磨萃取' : '落料注水') + '</div>' +
+               '</div>' +
+               '<div class="pr-time">约 ' + p.t + ' 秒</div>' +
+               '<span class="pr-go">&#8250;</span>' +
+             '</a>';
+    }).join('');
+
+    listEl.style.display = list.length ? '' : 'none';
+    emptyEl.classList.toggle('on', list.length === 0);
+    listEl.scrollTop = 0;
+  }
+
+  /* ---------------- 三态切换 ---------------- */
+  /* 浮层标题固定「出货测试」（页级语义），状态词只出现在卡片正文，避免同名重复 */
+  function setState(name) {
+    Array.prototype.forEach.call(modal.querySelectorAll('.dt-state'), function (el) {
+      el.classList.toggle('on', el.getAttribute('data-state') === name);
+    });
+  }
+
+  function pickSeg(seg, value) {
+    Array.prototype.forEach.call(seg.querySelectorAll('.dt-opt'), function (b) {
+      b.classList.toggle('on', b.getAttribute('data-v') === value);
+    });
+  }
+
+  /* 回到配置态并复位（每次点商品 / 点「再来一杯」都走这里） */
+  function resetTo(p) {
+    stopTimer();
+    prod = p;
+    sugar = '正常';
+    conc = '正常';
+    pickSeg(document.getElementById('dt-sugar'), sugar);
+    pickSeg(document.getElementById('dt-conc'), conc);
+
+    dtName.textContent = p.name;
+    dtSku.textContent = p.sku + ' · 约 ' + p.t + ' 秒';
+    dtConcLb.innerHTML = concLabel() + '<span class="opt">（可选 4 档）</span>';
+
+    dtPct.textContent = '0';
+    dtFill.style.width = '0%';
+    dtSteps.innerHTML = '';
+    setState('config');
+  }
+
+  function stopTimer() {
+    if (timer) { clearInterval(timer); timer = null; }
+  }
+
+  /* ---------------- 出货中：进度与分步 ---------------- */
+  function paintSteps(pct) {
+    var nodes = dtSteps.querySelectorAll('.dt-step');
+    for (var i = 0; i < nodes.length; i++) {
+      var done = pct >= MARKS[i];
+      var isOn = !done && (i === 0 || pct >= MARKS[i - 1]);
+      nodes[i].classList.toggle('done', done);
+      nodes[i].classList.toggle('on', isOn);
+    }
+  }
+
+  function tick() {
+    if (!modal.classList.contains('show')) { stopTimer(); return; }   /* 浮层被关掉就停表 */
+    var pct = Math.min(100, Math.round((Date.now() - startTs) / dur * 100));
+    dtPct.textContent = pct;
+    dtFill.style.width = pct + '%';
+    paintSteps(pct);
+
+    if (pct >= 100) {
+      stopTimer();
+      setTimeout(function () {
+        if (modal.classList.contains('show')) finish();
+      }, 320);
+    }
+  }
+
+  function startRun() {
+    dur = DURATION[prod.kind] || 4000;
+    var labels = STEPS[prod.kind] || STEPS.coffee;
+
+    dtRunSub.textContent = prod.name + ' · 糖 ' + sugar + ' · ' + concLabel() + ' ' + conc;
+    dtSteps.innerHTML = labels.map(function (s, i) {
+      return '<div class="dt-step' + (i === 0 ? ' on' : '') + '"><span class="dot"></span>' + s + '</div>';
+    }).join('');
+    dtPct.textContent = '0';
+    dtFill.style.width = '0%';
+
+    setState('running');
+    stopTimer();
+    startTs = Date.now();
+    timer = setInterval(tick, 60);
+  }
+
+  function finish() {
+    dtDoneNm.textContent = prod.name;
+    dtDoneMt.textContent = '糖量 ' + sugar + ' · ' + concLabel() + ' ' + conc;
+    dtDoneTm.textContent = '用时 ' + (dur / 1000).toFixed(1) + ' 秒 · ' + clock();
+    setState('done');
+  }
+
+  /* ---------------- 交互 ---------------- */
+  /* 切分组 */
+  groupsEl.addEventListener('click', function (ev) {
+    var btn = ev.target.closest ? ev.target.closest('.pr-g') : null;
+    if (!btn) return;
+    cur = btn.getAttribute('data-g');
+    groupsEl.querySelectorAll('.pr-g').forEach(function (b) {
+      b.classList.toggle('on', b === btn);
+    });
+    renderList();
+  });
+
+  /* 点商品行 → 复位三态并回填商品 */
+  document.addEventListener('click', function (ev) {
+    if (!ev.target.closest) return;
+    var row = ev.target.closest('.pr-row');
+    if (!row || !listEl.contains(row)) return;
+    var p = productOf(row.getAttribute('data-sku'));
+    if (p) resetTo(p);
+  });
+
+  /* 糖量 / 浓度 四选一 */
+  ['dt-sugar', 'dt-conc'].forEach(function (id) {
+    document.getElementById(id).addEventListener('click', function (ev) {
+      var b = ev.target.closest ? ev.target.closest('.dt-opt') : null;
+      if (!b) return;
+      var v = b.getAttribute('data-v');
+      pickSeg(this, v);
+      if (id === 'dt-sugar') sugar = v; else conc = v;
+    });
+  });
+
+  /* 确定出货 → 出货中 */
+  document.getElementById('dt-go').addEventListener('click', function () {
+    if (!prod) return;
+    startRun();
+  });
+
+  /* 停止出货 → 收浮层 */
+  document.getElementById('dt-stop').addEventListener('click', function () {
+    stopTimer();
+    modal.classList.remove('show');
+    toast('已停止出货：' + (prod ? prod.name : ''));
+  });
+
+  /* 再来一杯 → 回到同一商品的配置态 */
+  document.getElementById('dt-again').addEventListener('click', function () {
+    if (prod) resetTo(prod);
+  });
+
+  renderGroups();
+  renderList();
+})();
+</script>
+
+<script src="../shared/i18n.js" defer></script>
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>

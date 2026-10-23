@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>VendSolution Console · 售卖机补货 / 切换到盘点模式</title>
+<link rel="stylesheet" href="../shared/style.css">
+<style>
+  /* ---- 统一弹窗（与商品页同套） ---- */
+  .vs-overlay{position:absolute;inset:0;background:transparent;display:flex;align-items:center;justify-content:center;z-index:10;}
+  .vs-modal{width:560px;background:var(--card);border:1px solid var(--ink);border-radius:6px;overflow:hidden;}
+  .vs-modal-head{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid var(--line);font-size:17px;font-weight:700;}
+  .vs-modal-close{font-size:18px;color:var(--aux);cursor:pointer;background:none;border:none;line-height:1;}
+  .vs-modal-body{padding:28px;display:flex;flex-direction:column;gap:16px;font-size:17px;font-weight:600;color:var(--ink);line-height:1.7;}
+  .md-foot{display:flex;gap:14px;padding:0 28px 28px;}
+  .md-btn{flex:1;height:52px;border-radius:4px;font-size:16px;font-weight:600;font-family:var(--sans);cursor:pointer;border:1px solid transparent;}
+  .md-btn-line{background:var(--card);border-color:var(--line-btn);color:var(--ink);}
+  .md-btn-dark{background:var(--dark);border-color:var(--dark);color:#FFF;}
+</style>
+</head>
+<body>
+<div class="vs-canvas">
+
+  <div class="vs-topbar">
+    <a class="vs-btn-line" href="13-vm-ops-overview.html">&#8592;&nbsp;返回导航</a>
+    <div class="page-title">切换到盘点模式？</div>
+  </div>
+
+  <div class="vs-overlay">
+    <div class="vs-modal">
+      <div class="vs-modal-head">切换到盘点模式？<span class="vs-modal-close" data-close-go="13-vm-ops-overview.html">&#10005;</span></div>
+      <div class="vs-modal-body">
+        <span>「盘点模式」：系统根据实际盘点结果更新设备库存，不扣减后台补货库存。</span>
+      </div>
+      <div class="md-foot">
+        <button class="md-btn md-btn-line" data-close-go="13-vm-ops-overview.html">取消</button>
+        <button class="md-btn md-btn-dark" data-act="goto-toast" data-href="13-vm-ops-overview.html" data-toast="已切换到盘点模式">确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../shared/i18n.js" defer></script>
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>

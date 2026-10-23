@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>校准 · VendSolution</title>
+<link rel="stylesheet" href="../shared/style.css">
+<style>
+  .cal-hero{
+    background:var(--card);border:1px solid var(--line);border-radius:6px;
+    padding:26px 28px;display:flex;align-items:center;justify-content:space-between;
+    cursor:pointer;position:relative;overflow:hidden;
+  }
+  .cal-hero::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--blue);}
+  .cal-hero:hover{background:#FCFCFA;}
+  .cal-hero-name{font-size:22px;font-weight:700;}
+  .cal-hero-meta{display:flex;align-items:center;gap:16px;font-size:15px;color:var(--sub);}
+  .cal-hero-meta .mono{color:var(--ink);font-weight:600;}
+  .cal-arrow{color:var(--aux);font-size:18px;}
+
+  .cal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .cal-item{
+    background:var(--card);border:1px solid var(--line);border-radius:6px;
+    padding:22px 24px;display:flex;flex-direction:column;gap:12px;cursor:pointer;
+  }
+  .cal-item:hover{background:#FCFCFA;}
+  .cal-item-head{display:flex;align-items:center;justify-content:space-between;}
+  .cal-item-name{font-size:18px;font-weight:600;}
+  .cal-item-last{font-size:13px;color:var(--aux);}
+  .cal-item-last .mono{color:var(--sub);font-weight:500;}
+</style>
+</head>
+<body>
+<div class="vs-canvas">
+
+  <div class="vs-topbar">
+    <button class="vs-btn-line" data-href="01-home.html">← 返回首页</button>
+    <div class="page-title">校准</div>
+  </div>
+
+  <div class="vs-main" style="gap:24px;">
+    <section>
+      <div class="vs-section-title" style="margin-bottom:16px;">校准项目</div>
+
+      <div class="cal-hero" style="margin-bottom:16px;">
+        <div class="cal-hero-name">研磨粉校准</div>
+        <div class="cal-hero-meta">上次校准：<span class="mono">2026/08/28 14:30</span><span class="cal-arrow">→</span></div>
+      </div>
+
+      <div class="cal-grid">
+        <div class="cal-item" data-href="24b-calibration-water.html"><div class="cal-item-head" data-href="24b-calibration-water.html"><span class="cal-item-name" data-toast="该校准项（演示）">水量校准</span><span class="cal-arrow">→</span></div><div class="cal-item-last" data-toast="粉盒 1 校准（演示）"><span class="mono">08/27 10:20</span></div></div>
+        <div class="cal-item" data-toast="粉盒 1 校准（演示）"><div class="cal-item-head" data-toast="粉盒 1 校准（演示）"><span class="cal-item-name" data-toast="该校准项（演示）">粉盒 1 校准</span><span class="cal-arrow">→</span></div><div class="cal-item-last" data-toast="粉盒 2 校准（演示）"><span class="mono">08/26 16:40</span></div></div>
+        <div class="cal-item" data-toast="粉盒 2 校准（演示）"><div class="cal-item-head" data-toast="粉盒 2 校准（演示）"><span class="cal-item-name" data-toast="该校准项（演示）">粉盒 2 校准</span><span class="cal-arrow">→</span></div><div class="cal-item-last" data-toast="粉盒 3 校准（演示）"><span class="mono">08/26 18:35</span></div></div>
+        <div class="cal-item" data-toast="粉盒 3 校准（演示）"><div class="cal-item-head" data-toast="粉盒 3 校准（演示）"><span class="cal-item-name" data-toast="该校准项（演示）">粉盒 3 校准</span><span class="cal-arrow">→</span></div><div class="cal-item-last" data-toast="粉盒 4 校准（演示）"><span class="mono">08/25 15:20</span></div></div>
+        <div class="cal-item" data-toast="粉盒 4 校准（演示）"><div class="cal-item-head" data-toast="粉盒 4 校准（演示）"><span class="cal-item-name" data-toast="该校准项（演示）">粉盒 4 校准</span><span class="cal-arrow">→</span></div><div class="cal-item-last" data-toast="粉盒 5 校准（演示）"><span class="mono">08/25 15:15</span></div></div>
+        <div class="cal-item" data-toast="粉盒 5 校准（演示）"><div class="cal-item-head" data-toast="粉盒 5 校准（演示）"><span class="cal-item-name" data-toast="该校准项（演示）">粉盒 5 校准</span><span class="cal-arrow">→</span></div><div class="cal-item-last" data-toast="校准项目 8（演示）"><span class="mono">08/24 11:30</span></div></div>
+        <div class="cal-item" data-toast="校准项目 8（演示）"><div class="cal-item-head" data-toast="校准项目 8（演示）"><span class="cal-item-name" data-toast="该校准项（演示）">校准项目 8</span><span class="cal-arrow">→</span></div><div class="cal-item-last" data-toast="校准项目 9（演示）">上次校准：<span class="mono">--</span></div></div>
+        <div class="cal-item" data-toast="校准项目 9（演示）"><div class="cal-item-head" data-toast="校准项目 9（演示）"><span class="cal-item-name" data-toast="该校准项（演示）">校准项目 9</span><span class="cal-arrow">→</span></div><div class="cal-item-last" data-toast="校准项目 10（演示）">上次校准：<span class="mono">--</span></div></div>
+        <div class="cal-item" data-toast="校准项目 10（演示）"><div class="cal-item-head" data-toast="校准项目 10（演示）"><span class="cal-item-name" data-toast="该校准项（演示）">校准项目 10</span><span class="cal-arrow">→</span></div><div class="cal-item-last" data-toast="该校准项（演示）">上次校准：<span class="mono">--</span></div></div>
+      </div>
+    </section>
+  </div>
+</div>
+<script src="../shared/i18n.js" defer></script>
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>

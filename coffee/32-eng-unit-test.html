@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>VendSolution · 测试出货</title>
+<link rel="stylesheet" href="../shared/style.css">
+<style>
+  /* ---- 料道清单 ---- */
+  .lane-list{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--card);}
+  .lane-head,.lane-row{
+    display:grid;grid-template-columns:96px 1fr 200px 72px 104px 148px;
+    align-items:center;gap:18px;padding:0 24px;
+  }
+  .lane-head{height:46px;background:#FBFBF8;border-bottom:1px solid var(--line);font-size:13px;font-weight:600;color:var(--aux);}
+  .lane-row{height:94px;border-bottom:1px solid var(--line-soft);}
+  .lane-row:last-child{border-bottom:0;}
+  .lane-row.ok-row{cursor:pointer;transition:background .12s ease;}
+  .lane-row.ok-row:hover{background:#FCFCFA;}
+  .lane-row.ok-row:hover .lane-btn{border-color:var(--ink);background:var(--ink);color:#fff;}
+
+  .pm-lane-no{font-family:var(--mono);font-size:17px;font-weight:700;color:var(--ink);}
+  .lane-mat{display:flex;flex-direction:column;gap:3px;min-width:0;}
+  .pm-lane-name{font-size:16px;font-weight:600;color:var(--ink);}
+  .lane-sub{font-size:12px;color:var(--aux);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .lane-bar{height:10px;background:var(--track);border-radius:5px;overflow:hidden;}
+  .lane-bar i{display:block;height:100%;border-radius:5px;background:var(--green);}
+  .lane-bar i.low{background:var(--yellow);}
+  .lane-bar i.empty{background:transparent;}
+  .lane-pct{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--sub);text-align:right;}
+  .lane-state{font-size:12px;font-weight:700;border-radius:4px;padding:4px 10px;text-align:center;}
+  .lane-state.ok{background:#E6F4EA;color:#12703a;}
+  .lane-state.low{background:#FDF3D8;color:#8A6400;}
+  .lane-state.empty{background:#EDEDE8;color:#6B6B66;}
+  .lane-state.fault{background:#FBE4E7;color:#A80021;}
+  .lane-btn{
+    height:40px;width:100%;border:1px solid var(--line-btn);border-radius:4px;background:var(--card);
+    font-size:14px;font-weight:600;color:var(--ink);font-family:var(--sans);cursor:pointer;
+    transition:background .12s ease,border-color .12s ease,color .12s ease;
+  }
+  .lane-off{font-size:13px;font-weight:600;color:var(--aux);text-align:center;}
+
+  /* ---- 图例 ---- */
+  .lane-legend{display:flex;gap:22px;align-items:center;font-size:14px;color:var(--sub);margin:2px 0 4px;}
+  .lane-legend span{display:inline-flex;align-items:center;}
+  .lane-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;}
+  .lane-dot.ok{background:var(--green);}
+  .lane-dot.low{background:var(--yellow);}
+  .lane-dot.empty{background:var(--track);border:1px solid var(--line-btn);}
+  .lane-dot.fault{background:var(--red);}
+
+  /* ---- 浮层内文案 / 进度条 ---- */
+  .modal-desc{font-size:16px;color:var(--ink);line-height:1.7;}
+  .modal-sub{font-size:14px;color:var(--sub);margin-top:8px;}
+  .ship-bar{height:10px;background:var(--track);border-radius:5px;overflow:hidden;margin:18px 0 4px;}
+  .ship-bar-fill{display:block;height:100%;width:0%;background:var(--dark);border-radius:5px;}
+</style>
+</head>
+<body>
+<div class="vs-canvas">
+
+  <div class="vs-topbar">
+    <button class="vs-btn-line" data-href="31-eng-settings.html">&#8592; 返回高级IoT设置</button>
+    <div class="page-title">测试出货</div>
+  </div>
+
+  <main class="vs-main" style="gap:14px">
+    <div class="vs-sub-title" style="margin:0">物料料道 · 8 个</div>
+    <div class="lane-legend">
+      <span><i class="lane-dot ok"></i>正常</span>
+      <span><i class="lane-dot low"></i>余量偏低</span>
+      <span><i class="lane-dot empty"></i>空</span>
+      <span><i class="lane-dot fault"></i>故障</span>
+    </div>
+
+    <div class="lane-list">
+      <div class="lane-head">
+        <span>料道</span><span>物料</span><span>剩余</span><span style="text-align:right">余量</span><span style="text-align:center">状态</span><span style="text-align:center">操作</span>
+      </div>
+
+      <!-- L1 咖啡豆 -->
+      <div class="lane-row ok-row pm-lane-card" data-ship="#grid-confirm" data-ship-noun="料道">
+        <span class="pm-lane-no">L1</span>
+        <span class="lane-mat"><span class="pm-lane-name">咖啡豆</span><span class="lane-sub">意式拼配 · 中深烘</span></span>
+        <span class="lane-bar"><i style="width:72%"></i></span>
+        <span class="lane-pct">72%</span>
+        <span class="lane-state ok">正常</span>
+        <button class="lane-btn">测试出货</button>
+      </div>
+
+      <!-- L2 奶粉 -->
+      <div class="lane-row ok-row pm-lane-card" data-ship="#grid-confirm" data-ship-noun="料道">
+        <span class="pm-lane-no">L2</span>
+        <span class="lane-mat"><span class="pm-lane-name">奶粉</span><span class="lane-sub">全脂奶粉</span></span>
+        <span class="lane-bar"><i style="width:58%"></i></span>
+        <span class="lane-pct">58%</span>
+        <span class="lane-state ok">正常</span>
+        <button class="lane-btn">测试出货</button>
+      </div>
+
+      <!-- L3 糖 -->
+      <div class="lane-row ok-row pm-lane-card" data-ship="#grid-confirm" data-ship-noun="料道">
+        <span class="pm-lane-no">L3</span>
+        <span class="lane-mat"><span class="pm-lane-name">糖</span><span class="lane-sub">白砂糖</span></span>
+        <span class="lane-bar"><i class="low" style="width:12%"></i></span>
+        <span class="lane-pct">12%</span>
+        <span class="lane-state low">余量偏低</span>
+        <button class="lane-btn">测试出货</button>
+      </div>
+
+      <!-- L4 抹茶粉 -->
+      <div class="lane-row ok-row pm-lane-card" data-ship="#grid-confirm" data-ship-noun="料道">
+        <span class="pm-lane-no">L4</span>
+        <span class="lane-mat"><span class="pm-lane-name">抹茶粉</span><span class="lane-sub">抹茶拿铁专用</span></span>
+        <span class="lane-bar"><i style="width:46%"></i></span>
+        <span class="lane-pct">46%</span>
+        <span class="lane-state ok">正常</span>
+        <button class="lane-btn">测试出货</button>
+      </div>
+
+      <!-- L5 可可粉 -->
+      <div class="lane-row ok-row pm-lane-card" data-ship="#grid-confirm" data-ship-noun="料道">
+        <span class="pm-lane-no">L5</span>
+        <span class="lane-mat"><span class="pm-lane-name">可可粉</span><span class="lane-sub">热可可 / 摩卡</span></span>
+        <span class="lane-bar"><i style="width:63%"></i></span>
+        <span class="lane-pct">63%</span>
+        <span class="lane-state ok">正常</span>
+        <button class="lane-btn">测试出货</button>
+      </div>
+
+      <!-- L6 红茶粉 -->
+      <div class="lane-row ok-row pm-lane-card" data-ship="#grid-confirm" data-ship-noun="料道">
+        <span class="pm-lane-no">L6</span>
+        <span class="lane-mat"><span class="pm-lane-name">红茶粉</span><span class="lane-sub">奶茶专用</span></span>
+        <span class="lane-bar"><i style="width:34%"></i></span>
+        <span class="lane-pct">34%</span>
+        <span class="lane-state ok">正常</span>
+        <button class="lane-btn">测试出货</button>
+      </div>
+
+      <!-- L7 豆浆粉（空） -->
+      <div class="lane-row" data-toast="该料道已空，请先补充物料">
+        <span class="pm-lane-no">L7</span>
+        <span class="lane-mat"><span class="pm-lane-name">豆浆粉</span><span class="lane-sub">五谷豆奶粉</span></span>
+        <span class="lane-bar"><i class="empty"></i></span>
+        <span class="lane-pct">0%</span>
+        <span class="lane-state empty">空</span>
+        <span class="lane-off">不可出货</span>
+      </div>
+
+      <!-- L8 果味粉（故障） -->
+      <div class="lane-row" data-toast="该料道下料电机故障，无法出货">
+        <span class="pm-lane-no">L8</span>
+        <span class="lane-mat"><span class="pm-lane-name">果味粉</span><span class="lane-sub">柠檬风味</span></span>
+        <span class="lane-bar"><i class="low" style="width:41%"></i></span>
+        <span class="lane-pct">41%</span>
+        <span class="lane-state fault">故障</span>
+        <span class="lane-off">不可出货</span>
+      </div>
+    </div>
+
+    <div style="font-size:14px;color:var(--sub);line-height:1.7">
+      点击「测试出货」直接驱动该料道的下料电机；出货量按当前物料克重设定（约 5g），用于确认下料是否顺畅、有无堵料。
+    </div>
+  </main>
+
+  <!-- 浮窗1：是否出货（二次确认） -->
+  <div class="vs-overlay" id="grid-confirm">
+    <div class="vs-modal" style="width:460px">
+      <div class="vs-modal-head">
+        <div class="vs-modal-title">是否出货？</div>
+        <button class="vs-modal-close" data-close-hide>&#10005;</button>
+      </div>
+      <div class="vs-modal-body">
+        <div class="modal-desc" data-ship-text="confirm"></div>
+        <div class="modal-sub">点击「确认出货」后将直接驱动该料道电机下料。</div>
+      </div>
+      <div class="md-foot">
+        <button class="md-btn md-btn-line" data-close-hide>取消</button>
+        <button class="md-btn md-btn-dark" data-ship-go="#grid-running" data-ship-done="#grid-done">确认出货</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 浮窗2：出货中（进度条 + 可终止） -->
+  <div class="vs-overlay" id="grid-running">
+    <div class="vs-modal" style="width:520px">
+      <div class="vs-modal-head">
+        <div class="vs-modal-title">出货中</div>
+      </div>
+      <div class="vs-modal-body">
+        <div class="modal-desc" data-ship-text="running"></div>
+        <div class="ship-bar"><span class="ship-bar-fill"></span></div>
+        <div class="md-foot" style="justify-content:flex-start;padding:0;margin-top:18px;">
+          <button class="md-btn md-btn-orange" data-ship-stop="#grid-running">终止出货</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 浮窗3：出货完成 -->
+  <div class="vs-overlay" id="grid-done" data-modal-safe>
+    <div class="vs-modal" style="width:460px">
+      <div class="vs-modal-head">
+        <div class="vs-modal-title">出货完成</div>
+      </div>
+      <div class="vs-modal-body">
+        <div class="modal-desc" data-ship-text="done"></div>
+      </div>
+      <div class="md-foot">
+        <button class="md-btn md-btn-dark" data-close-hide>确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../shared/i18n.js" defer></script>
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>

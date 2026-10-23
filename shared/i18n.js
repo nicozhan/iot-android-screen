@@ -976,6 +976,16 @@
     n.nodeValue = keep.lead + dispFor(lang, keep.key) + keep.trail;
   }
 
+  /* 祖先（含自身）带 data-i18n-skip → 该子树文案恒为原文，不随语言切换。
+     用于语言选择项这类「始终用目标语言自称」的控件（简体中文 / English / 繁體中文）。 */
+  function inSkip(el) {
+    while (el && el.nodeType === 1) {
+      if (el.hasAttribute('data-i18n-skip')) return true;
+      el = el.parentNode;
+    }
+    return false;
+  }
+
   function walk(root) {
     var tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
       acceptNode: function (n) {
@@ -984,6 +994,7 @@
         if (!p) return NodeFilter.FILTER_REJECT;
         var nm = p.nodeName;
         if (nm === 'SCRIPT' || nm === 'STYLE' || nm === 'NOSCRIPT') return NodeFilter.FILTER_REJECT;
+        if (inSkip(p)) return NodeFilter.FILTER_REJECT;
         return NodeFilter.FILTER_ACCEPT;
       }
     });
@@ -1000,6 +1011,8 @@
     // 已登记节点先复位，再整体走查（覆盖动态插入的文本）
     orig.forEach(function (keep, n) {
       if (!n.parentNode) { orig.delete(n); return; }
+      // 后加的 data-i18n-skip：退回原文并注销登记
+      if (inSkip(n.parentNode)) { n.nodeValue = keep.lead + keep.key + keep.trail; orig.delete(n); return; }
       n.nodeValue = keep.lead + dispFor(lang, keep.key) + keep.trail;
     });
     walk(document.documentElement);
