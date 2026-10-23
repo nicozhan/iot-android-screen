@@ -1,183 +1,45 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-page-node-id="LzVkrxryyWhiz6XRQGaHff">
-<head data-page-node-id="XPLqw4Lhg2TFyGWZCwYtrq">
-<meta charset="UTF-8" data-page-node-id="CtxqGtoqR9Dd8olfPag4ty">
-<title>页面导航 · VendSolution 终端后台原型</title>
-<link rel="stylesheet" href="shared/style.css" data-page-node-id="Zgn0FsR6Kw5BeNRv29CnDJ">
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>wsd coffee · 正在进入</title>
+<meta http-equiv="refresh" content="0; url=coffee/01-home.html">
+<link rel="canonical" href="coffee/01-home.html">
+<meta name="robots" content="noindex">
 <style>
-  body{background:var(--bg);}
-  .nav-wrap{max-width:1280px;margin:0 auto;padding:40px 32px 64px;}
-  .nav-head{display:flex;align-items:baseline;gap:16px;margin-bottom:8px;}
-  .nav-title{font-size:28px;font-weight:700;}
-  .nav-ver{font-family:var(--mono);font-size:14px;color:var(--aux);}
-  .nav-sub{font-size:14px;color:var(--sub);margin-bottom:28px;}
-  .nav-progress{
-    background:var(--card);border:1px solid var(--line);border-radius:6px;
-    padding:18px 24px;display:flex;align-items:center;gap:20px;margin-bottom:32px;
+  html,body{height:100%;margin:0;}
+  body{
+    background:#F2F1EC;color:#8A8A83;
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",-apple-system,sans-serif;
+    display:flex;align-items:center;justify-content:center;
   }
-  .nav-progress-label{font-size:14px;color:var(--sub);white-space:nowrap;}
-  .nav-progress-track{flex:1;height:10px;background:var(--track);border-radius:5px;overflow:hidden;}
-  .nav-progress-bar{height:100%;background:var(--green);border-radius:5px;}
-  .nav-progress-num{font-family:var(--mono);font-size:16px;font-weight:700;white-space:nowrap;}
-
-  .nav-group{margin-bottom:28px;}
-  .nav-group-head{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
-  .nav-group-title{font-size:18px;font-weight:700;}
-  .nav-group-count{font-family:var(--mono);font-size:13px;color:var(--aux);}
-  .nav-group-tag{font-size:12px;font-weight:700;color:#fff;background:var(--orange);border-radius:4px;padding:2px 8px;white-space:nowrap;}
-  .nav-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-  .nav-item{
-    display:flex;align-items:center;gap:14px;
-    background:var(--card);border:1px solid var(--line);border-radius:6px;
-    padding:16px 18px;text-decoration:none;color:var(--ink);
-    transition:background .12s ease;
-  }
-  .nav-item:hover{background:#FCFCFA;border-color:#999;}
-  .nav-item.todo{opacity:.45;pointer-events:none;}
-  .nav-no{
-    flex:0 0 44px;font-family:var(--mono);font-size:14px;font-weight:700;color:var(--sub);
-  }
-  .nav-name{flex:1;font-size:15px;font-weight:500;}
-  .nav-dot{flex:0 0 10px;width:10px;height:10px;border-radius:50%;background:var(--green);}
-  .nav-item.todo .nav-dot{background:var(--line-btn);}
-  .nav-arrow{color:var(--aux);font-size:14px;}
+  .boot{display:flex;flex-direction:column;align-items:center;gap:14px;}
+  .boot-name{font-size:20px;font-weight:700;color:#3D3D38;letter-spacing:.5px;}
+  .boot-tip{font-size:14px;}
+  .boot-bar{width:160px;height:3px;border-radius:2px;background:#DEDDD5;overflow:hidden;}
+  .boot-bar i{display:block;height:100%;width:40%;background:#3D3D38;border-radius:2px;
+    animation:slide 1s ease-in-out infinite;}
+  @keyframes slide{0%{transform:translateX(-100%);}100%{transform:translateX(250%);}}
+  .boot a{color:#3D3D38;}
 </style>
+<noscript><meta http-equiv="refresh" content="1; url=coffee/01-home.html"></noscript>
 </head>
-<body data-page-node-id="kQThZmB5yWwhSa3rU70CMg">
-<div class="nav-wrap" data-page-node-id="jdgjUs8lfNQypEnbqFE1US">
-  <div class="nav-head" data-page-node-id="RLIWfMxARrzndV7IcAk58L">
-    <div class="nav-title" data-page-node-id="J2nejuNYgGdEMEVLcaWcGY">VendSolution 终端后台原型 · 页面导航</div>
-    <div class="nav-ver" data-page-node-id="OfhNYxFthy0RN0oJCc9cg8">1280×1280 / v0.1</div>
-  </div>
-  <div class="nav-sub" data-page-node-id="5msQ1cueGIoDI3zHunt6EZ">点击进入对应页面；灰色条目为未完成。</div>
-
-  <div class="nav-progress" data-page-node-id="TdR2HNZ9ZgxDAtFXAhnqIX">
-    <div class="nav-progress-label" data-page-node-id="yURk7wgVOCcCqcDsla7wD2">完成进度</div>
-    <div class="nav-progress-track" data-page-node-id="xO95hnmH4bMeLy697GCvwU"><div class="nav-progress-bar" id="navProgBar" style="width:100%;" data-page-node-id="zxp0CvK8gRfMgeGQzStNhb"></div></div>
-    <div class="nav-progress-num" id="navProgNum" data-page-node-id="mHseILU4HBh8dr550eG5gF">50 / 50</div>
-  </div>
-
-  <div id="groups" data-page-node-id="8Omt2PeDLt97ZeLWCtkDD9"></div>
+<body>
+<div class="boot">
+  <div class="boot-name">wsd coffee</div>
+  <div class="boot-bar"><i></i></div>
+  <div class="boot-tip">正在进入咖啡控制台…</div>
+  <noscript><div class="boot-tip"><a href="coffee/01-home.html">手动进入 →</a></div></noscript>
 </div>
-
-<script src="shared/i18n.js"></script>
 <script>
-const GROUPS = [
-  { name: "Beats项目售卖机", base: "draft/", items: [
-    ["01", "控制台首页（Beats项目）", "01-beats-home.html"],
-  ]},
-  { name: "产品设置 V0.4", tag: "新", base: "draft/", items: [
-    ["36", "商品管理主页", "36-products.html"],
-    ["42", "价格管理 · 列表", "42-products-price-1.html"],
-    ["43", "价格管理 · 单品编辑（深链）", "43-products-price-2.html"],
-    ["44", "价格输入 · 数字键盘（深链）", "44-products-price-3.html"],
-    ["45", "商品排序（无分类）", "45-products-sort-1.html"],
-    ["46", "商品分类管理", "46-products-sort-2.html"],
-    ["47", "分类内排序 · 咖啡", "47-products-sort-3.html"],
-    ["48", "分类内排序 · 经典咖啡", "48-products-sort-4.html"],
-    ["49", "SKU 排序 · 美式", "49-products-sort-5.html"],
-    ["50", "标签管理", "50-products-category-1.html"],
-    ["51", "批量管理 SKU 标签（深链）", "51-products-category-2.html"],
-  ]},
-  { name: "售卖机补货 V0.4", base: "draft/", tag: "新", items: [
-    ["13", "售卖机运营总览（浮层入口）", "13-vm-ops-overview.html"],
-    ["15", "售卖机运营总览 · 补货弹窗（含保质期）（深链）", "15-vm-ops-restock-modal.html"],
-    ["15b", "售卖机补货弹窗 · 保质期按生产日期（深链）", "15b-vm-ops-restock-shelflife-date.html"],
-    ["15c", "售卖机运营总览 · 补货数字键盘（深链）", "15c-vm-ops-restock-numpad.html"],
-    ["16", "切换盘点模式确认弹窗（深链）", "16-vm-switch-inventory-confirm.html"],
-    ["17", "批处理弹窗（多选补货）（深链）", "17-vm-batch-restock-modal.html"],
-    ["18", "二次确认 · 全部补满（绿）（深链）", "18-vm-confirm-fill-all.html"],
-    ["19", "二次确认 · 全部清空（橙）（深链）", "19-vm-confirm-clear-all.html"],
-    ["20", "二次确认 · 补满（绿）（深链）", "20-vm-confirm-fill.html"],
-    ["21", "二次确认 · 清空（橙）（深链）", "21-vm-confirm-clear.html"],
-    ["22", "二次确认 · 下架（粉）（深链）", "22-vm-confirm-remove.html"],
-  ]},
-  { name: "终端后台 Demo", base: "demo/", items: [
-    ["02", "设置 · 本机设置", "02-settings-device.html"],
-    ["02b", "设置 · 其他设置预留（右栏）", "02b-settings-other.html"],
-    ["03", "设置 · 用户和权限", "03-settings-users.html"],
-    ["04", "登录 · 账号", "04-login.html"],
-    ["05", "登录 · 密码", "05-login-passcode.html"],
-    ["06", "用户 · 修改密码弹窗（深链）", "06-users-password-modal.html"],
-    ["07", "设备信息 · 网络测试中（深链）", "07-device-info-testing.html"],
-    ["08", "设备信息 · 检查更新中（深链）", "08-device-info-updating.html"],
-    ["09", "设备信息", "09-device-info.html"],
-    ["10", "关机确认弹窗（深链）", "10-power-off-modal.html"],
-  ]},
-  { name: "咖啡机补货", base: "draft/", items: [
-    ["11", "运营总览（浮层入口）", "11-ops-overview.html"],
-    ["12", "运营总览 · 补货弹窗（含保质期）（深链）", "12-ops-restock-modal.html"],
-    ["12b", "补货弹窗 · 保质期按生产日期（深链）", "12b-ops-restock-shelflife-date.html"],
-    ["14", "运营总览 · 补货数字键盘（深链）", "14-ops-restock-numpad.html"],
-  ]},
-  { name: "Coffee", base: "coffee/", items: [
-    ["01", "控制台首页", "01-home.html"],
-    ["16", "清洗主页", "16-cleaning.html"],
-    ["17", "清洗策略 · 只提醒（深链）", "17-cleaning-strategy-remind.html"],
-    ["18", "清洗策略 · 自动 · 按杯数（深链）", "18-cleaning-strategy-cups.html"],
-    ["19", "清洗策略 · 自动 · 按定时（深链）", "19-cleaning-strategy-timer.html"],
-    ["20", "整机清洗 · 确认（深链）", "20-cleaning-confirm.html"],
-    ["21", "整机清洗 · 进行中（深链）", "21-cleaning-progress.html"],
-  ]},
-  { name: "校准", base: "draft/", items: [
-    ["23", "校准主页", "23-calibration.html"],
-    ["24", "研磨量校准", "24-calibration-grind.html"],
-    ["24b", "水料校准 · 水量校准", "24b-calibration-water.html"],
-  ]},
-  { name: "工程模式", base: "draft/", items: [
-    ["31", "高级IoT设置", "31-eng-settings.html"],
-    ["32", "测试出货 · 分类", "32-eng-unit-test.html"],
-    ["32b", "测试出货 · 货道", "32b-eng-unit-test-lanes.html"],
-    ["33", "单动测试 · 运行中", "33-eng-unit-test-running.html"],
-    ["34", "传感器状态", "34-eng-sensors.html"],
-    ["35", "参数调节", "35-eng-params.html"],
-  ]},
-  { name: "统计", base: "draft/", items: [
-    ["53", "统计主页", "53-stats.html"],
-    ["53a", "出杯量（深链）", "53a-stats-cups.html"],
-    ["53b", "销售额（深链）", "53b-stats-sales.html"],
-    ["53c", "维护记录（深链）", "53c-stats-maintenance.html"],
-    ["53d", "操作记录 Log（深链）", "53d-stats-log.html"],
-  ]},
-  { name: "告警", base: "draft/", items: [
-    ["54", "告警记录", "54-alerts.html"],
-  ]},
-];
-
-const root = document.getElementById("groups");
-for (const g of GROUPS) {
-  const done = g.items.filter(i => i[2]).length;
-  const sec = document.createElement("div");
-  sec.className = "nav-group";
-  sec.innerHTML = `<div class="nav-group-head">
-    <div class="nav-group-title">${I18N.t(g.name)}</div>
-    ${g.tag ? `<div class="nav-group-tag">${I18N.t(g.tag)}</div>` : ""}
-    <div class="nav-group-count">${done} / ${g.items.length}</div>
-  </div>`;
-  const grid = document.createElement("div");
-  grid.className = "nav-grid";
-  for (const [no, name, href] of g.items) {
-    const a = document.createElement("a");
-    a.className = "nav-item" + (href ? "" : " todo");
-const BEATS = new Set(["01-beats-home.html","13-vm-ops-overview.html","31-eng-settings.html","32b-eng-unit-test-lanes.html","34-eng-sensors.html","35-eng-params.html","36-products.html","42-products-price-1.html","45-products-sort-1.html","49-products-sort-5.html","53-stats.html","53a-stats-cups.html","53b-stats-sales.html","53c-stats-maintenance.html","53d-stats-log.html","54-alerts.html","02-settings-device.html","03-settings-users.html","04-login.html","05-login-passcode.html","09-device-info.html"]);
-const COFFEE = new Set(["01-home.html","16-cleaning.html","17-cleaning-strategy-remind.html","18-cleaning-strategy-cups.html","19-cleaning-strategy-timer.html","20-cleaning-confirm.html","21-cleaning-progress.html"]);
-    if (href) a.href = BEATS.has(href) ? "beats/" + href : (COFFEE.has(href) ? "coffee/" + href : "backups/" + href);
-    a.innerHTML = `<span class="nav-no">${no}</span>
-      <span class="nav-name">${I18N.t(name)}</span>
-      <span class="nav-dot"></span>
-      <span class="nav-arrow">${href ? "→" : "—"}</span>`;
-    grid.appendChild(a);
-  }
-  sec.appendChild(grid);
-  root.appendChild(sec);
-}
-
-(() => {
-  let total = 0, done = 0;
-  for (const g of GROUPS) for (const it of g.items) { total++; if (it[2]) done++; }
-  document.getElementById("navProgNum").textContent = done + " / " + total;
-  document.getElementById("navProgBar").style.width = (total ? Math.round(done / total * 100) : 0) + "%";
-})();
+  /* 站点根 = 咖啡控制台首页（wsd coffee）。
+     beats 售卖机本期暂不开放，故根路径不做机型选择，直接进入咖啡首页。
+     原型总索引见 /原型索引.html */
+  (function () {
+    var target = 'coffee/01-home.html';
+    try { window.location.replace(target); }
+    catch (e) { window.location.href = target; }
+  })();
 </script>
 </body>
 </html>

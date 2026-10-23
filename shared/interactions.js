@@ -92,11 +92,14 @@
     running: ['货道 %s（%s）正在出货，请稍候…', 'Lane %s (%s) is dispensing, please wait…'],
     done:    ['货道 %s（%s）测试出货完成', 'Lane %s (%s) test dispensing complete']
   };
-  function shipT(key, lane, name) {
+  function shipT(key, lane, name, noun) {
     var pair = SHIP_TPL[key]; if (!pair) return '';
     var isEn = !!(window.I18N && window.I18N.get() === 'en');
     var tpl = isEn ? pair[1] : pair[0];
-    return tpl.replace('%s', lane).replace('%s', isEn ? T(name) : name);
+    var out = tpl.replace('%s', lane).replace('%s', isEn ? T(name) : name);
+    /* 页面可自定义称谓：触发卡片带 data-ship-noun="料道" 时，把「货道」替换掉（咖啡机等非货道设备用） */
+    if (noun && !isEn) out = out.replace(/货道/g, noun);
+    return out;
   }
 
   /* ---------- Toast ---------- */
@@ -380,21 +383,22 @@
    *   [data-ship-stop="#ship-running"] 终止出货：停止计时、复位进度条、toast 提示
    *   [data-ship-text="confirm|running|done"] 浮层内文案占位，点击时按货道号/商品名回填
    * ===================================================================== */
-  var shipCtx = { lane: '', name: '' };
+  var shipCtx = { lane: '', name: '', noun: '' };
   var shipTimer = null;
   function shipTexts() {
     document.querySelectorAll('[data-ship-text]').forEach(function (el) {
       var kind = el.getAttribute('data-ship-text');
-      var lane = shipCtx.lane, name = shipCtx.name;
-      if (kind === 'confirm') el.textContent = shipT('confirm', lane, name);
-      else if (kind === 'running') el.textContent = shipT('running', lane, name);
-      else if (kind === 'done') el.textContent = shipT('done', lane, name);
+      var lane = shipCtx.lane, name = shipCtx.name, noun = shipCtx.noun;
+      if (kind === 'confirm') el.textContent = shipT('confirm', lane, name, noun);
+      else if (kind === 'running') el.textContent = shipT('running', lane, name, noun);
+      else if (kind === 'done') el.textContent = shipT('done', lane, name, noun);
     });
   }
   function shipOpen(el) {
     var card = el.closest('.pm-lane-card') || el.closest('.pm-sort-card') || el.closest('.pm-row');
     shipCtx.lane = '';
     shipCtx.name = '';
+    shipCtx.noun = (card && card.getAttribute('data-ship-noun')) || '';
     if (card) {
       var no = card.querySelector('.pm-lane-no') || card.querySelector('.pm-sort-no') || card.querySelector('.pm-sku-id');
       var nm = card.querySelector('.pm-lane-name') || card.querySelector('.pm-sort-name') || card.querySelector('.pm-name');

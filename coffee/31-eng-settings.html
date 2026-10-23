@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>高级IoT设置 · 工程模式 · VendSolution</title>
+<link rel="stylesheet" href="../shared/style.css">
+<style>
+  .eng-tag{
+    position:absolute;right:32px;top:50%;transform:translateY(-50%);
+    font-size:13px;font-weight:600;color:var(--sub);
+    border:1px solid var(--line-btn);border-radius:4px;padding:6px 14px;
+    font-family:var(--mono);letter-spacing:.5px;
+  }
+  .eng-list{display:flex;flex-direction:column;gap:16px;}
+  .eng-item{
+    background:var(--card);border:1px solid var(--line);border-radius:6px;
+    padding:26px 28px;display:flex;align-items:center;justify-content:space-between;
+    cursor:pointer;position:relative;overflow:hidden;
+  }
+  .eng-item::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--dark);}
+  .eng-item:hover{background:#FCFCFA;}
+  .eng-item-name{font-size:20px;font-weight:700;margin-bottom:8px;}
+  .eng-item-sub{font-size:14px;color:var(--aux);}
+  .eng-arrow{color:var(--aux);font-size:18px;}
+</style>
+</head>
+<body>
+<div class="vs-canvas">
+
+  <div class="vs-topbar">
+    <button class="vs-btn-line" data-href="01-home.html">← 返回首页</button>
+    <div class="page-title">高级IoT设置</div>
+    <div class="eng-tag">工程模式</div>
+  </div>
+
+  <div class="vs-main" style="gap:24px;">
+    <section>
+      <div class="vs-section-title" style="margin-bottom:16px;">工程工具</div>
+      <div class="eng-list">
+        <div class="eng-item" data-href="33-eng-unit-test-running.html">
+          <div>
+            <div class="eng-item-name" data-toast="该工具（演示）">单动测试</div>
+            <div class="eng-item-sub" data-toast="该工具（演示）">电机 / 水泵 / 电磁阀 单动控制</div>
+          </div>
+          <span class="eng-arrow">→</span>
+        </div>
+        <div class="eng-item" data-href="34-eng-sensors.html">
+          <div>
+            <div class="eng-item-name" data-toast="该工具（演示）">传感器状态</div>
+            <div class="eng-item-sub" data-href="35-eng-params.html">查看设备实时传感器状态</div>
+          </div>
+          <span class="eng-arrow">→</span>
+        </div>
+        <div class="eng-item" data-href="35-eng-params.html">
+          <div>
+            <div class="eng-item-name" data-toast="该工具（演示）">参数调节</div>
+            <div class="eng-item-sub" data-toast="该工具（演示）">Item 1 – Item 5</div>
+          </div>
+          <span class="eng-arrow">→</span>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+<script src="../shared/i18n.js" defer></script>
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>

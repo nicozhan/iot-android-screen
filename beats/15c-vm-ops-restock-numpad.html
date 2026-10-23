@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>VendSolution Console · 售卖机补货 / 补货量数字键盘</title>
+<link rel="stylesheet" href="../shared/style.css">
+<style>
+  /* ---- 分段 Tab ---- */
+  .seg{display:flex;width:420px;height:52px;margin:0 auto;flex:0 0 52px;
+    border:1px solid var(--line-btn);border-radius:6px;overflow:hidden;background:var(--card);}
+  .seg button{flex:1;border:none;background:var(--card);font-size:17px;font-weight:500;
+    color:var(--sub);cursor:pointer;font-family:var(--sans);}
+  .seg button+button{border-left:1px solid var(--line-btn);}
+  .seg button.active{background:var(--track);color:var(--ink);font-weight:700;}
+
+  /* ---- 工具条 ---- */
+  .vm-toolbar{display:flex;align-items:center;justify-content:space-between;flex:0 0 40px;}
+  .vm-count{font-size:16px;font-weight:700;}
+  .vm-tools{display:flex;gap:10px;}
+  .tool-btn{height:40px;padding:0 14px;background:var(--card);border:1px solid var(--line-btn);
+    border-radius:4px;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer;
+    font-family:var(--sans);display:flex;align-items:center;gap:6px;}
+  .tool-btn.active{background:var(--track);border-color:var(--line);}
+  .tool-btn .chev{color:var(--aux);font-size:12px;}
+
+  /* ---- 货道卡片（4×3） ---- */
+  .vm-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(3,1fr);
+    gap:14px;flex:1;min-height:0;}
+  .vm-card{background:var(--card);border:1px solid var(--line-btn);border-radius:6px;
+    padding:12px 14px;display:flex;flex-direction:column;cursor:pointer;min-height:0;}
+  .vm-lid{font-size:16px;font-weight:700;font-family:var(--mono);}
+  .vm-img{flex:1;min-height:100px;background:var(--track);border-radius:4px;
+    display:flex;align-items:center;justify-content:center;color:var(--aux);font-size:14px;margin:8px 0;}
+  .vm-row{display:flex;align-items:baseline;justify-content:space-between;}
+  .vm-name{font-size:16px;font-weight:700;}
+  .vm-stock{font-size:15px;font-weight:700;font-family:var(--mono);}
+  .vm-card.low .vm-stock{color:var(--red);}
+  .vm-bar{height:6px;border-radius:3px;background:var(--track);overflow:hidden;margin:8px 0 10px;}
+  .vm-bar i{display:block;height:100%;background:var(--ink);border-radius:3px;}
+  .vm-card.low .vm-bar i{background:var(--red);}
+  .vm-foot{display:flex;align-items:center;justify-content:space-between;}
+  .vm-restock{font-size:15px;font-weight:700;background:none;border:none;cursor:pointer;
+    color:var(--ink);font-family:var(--sans);padding:0;}
+  .vm-ctrl{display:flex;align-items:center;gap:6px;}
+  .sq{width:32px;height:32px;border:1px solid var(--line-btn);border-radius:4px;background:var(--card);
+    font-size:16px;color:var(--ink);display:flex;align-items:center;justify-content:center;}
+  .plus-n{min-width:40px;height:32px;border:1px solid var(--line-btn);border-radius:4px;background:var(--card);
+    font-size:14px;font-weight:600;font-family:var(--mono);color:var(--ink);
+    display:flex;align-items:center;justify-content:center;padding:0 6px;}
+
+  /* ---- 统一弹窗（与商品页同套） ---- */
+  .vs-overlay{position:absolute;inset:0;background:transparent;display:flex;align-items:center;justify-content:center;z-index:10;}
+  .vs-modal{background:var(--card);border:1px solid var(--ink);border-radius:6px;overflow:hidden;}
+  .vs-modal-head{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid var(--line);font-size:17px;font-weight:700;}
+  .vs-modal-close{font-size:18px;color:var(--aux);cursor:pointer;background:none;border:none;line-height:1;}
+  .md-foot{display:flex;justify-content:center;gap:14px;padding:18px 28px 28px;}
+  .md-btn{height:48px;padding:0 28px;border-radius:4px;font-size:15px;font-weight:600;font-family:var(--sans);cursor:pointer;border:1px solid transparent;}
+  .md-btn-line{background:var(--card);border-color:var(--line-btn);color:var(--ink);}
+  .md-btn-dark{background:var(--dark);border-color:var(--dark);color:#FFF;}
+
+  /* ---- 数字键盘（页内专用） ---- */
+  .np-display{padding:22px 28px;text-align:center;font-size:30px;font-weight:700;font-family:var(--mono);
+    border-bottom:1px solid var(--line);}
+  .np-grid{display:grid;grid-template-columns:repeat(3,1fr);}
+  .np-key{height:80px;background:var(--card);border:none;
+    border-right:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);
+    font-size:24px;font-weight:500;font-family:var(--mono);color:var(--ink);cursor:pointer;}
+  .np-key:nth-child(3n){border-right:none;}
+  .np-key:hover{background:#FCFCFA;}
+  .np-key:active{background:#F0F0EC;}
+</style>
+</head>
+<body>
+<div class="vs-canvas">
+
+  <div class="vs-topbar">
+    <a class="vs-btn-line" href="13-vm-ops-overview.html">&#8592;&nbsp;返回</a>
+    <div class="page-title">补货</div>
+    <button class="vs-btn-line" style="margin-left:auto" data-toast="已保存">保存</button>
+  </div>
+
+  <main class="vs-main" style="gap:18px">
+    <div class="seg">
+      <button class="active">补货</button>
+      <button data-href="16-vm-switch-inventory-confirm.html">盘点</button>
+    </div>
+
+    <div class="vm-toolbar">
+      <span class="vm-count">共 12 个货道</span>
+      <div class="vm-tools">
+        <button class="tool-btn">&#8645;&nbsp;货道<span class="chev">&#9662;</span></button>
+        <button class="tool-btn active" data-toggle="active">&#9638;&nbsp;图片模式</button>
+        <button class="tool-btn" data-href="17-vm-batch-restock-modal.html">多选</button>
+        <button class="tool-btn" data-href="18-vm-confirm-fill-all.html">全部补满</button>
+        <button class="tool-btn" data-href="19-vm-confirm-clear-all.html">全部清空</button>
+      </div>
+    </div>
+
+    <div class="vm-grid">
+      <div class="vm-card low"><span class="vm-lid">L1</span><div class="vm-img">商品图片</div><div class="vm-row"><span class="vm-name">咖啡豆</span><span class="vm-stock">2/10</span></div><div class="vm-bar"><i style="width:20%"></i></div><div class="vm-foot"><button class="vm-restock">补货</button><div class="vm-ctrl"><button class="sq">&minus;</button><span class="plus-n">+7</span><button class="sq">+</button></div></div></div>
+      <div class="vm-card"><span class="vm-lid">L2</span><div class="vm-img">商品图片</div><div class="vm-row"><span class="vm-name">奶粉</span><span class="vm-stock">4/10</span></div><div class="vm-bar"><i style="width:40%"></i></div><div class="vm-foot"><button class="vm-restock">补货</button><div class="vm-ctrl"><button class="sq">&minus;</button><span class="plus-n">+6</span><button class="sq">+</button></div></div></div>
+      <div class="vm-card"><span class="vm-lid">L3</span><div class="vm-img">商品图片</div><div class="vm-row"><span class="vm-name">糖浆</span><span class="vm-stock">3/10</span></div><div class="vm-bar"><i style="width:30%"></i></div><div class="vm-foot"><button class="vm-restock">补货</button><div class="vm-ctrl"><button class="sq">&minus;</button><span class="plus-n">+7</span><button class="sq">+</button></div></div></div>
+      <div class="vm-card"><span class="vm-lid">L4</span><div class="vm-img">商品图片</div><div class="vm-row"><span class="vm-name">纸杯</span><span class="vm-stock">8/10</span></div><div class="vm-bar"><i style="width:80%"></i></div><div class="vm-foot"><button class="vm-restock">补货</button><div class="vm-ctrl"><button class="sq">&minus;</button><span class="plus-n">+2</span><button class="sq">+</button></div></div></div>
+      <div class="vm-card"><span class="vm-lid">L5</span><div class="vm-img">商品图片</div><div class="vm-row"><span class="vm-name">搅拌棒</span><span class="vm-stock">8/10</span></div><div class="vm-bar"><i style="width:80%"></i></div><div class="vm-foot"><button class="vm-restock">补货</button><div class="vm-ctrl"><button class="sq">&minus;</button><span class="plus-n">+2</span><button class="sq">+</button></div></div></div>
+      <div class="vm-card"><span class="vm-lid">L6</span><div class="vm-img">商品图片</div><div class="vm-row"><span class="vm-name">巧克力粉</span><span class="vm-stock">3/10</span></div><div class="vm-bar"><i style="width:30%"></i></div><div class="vm-foot"><button class="vm-restock">补货</button><div class="vm-ctrl"><button class="sq">&minus;</button><span class="plus-n">+7</span><button class="sq">+</button></div></div></div>
+      <div class="vm-card"><span class="vm-lid">L7</span><div class="vm-img">商品图片</div><div class="vm-row"><span class="vm-name">杯盖</span><span class="vm-stock">6/10</span></div><div class="vm-bar"><i style="width:60%"></i></div><div class="vm-foot"><button class="vm-restock">补货</button><div class="vm-ctrl"><button class="sq">&minus;</button><span class="plus-n">+4</span><button class="sq">+</button></div></div></div>
+      <div class="vm-card low"><span class="vm-lid">L8</span><div class="vm-img">商品图片</div><div class="vm-row"><span class="vm-name">可可粉</span><span class="vm-stock">2/10</span></div><div class="vm-bar"><i style="width:20%"></i></div><div class="vm-foot"><button class="vm-restock">补货</button><div class="vm-ctrl"><button class="sq">&minus;</button><span class="plus-n">+8</span><button class="sq">+</button></div></div></div>
+      <div class="vm-card"><span class="vm-lid">L9</span><div class="vm-img">商品图片</div><div class="vm-row"><span class="vm-name">燕麦奶</span><span class="vm-stock">4/12</span></div><div class="vm-bar"><i style="width:33%"></i></div><div class="vm-foot"><button class="vm-restock">补货</button><div class="vm-ctrl"><button class="sq">&minus;</button><span class="plus-n">+8</span><button class="sq">+</button></div></div></div>
+      <div class="vm-card"><span class="vm-lid">L10</span><div class="vm-img">商品图片</div><div class="vm-row"><span class="vm-name">咖啡杯</span><span class="vm-stock">6/12</span></div><div class="vm-bar"><i style="width:50%"></i></div><div class="vm-foot"><button class="vm-restock">补货</button><div class="vm-ctrl"><button class="sq">&minus;</button><span class="plus-n">+6</span><button class="sq">+</button></div></div></div>
+      <div class="vm-card low"><span class="vm-lid">L11</span><div class="vm-img">商品图片</div><div class="vm-row"><span class="vm-name">糖浆</span><span class="vm-stock">2/10</span></div><div class="vm-bar"><i style="width:20%"></i></div><div class="vm-foot"><button class="vm-restock">补货</button><div class="vm-ctrl"><button class="sq">&minus;</button><span class="plus-n">+8</span><button class="sq">+</button></div></div></div>
+      <div class="vm-card"><span class="vm-lid">L12</span><div class="vm-img">商品图片</div><div class="vm-row"><span class="vm-name">奶盖</span><span class="vm-stock">9/10</span></div><div class="vm-bar"><i style="width:90%"></i></div><div class="vm-foot"><button class="vm-restock">补货</button><div class="vm-ctrl"><button class="sq">&minus;</button><span class="plus-n">+1</span><button class="sq">+</button></div></div></div>
+    </div>
+  </main>
+</div>
+
+<!-- L3 补货量数字键盘弹窗 -->
+<div class="vs-overlay">
+  <div class="vs-modal" style="width:640px;">
+    <div class="vs-modal-head">补货量 · L3 糖浆<span class="vs-modal-close" data-close-go="15-vm-ops-restock-modal.html">&#10005;</span></div>
+    <div class="np-display">11</div>
+    <div class="np-grid">
+      <button class="np-key">1</button><button class="np-key">2</button><button class="np-key">3</button>
+      <button class="np-key">4</button><button class="np-key">5</button><button class="np-key">6</button>
+      <button class="np-key">7</button><button class="np-key">8</button><button class="np-key">9</button>
+      <button class="np-key">&minus;</button><button class="np-key">0</button><button class="np-key">&#9003;</button>
+    </div>
+    <div class="md-foot">
+      <button class="md-btn md-btn-line" data-close-go="15-vm-ops-restock-modal.html">取消</button>
+      <button class="md-btn md-btn-dark" data-act="goto-toast" data-href="15-vm-ops-restock-modal.html" data-toast="已设置补货量">确定</button>
+    </div>
+  </div>
+</div>
+<script src="../shared/i18n.js" defer></script>
+
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>

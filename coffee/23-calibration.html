@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>校准 · VendSolution</title>
+<link rel="stylesheet" href="../shared/style.css">
+<style>
+  .cal-hero{
+    background:var(--card);border:1px solid var(--line);border-radius:6px;
+    padding:26px 28px;display:flex;align-items:center;justify-content:space-between;
+    cursor:pointer;position:relative;overflow:hidden;
+  }
+  .cal-hero::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--blue);}
+  .cal-hero:hover{background:#FCFCFA;}
+  .cal-hero-name{font-size:22px;font-weight:700;}
+  .cal-hero-meta{display:flex;align-items:center;gap:16px;font-size:15px;color:var(--sub);}
+  .cal-hero-meta .mono{color:var(--ink);font-weight:600;}
+  .cal-arrow{color:var(--aux);font-size:18px;}
+
+  /* 7 个校准项：4 列排 4 + 3，避免 3 列出现孤行 */
+  .cal-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  .cal-item{
+    background:var(--card);border:1px solid var(--line);border-radius:6px;
+    padding:22px 24px;display:flex;flex-direction:column;gap:12px;cursor:pointer;
+  }
+  .cal-item:hover{background:#FCFCFA;}
+  .cal-item-head{display:flex;align-items:center;justify-content:space-between;}
+  .cal-item-name{font-size:18px;font-weight:600;}
+  .cal-item-last{font-size:13px;color:var(--aux);}
+  .cal-item-last .mono{color:var(--sub);font-weight:500;}
+</style>
+</head>
+<body>
+<div class="vs-canvas">
+
+  <div class="vs-topbar">
+    <button class="vs-btn-line" data-href="01-home.html">← 返回首页</button>
+    <div class="page-title">校准</div>
+  </div>
+
+  <div class="vs-main" style="gap:24px;">
+    <section>
+      <div class="vs-section-title" style="margin-bottom:16px;">校准项目</div>
+
+      <div class="cal-hero" style="margin-bottom:16px;" data-href="24-calibration-grind.html">
+        <div class="cal-hero-name">研磨粉校准</div>
+        <div class="cal-hero-meta">上次校准：<span class="mono">2026/08/28 14:30</span><span class="cal-arrow">→</span></div>
+      </div>
+
+      <div class="cal-grid">
+        <div class="cal-item" data-href="24c-calibration-water.html"><div class="cal-item-head"><span class="cal-item-name">水量校准</span><span class="cal-arrow">→</span></div><div class="cal-item-last">上次校准：<span class="mono">08/27 10:20</span></div></div>
+        <div class="cal-item" data-href="24d-calibration-powder.html?box=1"><div class="cal-item-head"><span class="cal-item-name">粉盒校准(1)</span><span class="cal-arrow">→</span></div><div class="cal-item-last">上次校准：<span class="mono">08/26 09:10</span></div></div>
+        <div class="cal-item" data-href="24d-calibration-powder.html?box=2"><div class="cal-item-head"><span class="cal-item-name">粉盒校准(2)</span><span class="cal-arrow">→</span></div><div class="cal-item-last">上次校准：<span class="mono">08/26 10:22</span></div></div>
+        <div class="cal-item" data-href="24d-calibration-powder.html?box=3"><div class="cal-item-head"><span class="cal-item-name">粉盒校准(3)</span><span class="cal-arrow">→</span></div><div class="cal-item-last">上次校准：<span class="mono">08/25 16:05</span></div></div>
+        <div class="cal-item" data-href="24d-calibration-powder.html?box=4"><div class="cal-item-head"><span class="cal-item-name">粉盒校准(4)</span><span class="cal-arrow">→</span></div><div class="cal-item-last">上次校准：<span class="mono">08/25 15:42</span></div></div>
+        <div class="cal-item" data-href="24d-calibration-powder.html?box=5"><div class="cal-item-head"><span class="cal-item-name">粉盒校准(5)</span><span class="cal-arrow">→</span></div><div class="cal-item-last">上次校准：<span class="mono">--</span></div></div>
+        <div class="cal-item" data-href="24d-calibration-powder.html?box=6"><div class="cal-item-head"><span class="cal-item-name">粉盒校准(6)</span><span class="cal-arrow">→</span></div><div class="cal-item-last">上次校准：<span class="mono">--</span></div></div>
+      </div>
+    </section>
+  </div>
+</div>
+<script src="../shared/i18n.js" defer></script>
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>

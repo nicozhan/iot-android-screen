@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>VendSolution · 价格管理 · 修改价格弹窗</title>
+<link rel="stylesheet" href="../shared/style.css">
+<style>
+  .vs-overlay{display:flex;}
+
+  /* ---- 页面局部：修改价格弹窗 ---- */
+  .md-product{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:22px;}
+  .md-product-img{width:200px;height:200px;flex:0 0 200px;background:var(--track);border-radius:4px;
+    display:flex;align-items:center;justify-content:center;color:var(--aux);font-size:14px;}
+  .md-product-name{font-size:20px;font-weight:700;margin-top:4px;}
+  .md-product-sku{font-family:var(--mono);font-size:13px;color:var(--aux);letter-spacing:1px;}
+  /* 价格字段：居中 */
+  .md-field{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:18px;}
+  .md-field-label{font-size:14px;font-weight:600;color:var(--ink);}
+  .md-field-label .opt{font-weight:400;color:var(--aux);margin-left:6px;}
+  .md-field-input{width:420px;height:56px;border:1px solid var(--line-btn);border-radius:4px;
+    background:var(--card);display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);}
+  .md-foot-center{justify-content:center;gap:14px;padding-top:6px;}
+</style>
+</head>
+<body>
+<div class="vs-canvas">
+<div class="vs-topbar"><a class="vs-btn-line" href="42-products-price-1.html">&#8592;&nbsp;返回</a><div class="page-title">价格管理</div><span style="margin-left:auto"></span></div>
+<main class="vs-main" style="gap:16px">
+  <div class="vs-section-title">商品价格</div>
+  <div class="pm-list">
+    <a class="pm-row" href="43-products-price-2.html"><div class="pm-thumb">商品图片</div><div class="pm-name">可乐</div><div><span class="pm-price">$2.00</span> <span class="pm-strike">$2.50</span></div></a>
+    <a class="pm-row" href="43-products-price-2.html"><div class="pm-thumb">商品图片</div><div class="pm-name">雪碧</div><div><span class="pm-price">$3.00</span> <span class="pm-strike">$3.50</span></div></a>
+    <a class="pm-row" href="43-products-price-2.html"><div class="pm-thumb">商品图片</div><div class="pm-name">橙汁</div><div><span class="pm-price">$3.00</span> <span class="pm-strike">$3.50</span></div></a>
+    <a class="pm-row" href="43-products-price-2.html"><div class="pm-thumb">商品图片</div><div class="pm-name">咖啡</div><div><span class="pm-price">$4.50</span> <span class="pm-strike">$5.00</span></div></a>
+    <a class="pm-row" href="43-products-price-2.html"><div class="pm-thumb">商品图片</div><div class="pm-name">拿铁</div><div><span class="pm-price">$6.00</span></div></a>
+    <a class="pm-row" href="43-products-price-2.html"><div class="pm-thumb">商品图片</div><div class="pm-name">美式咖啡</div><div><span class="pm-price">$4.00</span> <span class="pm-strike">$4.80</span></div></a>
+    <a class="pm-row" href="43-products-price-2.html"><div class="pm-thumb">商品图片</div><div class="pm-name">摩卡</div><div><span class="pm-price">$5.50</span> <span class="pm-strike">$6.50</span></div></a>
+    <a class="pm-row" href="43-products-price-2.html"><div class="pm-thumb">商品图片</div><div class="pm-name">矿泉水</div><div><span class="pm-price">$1.50</span></div></a>
+  </div>
+</main>
+
+<!-- 修改价格弹窗 -->
+<div class="vs-overlay">
+  <div class="vs-modal" style="width:640px;">
+    <div class="vs-modal-head">
+      <div class="vs-modal-title">修改价格</div>
+      <button class="vs-modal-close" data-close-hide>&#10005;</button>
+    </div>
+    <div class="vs-modal-body">
+      <div class="md-product">
+        <div class="md-product-img">商品图片</div>
+        <div class="md-product-name">雪碧</div>
+        <div class="md-product-sku">SKU-002</div>
+      </div>
+      <div class="md-field">
+        <span class="md-field-label">销售价</span>
+        <div class="md-field-input" data-href="44-products-price-3.html">$ 2.00</div>
+      </div>
+      <div class="md-field">
+        <span class="md-field-label">划线价<span class="opt">（非必填）</span></span>
+        <div class="md-field-input" data-href="44-products-price-3.html">$ 2.50</div>
+      </div>
+    </div>
+    <div class="md-foot md-foot-center">
+      <button class="md-btn md-btn-line" data-close-hide>取消</button>
+      <button class="md-btn md-btn-line" data-close-hide data-toast="已应用到本机同款">应用到本机同款</button>
+      <button class="md-btn md-btn-dark" data-close-hide data-toast="已保存">保存</button>
+    </div>
+  </div>
+</div>
+</div>
+<script src="../shared/i18n.js" defer></script>
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>

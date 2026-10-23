@@ -12,7 +12,7 @@
   .user-caret{font-size:12px;color:var(--sub);margin-left:2px;line-height:1;}
   .vs-menu{
     position:absolute;top:70px;right:24px;z-index:40;
-    min-width:200px;background:var(--card);
+    min-width:248px;background:var(--card);
     border:1px solid var(--ink);border-radius:6px;
     box-shadow:0 14px 36px rgba(0,0,0,.18);
     display:none;overflow:hidden;
@@ -26,19 +26,36 @@
   }
   .vs-menu-item:hover{background:#F4F4EE;}
   .vs-menu-item + .vs-menu-item{border-top:1px solid var(--line);}
-  /* 语言切换行 */
-  .vs-menu-lang{
-    display:flex;align-items:center;gap:10px;
-    padding:12px 16px 12px 20px;border-bottom:1px solid var(--line);
-  }
-  .vs-menu-lang-label{font-size:15px;font-weight:600;color:var(--sub);margin-right:auto;}
-  .lang-chip{
-    min-width:62px;padding:6px 0;text-align:center;
-    font-size:14px;font-weight:600;font-family:var(--sans);
-    border:1px solid var(--line-btn);border-radius:4px;
-    color:var(--sub);cursor:pointer;user-select:none;
-  }
-  .lang-chip.on{border-color:var(--ink);color:var(--ink);background:#F4F4EE;}
+
+  /* ---- 语言选择：纵向左对齐列表，预留 5 个语言位（后续语言只往下加行，不动版式） ---- */
+  .vs-menu-lang{padding:14px 0 8px;border-bottom:1px solid var(--line);}
+  .vs-menu-lang-label{display:block;padding:0 20px 8px;
+    font-size:12px;font-weight:600;letter-spacing:1px;color:var(--aux);}
+  .lang-list{display:flex;flex-direction:column;}
+  .lang-opt{display:flex;align-items:center;height:44px;padding:0 20px;
+    font-size:16px;color:var(--ink);cursor:pointer;user-select:none;}
+  .lang-opt:hover{background:#F4F4EE;}
+  .lang-opt .lang-name{flex:1;text-align:left;}
+  .lang-opt .lang-check{font-size:15px;font-weight:700;color:var(--ink);opacity:0;}
+  .lang-opt.on{background:#F4F4EE;font-weight:700;}
+  .lang-opt.on .lang-check{opacity:1;}
+  .lang-opt.soon{color:var(--aux);cursor:default;}
+  .lang-opt.soon:hover{background:none;}
+  .lang-opt .lang-tag{font-size:12px;color:var(--aux);border:1px solid var(--line-btn);
+    border-radius:3px;padding:1px 6px;}
+
+  /* ---- 快捷操作：4 列 × 2 行（当前 6 项 → 首行 4 个、次行 2 个，余位留空） ---- */
+  .vs-quick-grid{grid-template-columns:repeat(4,1fr);}
+  /* 出货测试：石板灰，与清洗/价格/补货/排序四色区分 */
+  .vs-q-test{--accent:#58606B;--accent-hover:#4A515A;--accent-active:#3D434B;}
+  /* 校准：紫，与其余五项区分 */
+  .vs-q-cal{--accent:#6A5A9E;--accent-hover:#5B4C8A;--accent-active:#4D4076;}
+  /* ---- 更多功能：每行最多 6 个（7 项 → 首行 6、次行 1，余位留空） ---- */
+  .vs-more-grid{grid-template-columns:repeat(6,1fr);}
+
+  /* ---- 顶栏：文案均匀分布（品牌 / 设备ID / 时间 / 用户 等间距铺满整条） ---- */
+  .vs-header{justify-content:space-between;}
+  .vs-header .h-spacer{display:none;}
 
   /* ---- 本页：二次确认浮层组件 ---- */
   .modal-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;}
@@ -60,8 +77,23 @@
     <div class="vs-menu" id="user-menu">
       <div class="vs-menu-lang">
         <span class="vs-menu-lang-label">切换语言</span>
-        <span class="lang-chip on" data-act="set-lang" data-lang="zh">中文</span>
-        <span class="lang-chip" data-act="set-lang" data-lang="en">English</span>
+        <div class="lang-list" data-i18n-skip>
+          <div class="lang-opt on" data-act="set-lang" data-lang="zh">
+            <span class="lang-name">简体中文</span><span class="lang-check">&#10003;</span>
+          </div>
+          <div class="lang-opt" data-act="set-lang" data-lang="en">
+            <span class="lang-name">English</span><span class="lang-check">&#10003;</span>
+          </div>
+          <div class="lang-opt soon" data-toast="繁體中文 将在后续版本支持">
+            <span class="lang-name">繁體中文</span><span class="lang-tag">预留</span>
+          </div>
+          <div class="lang-opt soon" data-toast="日本語 将在后续版本支持">
+            <span class="lang-name">日本語</span><span class="lang-tag">预留</span>
+          </div>
+          <div class="lang-opt soon" data-toast="한국어 将在后续版本支持">
+            <span class="lang-name">한국어</span><span class="lang-tag">预留</span>
+          </div>
+        </div>
       </div>
       <button class="vs-menu-item" data-modal="#resell-confirm">返回售卖页面</button>
       <button class="vs-menu-item" data-modal="#logout-confirm">退出登录</button>
@@ -98,24 +130,19 @@
       </div>
 
       <div class="vs-status-alerts" data-page-node-id="MJUgyH6ETnW9NMQ0yGQa2w">
-        <div class="vs-alerts-head" data-page-node-id="0l1mhaARR7bjwtgPFe2DCG">
+        <div class="vs-alerts-head" data-page-node-id="0l1mhaARR7bjwtgPFe2DCG" data-href="54-alerts.html">
           <span class="vs-alerts-title" data-page-node-id="BGVFdIbAiurYsvCmBq1wKH">告警</span>
-          <span class="vs-alerts-badge" data-page-node-id="dsHnVHshbWJ4ReEiAVra46">3</span>
+          <span class="vs-alerts-badge" data-page-node-id="dsHnVHshbWJ4ReEiAVra46">2</span>
         </div>
-        <div class="vs-alert-item" data-page-node-id="6tUeEgg8FzEUoQXhbK8JdO">
+        <div class="vs-alert-item" data-href="54-alerts.html?tab=ops" data-page-node-id="6tUeEgg8FzEUoQXhbK8JdO">
           <span class="vs-alert-time" data-page-node-id="m1PhfmZREGJHewxm7P3RPM">12:10</span>
           <span class="vs-alert-text" data-page-node-id="ttrzhyeqMQL3flwvQPXX9G">纸杯余量不足（18%）</span>
           <span class="vs-alert-arrow" data-page-node-id="fNp7QhqHQIjmZP6DkNxYrg">&#8250;</span>
         </div>
-        <div class="vs-alert-item" data-page-node-id="u2xEqbHZREB5IWQLbCAF8s">
+        <div class="vs-alert-item" data-href="54-alerts.html?tab=ops" data-page-node-id="u2xEqbHZREB5IWQLbCAF8s">
           <span class="vs-alert-time" data-page-node-id="bcw9CI65JcberUqDiZ97zY">09:42</span>
           <span class="vs-alert-text" data-page-node-id="N7TKgnI2K7yyDcGHTebebD">右搅拌器清洗提醒</span>
           <span class="vs-alert-arrow" data-page-node-id="uC7WKcNLDYkCBRignMNDlE">&#8250;</span>
-        </div>
-        <div class="vs-alert-item" data-page-node-id="Ypt6yeD9bbBZxn9IeN49Sm">
-          <span class="vs-alert-time" data-page-node-id="d1P2RO5LsWRdnxx0sHVQwn">07-30 22:58</span>
-          <span class="vs-alert-text" data-page-node-id="m2yBrBekwS4G7yMDwEOMeC">离线</span>
-          <span class="vs-alert-arrow" data-page-node-id="kJgVv1nDTkEnOImbWMeo4M">&#8250;</span>
         </div>
       </div>
     </section>
@@ -128,22 +155,22 @@
           <span class="vs-quick-title" data-page-node-id="wwBHl4sk3u17EDEjzbiWZk">清洗</span>
           <span class="vs-quick-sub" data-page-node-id="NmPfmXf4BIJoJjGeDSAmgF">上次清洗：<span class="mono" data-page-node-id="DuVzZm7BnDZ1Sj2BEKBH7o">08/01 13:51</span></span>
         </button>
-        <button class="vs-quick-btn vs-q-goods" data-page-node-id="Nmuht8WqYYs0yMuYvtdMIi" data-href="../draft/42-products-price-1.html">
+        <button class="vs-quick-btn vs-q-goods" data-page-node-id="Nmuht8WqYYs0yMuYvtdMIi" data-href="42-products-price-1.html">
           <span class="vs-quick-title" data-page-node-id="mUMDTviGbYDl9zyIOEgWaM">商品价格</span>
         </button>
-        <button class="vs-quick-btn vs-q-restock" data-page-node-id="MayKN2HVEABvuDazcB5000" data-href="../draft/13-vm-ops-overview.html">
+        <button class="vs-quick-btn vs-q-restock" data-page-node-id="MayKN2HVEABvuDazcB5000" data-href="13-vm-ops-overview.html">
           <span class="vs-quick-title" data-page-node-id="N3BbHuUe8xeqwEXM4EKn0q">补货</span>
           <span class="vs-quick-sub" data-page-node-id="Zn6c3D9jnIGB7qvSIHaRUn">上次补货：<span class="mono" data-page-node-id="FSMkx0dvmRexcpgsEEjss2">08/01 11:02</span></span>
         </button>
-        <button class="vs-quick-btn vs-q-stats" data-page-node-id="UAzLZM5x7kbMoTetcSmi7w" data-href="../draft/45-products-sort-1.html">
+        <button class="vs-quick-btn vs-q-stats" data-page-node-id="UAzLZM5x7kbMoTetcSmi7w" data-href="45-products-sort-1.html">
           <span class="vs-quick-title" data-page-node-id="zCb97WeOyLlVzQ7VZbeNpd">商品排序</span>
         </button>
-        <button class="vs-quick-btn vs-q-ops" data-page-node-id="tsqjbejXReNx8ETHjpMuOV" data-href="../draft/32-eng-unit-test.html">
-          <span class="vs-quick-title" data-page-node-id="BtiFCfOVZW5V7RBT3JPvMn">测试打杯</span>
+        <button class="vs-quick-btn vs-q-test" data-page-node-id="Dz7Qm5tDispTest001" data-href="55-dispense-test.html">
+          <span class="vs-quick-title" data-page-node-id="Dz7Qm5tDispTest002">出货测试</span>
         </button>
-        <button class="vs-quick-btn vs-q-ota" data-page-node-id="JDJt9hsArcytMiSFYuHuVt" data-modal="#check-update">
-          <span class="vs-quick-title" data-page-node-id="lBCB5CKXHjwP4CU5Bc7aMe">OTA升级</span>
-          <span class="vs-quick-sub mono" data-page-node-id="hRvecXKyYhPbEQisaEdsWy">v0.1.2</span>
+        <button class="vs-quick-btn vs-q-cal" data-page-node-id="Dz7Qm5tCalib0001" data-href="23-calibration.html">
+          <span class="vs-quick-title" data-page-node-id="Dz7Qm5tCalib0002">校准</span>
+          <span class="vs-quick-sub" data-page-node-id="Dz7Qm5tCalib0003">上次校准：<span class="mono" data-page-node-id="Dz7Qm5tCalib0004">08/28 14:30</span></span>
         </button>
       </div>
     </section>
@@ -152,34 +179,19 @@
     <section class="vs-more-section" data-page-node-id="gm9Qd1hYiybl6yTfAlszeG">
       <div class="vs-section-title sm" data-page-node-id="dXqEFOwrBF9q8kXRGHgixI">更多功能</div>
       <div class="vs-more-grid" data-page-node-id="LkSwglHpgW2PYFhwyNBTPb">
-        <button class="vs-more-btn" data-page-node-id="5ZIRinoBAVedA3EsPOgf7h" data-href="../demo/02-settings-device.html">基本设置</button>
-        <button class="vs-more-btn" data-page-node-id="YYFxDEigC3ALbzRabRfoYj" data-href="../draft/23-calibration.html">校准</button>
-        <button class="vs-more-btn" data-page-node-id="tC3G8pR0d8aauUcflBjNgr" data-href="../demo/03-settings-users.html">账号设置</button>
-        <button class="vs-more-btn" data-page-node-id="1McHYJXTErWHE4L4hxcR7j" data-href="../draft/31-eng-settings.html">高级（IOT）</button>
-        <button class="vs-more-btn stop" data-page-node-id="MdYLWegix63zgkIPJwH3AF" data-toast="已发送停止指令">停止</button>
-        <button class="vs-more-btn" data-page-node-id="mqYAIhvFP66JVlqipOjBqf" data-toast="功能待接入">预留</button>
-        <button class="vs-more-btn" data-page-node-id="T3BcRSQMjepreEatJ4OJMU" data-toast="功能待接入">预留1</button>
-        <button class="vs-more-btn" data-page-node-id="2uc47Dnr4QokJXKUAQK3PV" data-toast="功能待接入">预留2</button>
-        <button class="vs-more-btn" data-page-node-id="h1TH3AW7cqZ7ovpwilGXNK" data-toast="功能待接入">预留3</button>
-        <button class="vs-more-btn power" data-page-node-id="l5iKLklAEPNo6KLaMkLcAW" data-modal="#power-off">关机</button>
+        <button class="vs-more-btn" data-page-node-id="5ZIRinoBAVedA3EsPOgf7h" data-href="02b-settings-other.html">本机设置</button>
+        <button class="vs-more-btn" data-page-node-id="h1TH3AW7cqZ7ovpwilGXNK" data-href="09-device-info.html">设备信息</button>
+        <button class="vs-more-btn" data-page-node-id="tC3G8pR0d8aauUcflBjNgr" data-href="03-settings-users.html">账号设置</button>
+        <button class="vs-more-btn" data-page-node-id="1McHYJXTErWHE4L4hxcR7j" data-href="31-eng-settings.html">高级（IoT）</button>
+        <button class="vs-more-btn" data-page-node-id="MdYLWegix63zgkIPJwH3AF" data-toast="已下发开门指令">开门</button>
+        <button class="vs-more-btn" data-page-node-id="T3BcRSQMjepreEatJ4OJMU" data-toast="已下发复位指令">复位</button>
+        <button class="vs-more-btn" data-page-node-id="2uc47Dnr4QokJXKUAQK3PV" data-toast="正在同步设备参数…">同步参数</button>
       </div>
     </section>
 
   </main>
 </div>
 
-<!-- 浮层 · power-off（源自 10-power-off-modal.html，深链仍可访问） -->
-<div class="vs-overlay" id="power-off">
-  <div class="vs-modal" style="width:460px">
-    <div class="modal-tag">POWER</div>
-    <div class="modal-title">是否立即关机？</div>
-    <hr class="modal-divider">
-    <div class="md-foot">
-      <button class="md-btn md-btn-line" data-close-hide>取消</button>
-      <button class="md-btn md-btn-red" data-close-hide data-toast="已下发关机指令">关机</button>
-    </div>
-  </div>
-</div>
 
 <!-- 二次确认：返回售卖页面 -->
 <div class="vs-overlay" id="resell-confirm">
@@ -195,7 +207,7 @@
     <div class="modal-desc">确定要返回售卖页面吗？<br>确认后将退出运营后台，本演示环境返回账号密码登录页面。</div>
     <div class="md-foot">
       <button class="md-btn md-btn-line" data-close-hide>取消</button>
-      <button class="md-btn md-btn-dark" data-href="../demo/04-login.html">确定返回</button>
+      <button class="md-btn md-btn-dark" data-href="04-login.html">确定返回</button>
     </div>
   </div>
 </div>
@@ -214,20 +226,11 @@
     <div class="modal-desc">确定要退出登录吗？<br>退出后将返回账号密码登录页面。</div>
     <div class="md-foot">
       <button class="md-btn md-btn-line" data-close-hide>取消</button>
-      <button class="md-btn md-btn-dark" data-href="../demo/04-login.html">确定退出</button>
+      <button class="md-btn md-btn-dark" data-href="04-login.html">确定退出</button>
     </div>
   </div>
 </div>
 
-<!-- 浮层 · check-update（源自 08-device-info-updating.html，深链仍可访问） -->
-<div class="vs-overlay" id="check-update" data-modal-safe>
-  <div class="loading-modal">
-    <div class="spinner"></div>
-    <div class="loading-title">检查更新中...</div>
-    <div class="loading-sub">请稍候</div>
-    <button class="loading-cancel" data-close-hide>取消</button>
-  </div>
-</div>
 <script src="../shared/i18n.js" defer></script>
 
 <script src="../shared/interactions.js" defer></script>

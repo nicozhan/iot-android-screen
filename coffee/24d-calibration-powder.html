@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>粉盒校准 · VendSolution</title>
+<link rel="stylesheet" href="../shared/style.css">
+<style>
+  /* ---- 左右结构：左栏 300（同 24c / 42 页）· 右栏自适应 ---- */
+  .cp-wrap{flex:1;display:flex;gap:32px;min-height:0;}
+
+  .cp-nav{width:300px;flex:0 0 300px;background:var(--card);border:1px solid var(--line);
+    border-radius:6px;display:flex;flex-direction:column;overflow:hidden;}
+  .cp-nav-head{height:56px;flex:0 0 56px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 20px;font-size:15px;color:var(--aux);border-bottom:1px solid var(--line-soft);}
+  .cp-nav-head .n{font-family:var(--mono);font-size:13px;}
+  .cp-nav-list{flex:1;min-height:0;overflow-y:auto;padding:6px 0;}
+
+  .cp-g{display:flex;align-items:center;justify-content:space-between;width:100%;height:64px;
+    padding:0 20px;background:none;border:none;border-left:3px solid transparent;
+    font-family:var(--sans);font-size:17px;font-weight:400;color:var(--sub);
+    text-align:left;cursor:pointer;}
+  .cp-g:hover{background:#FAFAF7;}
+  .cp-g.on{background:#ECECE7;border-left-color:var(--ink);color:var(--ink);font-weight:700;cursor:default;}
+  .cp-g.on:hover{background:#ECECE7;}
+  .cp-g .st{font-family:var(--mono);font-size:13px;color:var(--aux);font-weight:400;white-space:nowrap;}
+  .cp-g .st.todo{color:var(--orange);}
+
+  /* ---- 右栏 ---- */
+  .cp-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:16px;}
+
+  .cp-head{height:56px;flex:0 0 56px;display:flex;align-items:center;gap:14px;}
+  .cp-title{font-size:22px;font-weight:700;}
+  .cp-count{font-size:15px;color:var(--sub);}
+  .cp-save{margin-left:auto;min-width:112px;height:48px;font-size:15px;}
+  .cp-save[disabled]{opacity:.38;cursor:default;pointer-events:none;}
+
+  .cp-hint{height:48px;flex:0 0 48px;display:flex;align-items:center;gap:10px;
+    padding:0 18px;background:var(--card);border:1px solid var(--line);border-radius:6px;
+    font-size:14px;color:var(--sub);}
+  .cp-hint .i{flex:0 0 auto;width:18px;height:18px;border-radius:50%;background:var(--dark);color:#FFF;
+    font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);}
+
+  /* ---- 基准行 ---- */
+  .cp-card{flex:1;min-height:0;background:var(--card);border:1px solid var(--line);border-radius:6px;
+    display:flex;flex-direction:column;overflow:hidden;}
+  .cp-row{flex:1;min-height:96px;display:grid;
+    grid-template-columns:160px 96px 112px 152px 84px 80px 1fr;
+    align-items:center;gap:12px;padding:0 20px;border-bottom:1px solid var(--line-soft);}
+  .cp-row:last-child{border-bottom:none;}
+
+  .cp-name{display:flex;flex-direction:column;gap:5px;}
+  .cp-name .t{font-size:18px;font-weight:700;white-space:nowrap;}
+  .cp-name .cp-last{font-family:var(--mono);font-size:12px;color:var(--aux);white-space:nowrap;}
+  .cp-name .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--line-btn);
+    margin-left:8px;vertical-align:middle;}
+  .cp-name .dot.bad{background:var(--red);}
+  .cp-name .dot.ok{background:var(--green);}
+
+  .cp-tgt{font-size:14px;color:var(--aux);white-space:nowrap;}
+  .cp-tgt .mono{color:var(--sub);font-weight:500;}
+
+  /* 下料时间：系统只读 */
+  .cp-time{display:flex;align-items:baseline;gap:5px;height:36px;padding:0 10px;
+    background:#F4F4EF;border:1px solid var(--line-soft);border-radius:4px;width:fit-content;}
+  .cp-time .lb{font-size:12px;color:var(--aux);}
+  .cp-time .mono{font-size:15px;font-weight:600;color:var(--sub);}
+  .cp-time .u{font-size:12px;color:var(--aux);}
+
+  .cp-input{height:56px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 16px;border:1px solid var(--line-btn);border-radius:4px;background:var(--card);
+    font-family:var(--mono);font-size:19px;font-weight:600;cursor:pointer;}
+  .cp-input:hover{border-color:#999;}
+  .cp-input .ph{font-family:var(--mono);}
+  .cp-input .u{font-family:var(--sans);font-size:14px;font-weight:500;color:var(--aux);}
+  .cp-input.empty .ph{color:var(--aux);font-weight:400;}
+
+  .cp-test{height:48px;width:84px;background:var(--card);border:1px solid var(--line-btn);
+    border-radius:4px;font-family:var(--sans);font-size:15px;font-weight:600;color:var(--ink);cursor:pointer;}
+  .cp-test:hover{background:#F0F0EC;}
+  .cp-test[disabled]{opacity:.55;cursor:default;}
+  .cp-test.run{background:var(--dark);border-color:var(--dark);color:#FFF;opacity:1;}
+
+  .cp-dev{font-family:var(--mono);font-size:17px;font-weight:600;color:var(--sub);white-space:nowrap;}
+  .cp-dev .u{font-family:var(--sans);font-size:13px;color:var(--aux);margin-left:3px;font-weight:500;}
+  .cp-dev.bad{color:var(--red);}
+  .cp-dev.bad .u{color:var(--red);}
+
+  .cp-st{font-size:14px;color:var(--aux);text-align:right;white-space:nowrap;font-weight:500;}
+  .cp-st.done{color:var(--green);}
+  .cp-st.dirty{color:var(--orange);font-weight:700;}
+  .cp-st.todo{color:var(--aux);}
+
+  .cp-foot{height:24px;flex:0 0 24px;display:flex;align-items:center;gap:14px;
+    font-size:14px;color:var(--aux);}
+  .cp-foot .mono{color:var(--sub);font-weight:500;}
+  .cp-foot .dirty{margin-left:auto;color:var(--orange);font-weight:600;opacity:0;}
+  .cp-foot .dirty.on{opacity:1;}
+
+  /* ---- 未保存离开确认（三段式浮卡） ---- */
+  .cp-leave-text{font-size:16px;line-height:1.7;color:var(--sub);}
+</style>
+</head>
+<body>
+<div class="vs-canvas">
+
+  <div class="vs-topbar">
+    <button class="vs-btn-line" id="cp-back">&#8592;&nbsp;返回校准</button>
+    <div class="page-title" id="cp-page-title">粉盒校准(1)</div>
+  </div>
+
+  <main class="vs-main" style="gap:0;">
+    <div class="cp-wrap">
+
+      <!-- 左栏：7 项（水量 + 粉盒 1~6） -->
+      <aside class="cp-nav">
+        <div class="cp-nav-head"><span>校准项</span><span class="n">7 项</span></div>
+        <div class="cp-nav-list">
+          <button class="cp-g" data-href="24c-calibration-water.html">水量校准<span class="st">5 项</span></button>
+          <button class="cp-g" data-box="1" data-href="24d-calibration-powder.html?box=1">粉盒校准(1)<span class="st">已校准 08/26</span></button>
+          <button class="cp-g" data-box="2" data-href="24d-calibration-powder.html?box=2">粉盒校准(2)<span class="st">已校准 08/26</span></button>
+          <button class="cp-g" data-box="3" data-href="24d-calibration-powder.html?box=3">粉盒校准(3)<span class="st">已校准 08/25</span></button>
+          <button class="cp-g" data-box="4" data-href="24d-calibration-powder.html?box=4">粉盒校准(4)<span class="st">已校准 08/25</span></button>
+          <button class="cp-g" data-box="5" data-href="24d-calibration-powder.html?box=5">粉盒校准(5)<span class="st todo">待校准</span></button>
+          <button class="cp-g" data-box="6" data-href="24d-calibration-powder.html?box=6">粉盒校准(6)<span class="st todo">待校准</span></button>
+        </div>
+      </aside>
+
+      <!-- 右栏：5 个出粉基准 -->
+      <section class="cp-body">
+        <div class="cp-head">
+          <div class="cp-title" id="cp-title">粉盒校准(1)</div>
+          <div class="cp-count">共 5 个出粉基准</div>
+          <button class="vs-btn-line cp-save" id="cp-save" disabled>保存</button>
+        </div>
+
+        <div class="cp-hint">
+          <span class="i">i</span>
+          <span>称重取实际出粉量（保留一位小数）；偏差超 ±5%（最小 0.2 g）时建议连续校准三次取均值</span>
+        </div>
+
+        <div class="cp-card" id="cp-list">
+          <div class="cp-row" data-target="5" data-time="1.5">
+            <div class="cp-name"><span class="t">校准出粉 5 g<span class="dot ok"></span></span><span class="cp-last">上次 08/26 09:10</span></div>
+            <div class="cp-tgt">目标 <b class="mono">5.0</b> g</div>
+            <div class="cp-time"><span class="lb">下料</span><span class="mono">1.5</span><span class="u">s</span></div>
+            <div class="cp-input" data-kb data-kb-max="3" data-kb-value="5.0"><span class="ph">5.0</span><span class="u">g</span></div>
+            <button class="cp-test">测试</button>
+            <div class="cp-dev">+0.0<span class="u">g</span></div>
+            <div class="cp-st done">已校准</div>
+          </div>
+
+          <div class="cp-row" data-target="15" data-time="4.5">
+            <div class="cp-name"><span class="t">校准出粉 15 g<span class="dot ok"></span></span><span class="cp-last">上次 08/26 09:10</span></div>
+            <div class="cp-tgt">目标 <b class="mono">15.0</b> g</div>
+            <div class="cp-time"><span class="lb">下料</span><span class="mono">4.5</span><span class="u">s</span></div>
+            <div class="cp-input" data-kb data-kb-max="3" data-kb-value="15.2"><span class="ph">15.2</span><span class="u">g</span></div>
+            <button class="cp-test">测试</button>
+            <div class="cp-dev">+0.2<span class="u">g</span></div>
+            <div class="cp-st done">已校准</div>
+          </div>
+
+          <div class="cp-row" data-target="20" data-time="6.0">
+            <div class="cp-name"><span class="t">校准出粉 20 g<span class="dot ok"></span></span><span class="cp-last">上次 08/26 09:10</span></div>
+            <div class="cp-tgt">目标 <b class="mono">20.0</b> g</div>
+            <div class="cp-time"><span class="lb">下料</span><span class="mono">6.0</span><span class="u">s</span></div>
+            <div class="cp-input" data-kb data-kb-max="3" data-kb-value="19.8"><span class="ph">19.8</span><span class="u">g</span></div>
+            <button class="cp-test">测试</button>
+            <div class="cp-dev">−0.2<span class="u">g</span></div>
+            <div class="cp-st done">已校准</div>
+          </div>
+
+          <div class="cp-row" data-target="25" data-time="7.3">
+            <div class="cp-name"><span class="t">校准出粉 25 g<span class="dot ok"></span></span><span class="cp-last">上次 08/26 09:10</span></div>
+            <div class="cp-tgt">目标 <b class="mono">25.0</b> g</div>
+            <div class="cp-time"><span class="lb">下料</span><span class="mono">7.3</span><span class="u">s</span></div>
+            <div class="cp-input" data-kb data-kb-max="3" data-kb-value="25.1"><span class="ph">25.1</span><span class="u">g</span></div>
+            <button class="cp-test">测试</button>
+            <div class="cp-dev">+0.1<span class="u">g</span></div>
+            <div class="cp-st done">已校准</div>
+          </div>
+
+          <div class="cp-row" data-target="30" data-time="9.3">
+            <div class="cp-name"><span class="t">校准出粉 30 g<span class="dot ok"></span></span><span class="cp-last">上次 08/26 09:10</span></div>
+            <div class="cp-tgt">目标 <b class="mono">30.0</b> g</div>
+            <div class="cp-time"><span class="lb">下料</span><span class="mono">9.3</span><span class="u">s</span></div>
+            <div class="cp-input" data-kb data-kb-max="3" data-kb-value="30.4"><span class="ph">30.4</span><span class="u">g</span></div>
+            <button class="cp-test">测试</button>
+            <div class="cp-dev">+0.4<span class="u">g</span></div>
+            <div class="cp-st done">已校准</div>
+          </div>
+        </div>
+
+        <div class="cp-foot">
+          <span>上次校准：<b class="mono" id="cp-last">2026/08/26 09:10</b></span>
+          <span class="dirty" id="cp-dirty"></span>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- 浮层 · 未保存离开确认 -->
+<div class="vs-overlay" id="cp-leave">
+  <div class="vs-modal" style="width:520px;">
+    <div class="vs-modal-head">
+      <div class="vs-modal-title">离开校准</div>
+      <button class="vs-modal-close" data-close-hide>&#10005;</button>
+    </div>
+    <div class="vs-modal-body">
+      <div class="cp-leave-text">当前有未保存的校准结果，离开后本次修改将丢失。确认离开？</div>
+    </div>
+    <div class="md-foot">
+      <button class="md-btn md-btn-line" data-close-hide>取消</button>
+      <button class="md-btn md-btn-dark" id="cp-leave-ok">确认离开</button>
+    </div>
+  </div>
+</div>
+
+<script src="../shared/i18n.js" defer></script>
+<script src="../shared/interactions.js" defer></script>
+<script>
+(function () {
+  /* ---- 各粉盒的演示数据：vals 为空数组项表示未校准 ---- */
+  var BOXES = {
+    1: { last: '2026/08/26 09:10', short: '08/26 09:10', vals: ['5.0', '15.2', '19.8', '25.1', '30.4'] },
+    2: { last: '2026/08/26 10:22', short: '08/26 10:22', vals: ['5.1', '14.9', '20.1', '24.8', '29.7'] },
+    3: { last: '2026/08/25 16:05', short: '08/25 16:05', vals: ['4.9', '15.0', '20.2', '25.3', '30.1'] },
+    4: { last: '2026/08/25 15:42', short: '08/25 15:42', vals: ['5.0', '15.1', '19.9', '25.0', '30.2'] },
+    5: { last: '', short: '', vals: ['', '', '', '', ''] },
+    6: { last: '', short: '', vals: ['', '', '', '', ''] }
+  };
+
+  var q = new URLSearchParams(location.search);
+  var box = parseInt(q.get('box') || '1', 10);
+  if (!(box >= 1 && box <= 6)) box = 1;
+
+  var rows = [].slice.call(document.querySelectorAll('.cp-row'));
+  var saveBtn = document.getElementById('cp-save');
+  var dirtyEl = document.getElementById('cp-dirty');
+  var lastEl = document.getElementById('cp-last');
+  var leaveOv = document.getElementById('cp-leave');
+  var navs = [].slice.call(document.querySelectorAll('.cp-g'));
+  var dirtyCount = 0;
+  var pendingHref = null;
+
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function stamp(withYear) {
+    var d = new Date();
+    var s = pad(d.getMonth() + 1) + '/' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+    return withYear ? (d.getFullYear() + '/' + s) : s;
+  }
+  function fmt1(v) { return (Math.round(Number(v) * 10) / 10).toFixed(1); }
+
+  /* ---- 按 ?box=N 渲染整页 ---- */
+  function loadBox() {
+    var data = BOXES[box] || BOXES[1];
+    var name = '粉盒校准(' + box + ')';
+    document.getElementById('cp-page-title').textContent = name;
+    document.getElementById('cp-title').textContent = name;
+    document.title = name + ' · VendSolution';
+
+    navs.forEach(function (b) {
+      b.classList.toggle('on', b.dataset.box === String(box));
+    });
+
+    rows.forEach(function (row, i) {
+      var v = data.vals[i] || '';
+      var inp = row.querySelector('.cp-input');
+      inp.querySelector('.ph').textContent = v === '' ? '--' : v;
+      inp.setAttribute('data-kb-value', v);
+      row.querySelector('.cp-last').textContent = '上次 ' + (data.short || '--');
+      row.dataset.dirty = '0';
+      applyRow(row);
+    });
+
+    lastEl.textContent = data.last || '--';
+    refresh();
+  }
+
+  function refresh() {
+    dirtyCount = rows.filter(function (r) { return r.dataset.dirty === '1'; }).length;
+    saveBtn.disabled = dirtyCount === 0;
+    dirtyEl.textContent = dirtyCount ? '有 ' + dirtyCount + ' 项未保存' : '';
+    dirtyEl.classList.toggle('on', dirtyCount > 0);
+  }
+
+  function applyRow(row) {
+    var target = Number(row.dataset.target);
+    var inp = row.querySelector('.cp-input');
+    var raw = inp.getAttribute('data-kb-value') || '';
+    var devEl = row.querySelector('.cp-dev');
+    var stEl = row.querySelector('.cp-st');
+    var dot = row.querySelector('.cp-name .dot');
+
+    inp.classList.toggle('empty', raw === '');
+
+    if (raw === '') {
+      devEl.innerHTML = '--<span class="u">g</span>';
+      devEl.classList.remove('bad');
+      stEl.textContent = '未校准';
+      stEl.className = 'cp-st todo';
+      dot.className = 'dot';
+      return;
+    }
+
+    var actual = Number(raw);
+    var dev = actual - target;
+    var tol = Math.max(0.2, target * 0.05);
+    var over = Math.abs(dev) > tol + 1e-9;
+    var abs = Math.abs(dev);
+    devEl.innerHTML = (dev >= 0 ? '+' : '−') + (abs < 0.05 ? '0.0' : fmt1(abs)) + '<span class="u">g</span>';
+    devEl.classList.toggle('bad', over);
+    dot.className = 'dot ' + (over ? 'bad' : 'ok');
+
+    if (row.dataset.dirty === '1') {
+      stEl.textContent = '待保存';
+      stEl.className = 'cp-st dirty';
+    }
+  }
+
+  /* 键盘「确定」回写后（引擎派发 kb-done）→ 规范化到一位小数、标脏 */
+  document.addEventListener('kb-done', function (e) {
+    var inp = e.target.closest ? e.target.closest('.cp-input') : null;
+    if (!inp) return;
+    var row = inp.closest('.cp-row');
+    var raw = inp.getAttribute('data-kb-value') || '';
+    if (raw === '') return;
+    var v = Number(raw);
+    if (!isFinite(v)) return;
+    if (v > 99.9) v = 99.9;
+    inp.setAttribute('data-kb-value', String(v));
+    inp.querySelector('.ph').textContent = fmt1(v);
+    row.dataset.dirty = '1';
+    applyRow(row);
+    refresh();
+  });
+
+  /* 测试：按该行下料时间模拟出粉，回填实测值 */
+  rows.forEach(function (row) {
+    var btn = row.querySelector('.cp-test');
+    btn.addEventListener('click', function () {
+      if (btn.disabled) return;
+      btn.disabled = true;
+      btn.classList.add('run');
+      btn.textContent = '测试中…';
+      var target = Number(row.dataset.target);
+      var time = Number(row.dataset.time);
+      var runMs = Math.min(1800, Math.max(700, 600 + time * 120));
+      setTimeout(function () {
+        var jitter = Math.random() * 0.08 - 0.04;
+        var actual = Math.round(target * (1 + jitter) * 10) / 10;
+        if (actual <= 0) actual = 0.1;
+        var inp = row.querySelector('.cp-input');
+        inp.querySelector('.ph').textContent = fmt1(actual);
+        inp.setAttribute('data-kb-value', String(actual));
+        row.dataset.dirty = '1';
+        applyRow(row);
+        refresh();
+        btn.disabled = false;
+        btn.classList.remove('run');
+        btn.textContent = '测试';
+        if (window.VS && window.VS.toast) window.VS.toast('已下料 ' + time.toFixed(1) + ' s，出粉 ' + fmt1(actual) + ' g');
+      }, runMs);
+    });
+  });
+
+  /* 保存：脏行转「已校准」，同步左栏该盒状态 */
+  saveBtn.addEventListener('click', function () {
+    if (saveBtn.disabled) return;
+    var t = stamp(false);
+    rows.forEach(function (row) {
+      if (row.dataset.dirty !== '1') return;
+      row.dataset.dirty = '0';
+      var stEl = row.querySelector('.cp-st');
+      stEl.textContent = '已校准';
+      stEl.className = 'cp-st done';
+      row.querySelector('.cp-last').textContent = '上次 ' + t;
+    });
+    lastEl.textContent = stamp(true);
+    var mine = navs.filter(function (b) { return b.dataset.box === String(box); })[0];
+    if (mine) {
+      var st = mine.querySelector('.st');
+      st.textContent = '已校准 ' + t.slice(0, 5);
+      st.classList.remove('todo');
+    }
+    refresh();
+    if (window.VS && window.VS.toast) window.VS.toast('校准结果已保存');
+  });
+
+  /* 离开 / 切换校准项：有未保存先确认 */
+  function nav(href) {
+    if (dirtyCount > 0) { pendingHref = href; leaveOv.classList.add('show'); return; }
+    location.href = href;
+  }
+  document.getElementById('cp-back').addEventListener('click', function () {
+    nav('23-calibration.html');
+  });
+  document.getElementById('cp-leave-ok').addEventListener('click', function () {
+    location.href = pendingHref || '23-calibration.html';
+  });
+  /* 左栏项带 data-href，引擎也会跳转 —— 捕获阶段先接管 */
+  navs.forEach(function (b) {
+    var href = b.getAttribute('data-href');
+    if (!href) return;
+    b.addEventListener('click', function (e) {
+      if (dirtyCount > 0) {
+        e.preventDefault();
+        e.stopPropagation();
+        nav(href);
+      }
+    }, true);
+  });
+
+  loadBox();
+})();
+</script>
+</body>
+</html>
