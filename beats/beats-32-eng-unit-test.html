@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>VendSolution · 测试出货</title>
+<link rel="stylesheet" href="../shared/style.css">
+<style>
+  /* ---- 模式切换 Tab ---- */
+  .mode-tabs{display:flex;border:1px solid var(--line-btn);border-radius:6px;overflow:hidden;width:fit-content;}
+  .mode-tab{height:44px;padding:0 26px;background:var(--card);border:none;border-right:1px solid var(--line-btn);
+    font-size:16px;font-weight:600;color:var(--sub);cursor:pointer;font-family:var(--sans);transition:background .12s ease;}
+  .mode-tab:last-child{border-right:none;}
+  .mode-tab:hover{background:#F4F4EF;}
+  .mode-tab.on{background:var(--dark);color:#FFFFFF;}
+
+  /* ---- Tab 容器 ---- */
+  .tab-pane{flex:1;min-height:0;display:flex;flex-direction:column;}
+  #tab-lane{overflow-y:auto;}
+
+  /* ================= 按商品出货：左右分栏（同 42 价格管理） ================= */
+  /* 左分类 300 / 间距 32 / 右商品 884 */
+  #tab-goods{flex-direction:row;gap:32px;min-height:0;}
+
+  .tg-nav{width:300px;flex:0 0 300px;background:var(--card);border:1px solid var(--line);
+    border-radius:6px;display:flex;flex-direction:column;overflow:hidden;}
+  .tg-nav-head{height:56px;flex:0 0 56px;display:flex;align-items:center;padding:0 20px;
+    font-size:15px;color:var(--aux);border-bottom:1px solid var(--line-soft);}
+  .tg-nav-list{flex:1;min-height:0;overflow-y:auto;padding:6px 0;}
+  .tg-nav-foot{flex:0 0 auto;padding:14px 20px 16px;border-top:1px solid var(--line-soft);
+    font-size:13px;color:var(--aux);line-height:1.5;}
+
+  .tg-g{display:flex;align-items:center;justify-content:space-between;width:100%;height:64px;
+    padding:0 20px;background:none;border:none;border-left:3px solid transparent;
+    font-family:var(--sans);font-size:17px;font-weight:400;color:var(--sub);
+    text-align:left;cursor:pointer;}
+  .tg-g:hover{background:#FAFAF7;}
+  .tg-g .n{font-family:var(--mono);font-size:14px;color:var(--aux);}
+  .tg-g.on{background:#ECECE7;border-left-color:var(--ink);color:var(--ink);font-weight:700;}
+  .tg-g.on .n{color:var(--sub);}
+
+  .tg-body{flex:1;min-width:0;display:flex;flex-direction:column;}
+  .tg-head{display:flex;align-items:baseline;gap:14px;padding-bottom:16px;
+    border-bottom:1px solid var(--line-soft);margin-bottom:18px;}
+  .tg-title{font-size:22px;font-weight:700;}
+  .tg-count{font-size:14px;color:var(--aux);}
+  .tg-hint{margin-left:auto;font-size:13px;color:var(--aux);}
+
+  .tg-list{flex:1;min-height:0;overflow-y:auto;background:var(--card);
+    border:1px solid var(--line);border-radius:6px;}
+  .tg-list::-webkit-scrollbar,.tg-nav-list::-webkit-scrollbar{width:8px;}
+  .tg-list::-webkit-scrollbar-thumb,.tg-nav-list::-webkit-scrollbar-thumb{background:#D6D6D0;border-radius:4px;}
+
+  /* 商品行：货道号 / 缩略图 / 名称 / 出货 */
+  .tg-row{height:84px;gap:18px;cursor:default;}
+  .tg-row .pm-thumb{width:56px;height:56px;flex:0 0 56px;}
+  .tg-lane{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--sub);flex:0 0 46px;}
+  .tg-row .pm-name{flex:1;min-width:0;}
+  .tg-ship{flex:0 0 auto;height:40px;padding:0 22px;background:var(--card);
+    border:1px solid var(--line-btn);border-radius:4px;font-size:14px;font-weight:600;
+    color:var(--ink);font-family:var(--sans);cursor:pointer;}
+  .tg-ship:hover{background:#F0F0EC;}
+
+  .tg-empty{display:none;flex:1;align-items:center;justify-content:center;
+    background:var(--card);border:1px solid var(--line);border-radius:6px;
+    font-size:16px;color:var(--aux);}
+  .tg-empty.on{display:flex;}
+
+  /* ---- 货道矩阵 10×8 ---- */
+  .lane-legend{display:flex;gap:20px;align-items:center;font-size:14px;color:var(--sub);margin:2px 0 12px;}
+  .lane-legend span{display:inline-flex;align-items:center;}
+  .lane-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;}
+  .lane-dot.ok{background:var(--green);}
+  .lane-dot.empty{background:var(--track);border:1px solid var(--line-btn);}
+  .lane-dot.fault{background:var(--red);}
+  .lane-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:10px;}
+  .lane-cell{height:72px;border:1px solid var(--line);border-radius:6px;background:var(--card);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    cursor:pointer;font-family:var(--sans);padding:4px;transition:background .12s ease;}
+  .lane-cell:hover{background:#FCFCFA;}
+  .lane-cell .pm-lane-no{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--ink);flex:none;}
+  .lane-cell .pm-lane-name{font-size:12px;color:var(--sub);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:none;}
+  .lane-cell .lane-prod{font-size:12px;color:var(--sub);flex:none;}
+  .lane-cell.empty{background:var(--track);border-style:dashed;color:var(--aux);cursor:not-allowed;}
+  .lane-cell.empty .pm-lane-no,.lane-cell.empty .lane-prod{color:var(--aux);}
+  .lane-cell.fault{background:#FCEDED;border-color:#E7B4B4;cursor:not-allowed;}
+  .lane-cell.fault .pm-lane-no,.lane-cell.fault .lane-prod{color:#C53030;}
+
+  /* ---- 浮层文案 / 进度条 ---- */
+  .modal-desc{font-size:16px;color:var(--ink);line-height:1.7;}
+  .modal-sub{font-size:14px;color:var(--sub);margin-top:8px;}
+  .ship-bar{height:10px;background:var(--track);border-radius:5px;overflow:hidden;margin:18px 0 4px;}
+  .ship-bar-fill{display:block;height:100%;width:0%;background:var(--dark);border-radius:5px;}
+
+  /* ---- 出货前二次配置 ---- */
+  .cfg-name{font-size:14px;color:var(--sub);margin-bottom:14px;}
+  .cfg-name b{color:var(--ink);font-weight:600;}
+  .cfg-hint{font-size:14px;color:var(--ink);margin-bottom:14px;}
+  .cfg-row{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+  .cfg-label{flex:0 0 64px;font-size:16px;font-weight:600;}
+  .cfg-opts{display:flex;gap:10px;flex-wrap:wrap;}
+  .cfg-opt{height:38px;min-width:56px;padding:0 16px;border:1px solid var(--line-btn);border-radius:4px;
+    background:var(--card);font-size:15px;font-family:var(--sans);color:var(--ink);cursor:pointer;}
+  .cfg-opt:hover{background:#F0F0EC;}
+  .cfg-opt.on{background:var(--dark);border-color:var(--dark);color:#FFFFFF;}
+
+  /* ---- 出货中：左侧进度 + 右侧 IoT 日志 ---- */
+  #ship-running .vs-modal{width:700px;}
+  .ship-run-body{display:flex;gap:22px;align-items:stretch;}
+  .ship-run-left{flex:1;min-width:0;}
+  .ship-run-right{flex:0 0 268px;display:flex;flex-direction:column;}
+  .ship-cfg-readout{font-size:14px;color:var(--sub);margin:14px 0 4px;}
+  .iot-head{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;
+    padding-bottom:10px;margin-bottom:10px;border-bottom:1px solid var(--line);}
+  .iot-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);animation:iotpulse 1.1s infinite;}
+  @keyframes iotpulse{0%{opacity:.3;}50%{opacity:1;}100%{opacity:.3;}}
+  .iot-log{height:300px;overflow-y:auto;font-family:var(--mono);font-size:12px;line-height:1.55;
+    background:var(--track);border:1px solid var(--line);border-radius:4px;padding:10px 12px;color:var(--ink);}
+  .iot-line{white-space:pre-wrap;word-break:break-all;}
+  .iot-time{color:var(--sub);}
+  .iot-sev{font-weight:700;margin-right:6px;}
+  .sev-info{color:#2B6CB0;}
+  .sev-ok{color:#2F855A;}
+  .sev-warn{color:#C05621;}
+  .sev-err{color:#C53030;}
+  .sev-cfg{color:#6B46C1;}
+</style>
+</head>
+<body>
+<div class="vs-canvas">
+
+  <div class="vs-topbar">
+    <button class="vs-btn-line" data-href="beats-01-home.html">&#8592; 返回首页</button>
+    <div class="page-title">测试出货</div>
+  </div>
+
+  <main class="vs-main" style="gap:16px">
+    <!-- 模式切换 Tab -->
+    <div class="mode-tabs">
+      <button class="mode-tab on" data-tab="goods">按商品出货</button>
+      <button class="mode-tab" data-tab="lane">按货道出货</button>
+    </div>
+
+    <!-- Tab 1：按商品出货（左分类 / 右商品） -->
+    <section id="tab-goods" class="tab-pane">
+      <aside class="tg-nav">
+        <div class="tg-nav-head">商品分类</div>
+        <div class="tg-nav-list" id="tg-cats"></div>
+        <div class="tg-nav-foot" id="tg-foot"></div>
+      </aside>
+      <section class="tg-body">
+        <div class="tg-head">
+          <div class="tg-title" id="tg-title">碳酸饮料</div>
+          <div class="tg-count" id="tg-count"></div>
+          <div class="tg-hint">点击商品行右侧「出货」测试对应货道</div>
+        </div>
+        <div class="tg-list" id="tg-list"></div>
+        <div class="tg-empty" id="tg-empty">该分类暂无商品</div>
+      </section>
+    </section>
+
+    <!-- Tab 2：按货道出货（10×8 矩阵） -->
+    <section id="tab-lane" class="tab-pane" style="display:none">
+      <div class="pm-note">直接点击货道按钮出货；空格不可点，故障格标红</div>
+      <div class="lane-legend">
+        <span><i class="lane-dot ok"></i>有货</span>
+        <span><i class="lane-dot empty"></i>空</span>
+        <span><i class="lane-dot fault"></i>故障</span>
+      </div>
+      <div class="lane-grid" id="lane-grid"></div>
+    </section>
+  </main>
+
+  <!-- ============ 按商品出货：出货前二次配置 ============ -->
+  <div class="vs-overlay" id="ship-confirm">
+    <div class="vs-modal" style="width:520px">
+      <div class="vs-modal-head">
+        <div class="vs-modal-title">测试出货</div>
+        <button class="vs-modal-close" data-close-hide>&#10005;</button>
+      </div>
+      <div class="vs-modal-body">
+        <div class="cfg-name">商品：<b id="cfg-name">可口可乐</b></div>
+        <div class="cfg-hint" id="cfg-hint">请确认出货配置</div>
+        <div class="cfg-row" data-drink-only>
+          <div class="cfg-label">温度</div>
+          <div class="cfg-opts" data-def="常温">
+            <button class="cfg-opt" data-val="常温">常温</button>
+            <button class="cfg-opt" data-val="冷藏">冷藏</button>
+          </div>
+        </div>
+      </div>
+      <div class="md-foot">
+        <button class="md-btn md-btn-line" data-close-hide>取消</button>
+        <button class="md-btn md-btn-dark" data-ship-go="#ship-running" data-ship-done="#ship-done">测试出货</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 按商品出货：出货中（进度 + IoT 日志） ============ -->
+  <div class="vs-overlay" id="ship-running">
+    <div class="vs-modal">
+      <div class="vs-modal-head">
+        <div class="vs-modal-title">出货中</div>
+      </div>
+      <div class="vs-modal-body">
+        <div class="ship-run-body">
+          <div class="ship-run-left">
+            <div class="modal-desc" data-ship-text="running">货道正在出货…</div>
+            <div class="ship-cfg-readout" id="ship-cfg-readout"></div>
+            <div class="ship-bar"><span class="ship-bar-fill"></span></div>
+            <div class="md-foot" style="justify-content:flex-start;padding:0;margin-top:18px;">
+              <button class="md-btn md-btn-orange" data-ship-stop="#ship-running">终止出货</button>
+            </div>
+          </div>
+          <div class="ship-run-right">
+            <div class="iot-head"><span class="iot-dot"></span>系统 IoT 日志</div>
+            <div class="iot-log" id="iot-log"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 按商品出货：出货完成 ============ -->
+  <div class="vs-overlay" id="ship-done" data-modal-safe>
+    <div class="vs-modal" style="width:460px">
+      <div class="vs-modal-head">
+        <div class="vs-modal-title">出货完成</div>
+      </div>
+      <div class="vs-modal-body">
+        <div class="modal-desc" data-ship-text="done"></div>
+        <div class="modal-sub" id="done-cfg"></div>
+      </div>
+      <div class="md-foot">
+        <button class="md-btn md-btn-dark" data-close-hide>确定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗1：按货道出货 · 是否出货（二次确认，无配置项） -->
+  <div class="vs-overlay" id="grid-confirm">
+    <div class="vs-modal" style="width:460px">
+      <div class="vs-modal-head">
+        <div class="vs-modal-title">是否出货？</div>
+        <button class="vs-modal-close" data-close-hide>&#10005;</button>
+      </div>
+      <div class="vs-modal-body">
+        <div class="modal-desc" data-ship-text="confirm"></div>
+        <div class="modal-sub">点击「确认出货」后将直接对该货道执行出货。</div>
+      </div>
+      <div class="md-foot">
+        <button class="md-btn md-btn-line" data-close-hide>取消</button>
+        <button class="md-btn md-btn-dark" data-ship-go="#grid-running" data-ship-done="#grid-done">确认出货</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗2：出货中（进度条 + 可终止） -->
+  <div class="vs-overlay" id="grid-running">
+    <div class="vs-modal" style="width:520px">
+      <div class="vs-modal-head">
+        <div class="vs-modal-title">出货中</div>
+      </div>
+      <div class="vs-modal-body">
+        <div class="modal-desc" data-ship-text="running"></div>
+        <div class="ship-bar"><span class="ship-bar-fill"></span></div>
+        <div class="md-foot" style="justify-content:flex-start;padding:0;margin-top:18px;">
+          <button class="md-btn md-btn-orange" data-ship-stop="#grid-running">终止出货</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗3：出货完成 -->
+  <div class="vs-overlay" id="grid-done" data-modal-safe>
+    <div class="vs-modal" style="width:460px">
+      <div class="vs-modal-head">
+        <div class="vs-modal-title">出货完成</div>
+      </div>
+      <div class="vs-modal-body">
+        <div class="modal-desc" data-ship-text="done"></div>
+      </div>
+      <div class="md-foot">
+        <button class="md-btn md-btn-dark" data-close-hide>确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* 按商品出货：左分类 / 右商品；按货道出货：10×8 矩阵（均为原型演示数据） */
+(function () {
+  function T(x) { return window.I18N ? window.I18N.t(x) : x; }
+
+  /* ---------------- 分类与商品（演示数据） ---------------- */
+  var CATS = {
+    '碳酸饮料': ['可口可乐', '百事可乐', '无糖可乐', '健怡可乐', '雪碧', '七喜', '芬达橙味', '芬达苹果', '美年达', '苏打气泡水', '汤力水', '干姜水'],
+    '饮料': ['冰红茶', '冰绿茶', '茉莉花茶', '乌龙茶', '酸梅汤', '橙汁', '苹果汁', '葡萄汁', '柠檬茶', '椰子水', '芒果汁', '桃汁', '冬瓜茶', '王老吉', '加多宝', '蜂蜜柚子茶', '乳酸菌饮料', '胡萝卜汁'],
+    '零食': ['薯片', '巧克力威化', '饼干', '牛角包', '奶油蛋糕', '混合坚果', '果冻', '牛奶糖', '口香糖', '牛肉干', '小鱼干', '豆干', '海苔', '瓜子', '花生', '蚕豆', '雪饼', '仙贝', '蛋卷', '沙琪玛', '爆米花', '冰淇淋', '棉花糖', '南瓜子', '杏仁'],
+    '水': ['矿泉水', '纯净水', '天然水', '薄荷水', '柠檬水', '山泉水', '矿物质水', '薄荷柠水'],
+    '早餐': ['三明治', '饭团', '肉包', '菜包', '米糕', '南瓜饼'],
+    '乳饮': ['阿萨姆奶茶', '元气乳茶', '豆奶', '椰汁', '杏仁露', '草莓奶', '巧克力奶', '燕麦奶饮', '纯牛奶'],
+    '其他': ['纸巾', '湿巾', '口罩', '电池']
+  };
+  var KEYS = Object.keys(CATS);
+  var cur = '碳酸饮料';
+
+  /* 深链：?cat=分类名（旧 32b 深链壳转过来）/ 否则取上一页经 vs-ctx 传来的分类 */
+  try {
+    var m = /[?&]cat=([^&]*)/.exec(location.search || '');
+    var q = m ? decodeURIComponent(m[1]) : '';
+    if (CATS[q]) {
+      cur = q;
+    } else {
+      var ctx = JSON.parse(sessionStorage.getItem('vs-ctx') || 'null');
+      if (ctx && ctx.name && CATS[ctx.name]) cur = ctx.name;
+    }
+  } catch (e) {}
+
+  function lanesOf(cat) {
+    var idx = KEYS.indexOf(cat) + 1;
+    return (CATS[cat] || []).map(function (nm, i) {
+      return { no: idx + '-' + (i + 1), name: nm };
+    });
+  }
+  function totalLanes() {
+    return KEYS.reduce(function (s, k) { return s + CATS[k].length; }, 0);
+  }
+  function esc(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+
+  /* ---------------- 渲染：左分类 / 右商品 ---------------- */
+  var catsEl  = document.getElementById('tg-cats');
+  var listEl  = document.getElementById('tg-list');
+  var emptyEl = document.getElementById('tg-empty');
+  var titleEl = document.getElementById('tg-title');
+  var countEl = document.getElementById('tg-count');
+  var footEl  = document.getElementById('tg-foot');
+
+  function renderCats() {
+    catsEl.innerHTML = KEYS.map(function (k) {
+      return '<button class="tg-g' + (k === cur ? ' on' : '') + '" data-c="' + esc(k) + '">' +
+               '<span>' + esc(T(k)) + '</span>' +
+               '<span class="n">' + CATS[k].length + '</span>' +
+             '</button>';
+    }).join('');
+    footEl.textContent = KEYS.length + ' ' + T('个分类') + ' · ' + totalLanes() + ' ' + T('个货道');
+  }
+
+  function renderList() {
+    var rows = lanesOf(cur);
+    titleEl.textContent = T(cur);
+    countEl.textContent = rows.length + ' ' + T('个货道');
+    listEl.innerHTML = rows.map(function (r) {
+      return '<div class="pm-row tg-row">' +
+               '<span class="tg-lane pm-lane-no">' + r.no + '</span>' +
+               '<div class="pm-thumb">' + T('商品图片') + '</div>' +
+               '<div class="pm-name">' + esc(T(r.name)) + '</div>' +
+               '<button class="tg-ship" data-ship="#ship-confirm">' + T('出货') + '</button>' +
+             '</div>';
+    }).join('');
+    listEl.style.display = rows.length ? '' : 'none';
+    emptyEl.classList.toggle('on', rows.length === 0);
+    listEl.scrollTop = 0;
+  }
+
+  catsEl.addEventListener('click', function (ev) {
+    var btn = ev.target.closest ? ev.target.closest('.tg-g') : null;
+    if (!btn) return;
+    cur = btn.getAttribute('data-c');
+    catsEl.querySelectorAll('.tg-g').forEach(function (b) { b.classList.toggle('on', b === btn); });
+    renderList();
+  });
+
+  /* ---------------- 模式 Tab ---------------- */
+  function setTab(which) {
+    document.querySelectorAll('.mode-tab').forEach(function (t) {
+      t.classList.toggle('on', t.getAttribute('data-tab') === which);
+    });
+    document.getElementById('tab-goods').style.display = (which === 'goods') ? 'flex' : 'none';
+    document.getElementById('tab-lane').style.display  = (which === 'lane')  ? 'flex' : 'none';
+  }
+  document.querySelectorAll('.mode-tab').forEach(function (tab) {
+    tab.addEventListener('click', function () { setTab(tab.getAttribute('data-tab')); });
+  });
+  if (/[?&]tab=lane/.test(location.search || '')) setTab('lane');
+
+  /* ---------------- 按货道出货：10×8 矩阵 ---------------- */
+  var POOL = ['可口可乐', '百事可乐', '雪碧', '七喜', '芬达橙味', '美年达', '冰红茶', '冰绿茶',
+              '橙汁', '苹果汁', '矿泉水', '纯净水', '苏打气泡水', '薯片', '巧克力威化', '饼干',
+              '混合坚果', '海苔', '三明治', '饭团', '阿萨姆奶茶', '豆奶', '椰汁', '纸巾'];
+  var OVERRIDES = { '5-3': 'fault', '7-5': 'empty', '3-7': 'empty', '9-2': 'fault', '10-8': 'empty', '2-4': 'fault' };
+
+  function renderLanes() {
+    var grid = document.getElementById('lane-grid');
+    if (!grid) return;
+    var html = '', idx = 0;
+    for (var r = 1; r <= 10; r++) {
+      for (var c = 1; c <= 8; c++) {
+        var id = r + '-' + c;
+        var st = OVERRIDES[id] || 'ok';
+        var prod = POOL[idx % POOL.length]; idx++;
+        if (st === 'ok') {
+          html += '<button class="pm-lane-card lane-cell ok" data-ship="#grid-confirm">' +
+                    '<span class="pm-lane-no">' + id + '</span>' +
+                    '<span class="pm-lane-name">' + prod + '</span>' +
+                  '</button>';
+        } else if (st === 'empty') {
+          html += '<button class="lane-cell empty" data-toast="该货道为空，暂不可出货">' +
+                    '<span class="pm-lane-no">' + id + '</span>' +
+                    '<span class="lane-prod">空</span>' +
+                  '</button>';
+        } else {
+          html += '<button class="lane-cell fault" data-toast="该货道故障，无法出货">' +
+                    '<span class="pm-lane-no">' + id + '</span>' +
+                    '<span class="lane-prod">故障</span>' +
+                  '</button>';
+        }
+      }
+    }
+    grid.innerHTML = html;
+  }
+
+  /* ---------------- 按商品出货：配置 / IoT 日志 ---------------- */
+  var iotLog  = document.getElementById('iot-log');
+  var readout = document.getElementById('ship-cfg-readout');
+  var doneCfg = document.getElementById('done-cfg');
+  var cfgName = document.getElementById('cfg-name');
+  var cfgHint = document.getElementById('cfg-hint');
+  var shipName = '', shipLane = '', shipCat = '';
+
+  /* 点「出货」：记下商品/货道，重置配置默认值，按分类决定是否显示温度配置 */
+  document.addEventListener('click', function (ev) {
+    if (!ev.target.closest) return;
+    var btn = ev.target.closest('[data-ship="#ship-confirm"]');
+    if (!btn) return;
+    var row = btn.closest('.pm-row');
+    if (!row) return;
+    shipName = (row.querySelector('.pm-name') || {}).textContent || '';
+    shipLane = (row.querySelector('.pm-lane-no') || {}).textContent || '';
+    shipCat = cur;
+    if (cfgName) cfgName.textContent = T(shipName.trim());
+    /* 碳酸饮料 / 饮料 / 水 / 乳饮 才有温度设置，其余商品（零食 / 早餐 / 其他）无需配置 */
+    var isDrink = ['碳酸饮料', '饮料', '水', '乳饮'].indexOf(shipCat) >= 0;
+    document.querySelectorAll('#ship-confirm .cfg-row[data-drink-only]').forEach(function (r) {
+      r.style.display = isDrink ? 'flex' : 'none';
+    });
+    if (cfgHint) cfgHint.textContent = T(isDrink ? '请确认出货配置' : '该商品无需配置，确认后直接出货');
+    document.querySelectorAll('#ship-confirm .cfg-opts').forEach(function (opts) {
+      var def = opts.getAttribute('data-def');
+      opts.querySelectorAll('.cfg-opt').forEach(function (o) {
+        o.classList.toggle('on', o.getAttribute('data-val') === def);
+      });
+    });
+    if (doneCfg) doneCfg.textContent = '';
+  });
+
+  /* 配置项单选（每组互斥） */
+  document.addEventListener('click', function (ev) {
+    if (!ev.target.closest) return;
+    var opt = ev.target.closest('.cfg-opt');
+    if (!opt) return;
+    var opts = opt.parentElement;
+    opts.querySelectorAll('.cfg-opt').forEach(function (o) { o.classList.remove('on'); });
+    opt.classList.add('on');
+  });
+
+  function readCfg() {
+    var c = {};
+    document.querySelectorAll('#ship-confirm .cfg-row').forEach(function (row) {
+      if (row.style.display === 'none') return;
+      var label = (row.querySelector('.cfg-label') || {}).textContent.trim();
+      var on = row.querySelector('.cfg-opt.on');
+      if (on) c[label] = on.getAttribute('data-val');
+    });
+    return c;
+  }
+
+  function buildLines(cfg, name, lane) {
+    var temp = cfg['温度'];
+    var tempC = (temp === '冷藏') ? 4 : 25;
+    var L = [];
+    L.push(['INFO', 'IoT link up · dev=VM-01 · fw=v2.3.1']);
+    L.push(['INFO', 'slot load · name=' + name + ' · lane=' + lane]);
+    if (temp) {
+      L.push(['CFG', 'mode=' + (temp === '冷藏' ? 'cool' : 'normal') + ' · temp=' + tempC + '°C']);
+      L.push(['INFO', (temp === '冷藏' ? 'chiller set ' : 'cabinet ambient ') + tempC + '°C']);
+    } else {
+      L.push(['CFG', 'mode=normal · no config required']);
+    }
+    L.push(['INFO', 'motor ' + lane + ' forward · coil rotate']);
+    L.push(['INFO', 'photo-eye check · product passing']);
+    L.push(['OK', 'drop detected · coil position OK']);
+    L.push(['INFO', 'motor stop · home position']);
+    L.push(['OK', 'done · item ready']);
+    return L;
+  }
+
+  var iotTimer = null, t0 = 0;
+
+  function appendLine(line, idx) {
+    var d = new Date(t0 + idx * 200);
+    var ts = d.toTimeString().slice(0, 8);
+    var div = document.createElement('div');
+    div.className = 'iot-line';
+    div.innerHTML = '<span class="iot-time">' + ts + '</span> <span class="iot-sev sev-' +
+      line[0].toLowerCase() + '">' + line[0] + '</span>' + esc(line[1]);
+    iotLog.appendChild(div);
+    iotLog.scrollTop = iotLog.scrollHeight;
+  }
+  function startIot() {
+    stopIot();
+    var cfg = readCfg();
+    var parts = [];
+    if (cfg['温度']) parts.push(cfg['温度']);
+    var line = T('配置') + '：' + parts.join(' · ');
+    if (readout) readout.textContent = line;
+    if (doneCfg) doneCfg.textContent = parts.length ? line : '';
+    var lines = buildLines(cfg, shipName, shipLane);
+    t0 = Date.now();
+    var i = 0;
+    iotTimer = setInterval(function () {
+      if (i >= lines.length) { clearInterval(iotTimer); iotTimer = null; return; }
+      appendLine(lines[i], i); i++;
+    }, 200);
+  }
+  function stopIot() {
+    if (iotTimer) { clearInterval(iotTimer); iotTimer = null; }
+    if (iotLog) iotLog.innerHTML = '';
+    if (readout) readout.textContent = '';
+  }
+
+  /* 出货中浮层打开即播日志，收起即停 */
+  var runOv = document.getElementById('ship-running');
+  new MutationObserver(function (muts) {
+    muts.forEach(function (m) {
+      if (m.attributeName !== 'class') return;
+      if (runOv.classList.contains('show')) startIot();
+      else stopIot();
+    });
+  }).observe(runOv, { attributes: true });
+
+  renderCats();
+  renderList();
+  renderLanes();
+})();
+</script>
+<script src="../shared/i18n.js" defer></script>
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>

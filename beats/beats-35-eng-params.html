@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>参数调节 · VendSolution</title>
+<link rel="stylesheet" href="../shared/style.css">
+<style>
+  .pp-range{font-size:15px;color:var(--sub);margin-bottom:18px;}
+  .pp-range .mono{color:var(--ink);font-weight:600;}
+  .pp-list{display:flex;flex-direction:column;gap:14px;}
+  .pp-row{
+    background:var(--card);border:1px solid var(--line);border-radius:6px;
+    padding:20px 24px;display:flex;align-items:center;justify-content:space-between;
+  }
+  .pp-name{font-size:17px;font-weight:600;}
+  .pp-stepper{display:flex;align-items:center;gap:0;border:1px solid var(--line-btn);border-radius:4px;overflow:hidden;}
+  .pp-step{width:52px;height:48px;background:var(--card);border:none;font-size:20px;font-weight:600;cursor:pointer;font-family:var(--sans);color:var(--ink);}
+  .pp-step:hover{background:#F0F0EC;}
+  .pp-step:first-child{border-right:1px solid var(--line-soft);}
+  .pp-step:last-child{border-left:1px solid var(--line-soft);}
+  .pp-val{width:88px;height:48px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:18px;font-weight:700;background:#FAFAF7;}
+  .pp-foot{display:flex;justify-content:flex-end;gap:16px;margin-top:auto;}
+  .pp-cancel{height:56px;padding:0 44px;background:var(--card);border:1px solid var(--line-btn);border-radius:4px;font-size:17px;font-weight:600;font-family:var(--sans);cursor:pointer;}
+  .pp-save{height:56px;padding:0 56px;background:var(--dark);border:1px solid var(--dark);border-radius:4px;color:#FFF;font-size:17px;font-weight:600;font-family:var(--sans);cursor:pointer;}
+</style>
+</head>
+<body>
+<div class="vs-canvas">
+
+  <div class="vs-topbar">
+    <button class="vs-btn-line" data-href="beats-31-eng-settings.html">← 返回高级IoT设置</button>
+    <div class="page-title">参数调节</div>
+  </div>
+
+  <div class="vs-main" style="gap:0;">
+    <div class="pp-range">参数范围：<span class="mono">1 – 50</span></div>
+    <div class="pp-list">
+      <div class="pp-row"><span class="pp-name">Item 1</span><div class="pp-stepper"><button class="pp-step" data-step="-">−</button><div class="pp-val">20</div><button class="pp-step" data-step="+">+</button></div></div>
+      <div class="pp-row"><span class="pp-name">Item 2</span><div class="pp-stepper"><button class="pp-step" data-step="-">−</button><div class="pp-val">35</div><button class="pp-step" data-step="+">+</button></div></div>
+      <div class="pp-row"><span class="pp-name">Item 3</span><div class="pp-stepper"><button class="pp-step" data-step="-">−</button><div class="pp-val">10</div><button class="pp-step" data-step="+">+</button></div></div>
+      <div class="pp-row"><span class="pp-name">Item 4</span><div class="pp-stepper"><button class="pp-step" data-step="-">−</button><div class="pp-val">25</div><button class="pp-step" data-step="+">+</button></div></div>
+      <div class="pp-row"><span class="pp-name">Item 5</span><div class="pp-stepper"><button class="pp-step" data-step="-">−</button><div class="pp-val">15</div><button class="pp-step" data-step="+">+</button></div></div>
+    </div>
+    <div class="pp-foot">
+      <button class="pp-cancel" data-href="beats-31-eng-settings.html">取消</button>
+      <button class="pp-save" data-toast="参数已保存">保存</button>
+    </div>
+  </div>
+</div>
+<script src="../shared/i18n.js" defer></script>
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>

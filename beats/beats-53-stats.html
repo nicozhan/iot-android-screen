@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>VendSolution Console · 统计</title>
+<link rel="stylesheet" href="../shared/style.css">
+<style>
+  /* ---- 页头：返回按钮 + 居中标题（Figma PageHeader） ---- */
+  .pg-head{
+    flex:0 0 88px;height:88px;background:var(--card);
+    border-bottom:1px solid var(--ink);
+    display:flex;align-items:center;justify-content:center;position:relative;
+  }
+  .pg-back{
+    position:absolute;left:40px;top:18px;height:52px;padding:0 26px;
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--card);border:2px solid var(--ink);border-radius:8px;
+    font-family:var(--sans);font-size:16px;font-weight:700;color:var(--ink);
+    cursor:pointer;
+  }
+  .pg-back:hover{background:var(--ink);color:#FFFFFF;}
+  .pg-title{font-size:20px;font-weight:700;}
+
+  /* ---- 时间范围段 ---- */
+  .sec{padding:28px 40px 32px;border-bottom:1px solid var(--ink);background:var(--card);}
+  .sec-h{font-size:17px;font-weight:700;margin-bottom:16px;}
+  .range-row{display:flex;gap:12px;}
+  .rg-btn{
+    height:44px;padding:0 22px;background:var(--card);
+    border:2px solid var(--ink);border-radius:8px;
+    font-family:var(--sans);font-size:16px;font-weight:700;color:var(--ink);
+    cursor:pointer;
+  }
+  .rg-btn.on{background:var(--ink);color:#FFFFFF;}
+
+  /* ---- 统计卡片 2x2 ---- */
+  .cards{
+    flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;
+    gap:32px;padding:36px 40px;background:var(--card);
+  }
+  .stat-card{
+    border:2px solid var(--ink);border-radius:8px;background:var(--card);
+    display:flex;flex-direction:column;align-items:center;text-align:center;
+    padding:36px 28px 28px;cursor:pointer;font-family:var(--sans);
+  }
+  .stat-card:hover{background:#FCFCFA;}
+  .stat-card .c-title{font-size:20px;font-weight:700;}
+  .stat-card .c-value{margin-top:30px;font-size:48px;font-weight:700;font-family:var(--mono);line-height:1;}
+  .stat-card .c-unit{font-size:20px;font-weight:700;margin-top:12px;}
+  .stat-card .c-mid{margin-top:26px;font-size:20px;font-weight:500;color:var(--sub);}
+  .stat-card .c-link{margin-top:auto;font-size:15px;font-weight:600;}
+  .stat-card:hover .c-link{color:var(--orange);}
+</style>
+</head>
+<body>
+<div class="vs-canvas">
+
+  <header class="pg-head">
+    <button class="pg-back" data-href="beats-01-home.html">&#8592; 返回首页</button>
+    <div class="pg-title">统计</div>
+  </header>
+
+  <section class="sec">
+    <div class="sec-h">时间范围</div>
+    <div class="range-row" id="rangeRow">
+      <button class="rg-btn on">今日</button>
+      <button class="rg-btn">本周</button>
+      <button class="rg-btn">本月</button>
+      <button class="rg-btn" data-op="custom-range">自定义 &#9662;</button>
+    </div>
+  </section>
+
+  <div class="cards">
+    <button class="stat-card" data-href="beats-53a-stats-cups.html">
+      <span class="c-title">出货量</span>
+      <span class="c-value">128</span>
+      <span class="c-unit">件</span>
+      <span class="c-link">查看出货量 &#8594;</span>
+    </button>
+    <button class="stat-card" data-href="beats-53b-stats-sales.html">
+      <span class="c-title">销售额</span>
+      <span class="c-value">&#165; 1,280</span>
+      <span class="c-link">查看销售额 &#8594;</span>
+    </button>
+    <button class="stat-card" data-href="beats-53c-stats-maintenance.html">
+      <span class="c-title">维护</span>
+      <span class="c-mid">最近一次：<span class="mono">08/28 14:30</span></span>
+      <span class="c-link">查看维护记录 &#8594;</span>
+    </button>
+    <button class="stat-card" data-href="beats-53d-stats-log.html">
+      <span class="c-title">操作记录 Log</span>
+      <span class="c-mid">最近一次：<span class="mono">08/28 14:30</span></span>
+      <span class="c-link">查看操作记录 &#8594;</span>
+    </button>
+  </div>
+
+</div>
+
+<script>
+  /* 时间范围段：互斥选中（原型态） */
+  document.getElementById('rangeRow').addEventListener('click', function (e) {
+    var b = e.target.closest('.rg-btn');
+    if (!b) return;
+    this.querySelectorAll('.rg-btn').forEach(function (x) { x.classList.remove('on'); });
+    b.classList.add('on');
+  });
+</script>
+<script src="../shared/i18n.js" defer></script>
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>

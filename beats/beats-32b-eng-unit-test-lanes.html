@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<meta http-equiv="refresh" content="0;url=beats-32-eng-unit-test.html?cat=%E7%A2%B3%E9%85%B8%E9%A5%AE%E6%96%99">
+<title>VendSolution · 测试出货</title>
+<link rel="stylesheet" href="../shared/style.css">
+<style>
+  .rd-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;color:var(--sub);}
+  .rd-title{font-size:20px;font-weight:700;color:var(--ink);}
+  .rd-desc{font-size:15px;line-height:1.7;text-align:center;}
+  .rd-link{color:var(--ink);text-decoration:underline;font-size:15px;}
+</style>
+</head>
+<body>
+<div class="vs-canvas">
+  <div class="vs-topbar">
+    <button class="vs-btn-line" data-href="beats-32-eng-unit-test.html">&#8592;&nbsp;返回</button>
+    <div class="page-title">测试出货</div>
+  </div>
+  <main class="vs-main">
+    <div class="rd-wrap">
+      <div class="rd-title">正在转到「测试出货」…</div>
+      <div class="rd-desc">
+        本页内容已并入 <b>beats-32-eng-unit-test.html</b>（按商品出货改成左分类、右商品的左右结构，<br>
+        出货配置 / 出货中 / 完成三个浮层都在同一页），这里只保留旧链接入口。
+      </div>
+      <a class="rd-link" id="rd-go" href="beats-32-eng-unit-test.html">如果没有自动跳转，点这里</a>
+    </div>
+  </main>
+</div>
+<script>
+/* 旧深链（32b）→ 32 的按商品出货；保留上一页经 vs-ctx 传来的分类，避免落到默认分类 */
+(function () {
+  var cat = '碳酸饮料';
+  try {
+    var ctx = JSON.parse(sessionStorage.getItem('vs-ctx') || 'null');
+    if (ctx && ctx.name) cat = ctx.name;
+  } catch (e) {}
+  var url = 'beats-32-eng-unit-test.html?cat=' + encodeURIComponent(cat);
+  var a = document.getElementById('rd-go');
+  if (a) a.setAttribute('href', url);
+  var m = document.querySelector('meta[http-equiv="refresh"]');
+  if (m) m.setAttribute('content', '0;url=' + url);
+  location.replace(url);
+})();
+</script>
+<script src="../shared/i18n.js" defer></script>
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>

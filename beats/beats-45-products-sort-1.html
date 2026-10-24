@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>VendSolution · 商品排序</title>
+<link rel="stylesheet" href="../shared/style.css">
+<style>
+
+  /* ---- 左右分栏：与价格管理（42）同版式，左分组 300 / 间距 32 / 右商品 884 ---- */
+  .pr-wrap{flex:1;display:flex;gap:32px;min-height:0;}
+
+  .pr-nav{width:300px;flex:0 0 300px;background:var(--card);border:1px solid var(--line);
+    border-radius:6px;display:flex;flex-direction:column;overflow:hidden;}
+
+  .pr-nav-head{height:56px;flex:0 0 56px;display:flex;align-items:center;padding:0 20px;
+    font-size:15px;color:var(--aux);border-bottom:1px solid var(--line-soft);}
+
+  .pr-nav-list{flex:1;min-height:0;overflow-y:auto;padding:6px 0;}
+
+  /* 分组行：名称 / 数量 / ≡ / ↑ / ↓ —— 可整组拖动，也可用箭头一步一步挪 */
+  .pr-g{display:flex;align-items:center;gap:6px;width:100%;height:64px;
+    padding:0 12px 0 17px;background:none;border:none;border-left:3px solid transparent;
+    font-family:var(--sans);font-size:17px;font-weight:400;color:var(--sub);
+    text-align:left;cursor:pointer;user-select:none;}
+  .pr-g:hover{background:#FAFAF7;}
+  .pr-g-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .pr-g .n{font-family:var(--mono);font-size:14px;color:var(--aux);flex:0 0 auto;}
+  .pr-g.on{background:#ECECE7;border-left-color:var(--ink);color:var(--ink);font-weight:700;}
+  .pr-g.on .n{color:var(--sub);}
+
+  /* ≡ 拖拽把手 + ↑↓ 逐位移动按钮 */
+  .pr-act{display:flex;gap:4px;flex:0 0 auto;}
+  .pr-mv{width:40px;height:40px;flex:0 0 40px;display:flex;align-items:center;justify-content:center;
+    padding:0;background:var(--card);border:1px solid var(--line-btn);border-radius:4px;
+    font-family:var(--sans);font-size:16px;line-height:1;color:var(--sub);cursor:pointer;}
+  .pr-mv:hover{background:#F0F0EC;color:var(--ink);border-color:var(--aux);}
+  .pr-mv:active{background:#E6E6E1;}
+  .pr-mv:disabled{opacity:.3;cursor:not-allowed;background:var(--card);
+    color:var(--aux);border-color:var(--line-soft);}
+  .pr-g .pr-mv{width:30px;height:30px;flex:0 0 30px;font-size:14px;}
+  .pr-g .pr-handle{width:28px;height:28px;flex:0 0 28px;font-size:19px;border-radius:4px;}
+
+  /* 分组行的拖拽落点提示 */
+  .pr-g.dragging{opacity:.35;}
+  .pr-g.drop-before{box-shadow:inset 0 2px 0 var(--ink);}
+  .pr-g.drop-after{box-shadow:inset 0 -2px 0 var(--ink);}
+
+  .pr-nav-foot{flex:0 0 auto;padding:14px 20px 18px;border-top:1px solid var(--line-soft);
+    font-size:13px;line-height:1.6;color:var(--aux);}
+
+  .pr-body{flex:1;min-width:0;display:flex;flex-direction:column;}
+
+  .pr-head{display:flex;align-items:baseline;gap:14px;padding-bottom:16px;
+    border-bottom:1px solid var(--line-soft);margin-bottom:18px;}
+  .pr-title{font-size:22px;font-weight:700;}
+  .pr-count{font-size:14px;color:var(--aux);}
+  .pr-hint{margin-left:auto;font-size:13px;color:var(--aux);display:flex;align-items:baseline;gap:14px;}
+  .pr-dirty{display:none;color:var(--red);font-weight:700;}
+  .pr-dirty.on{display:inline;}
+
+  .pr-list{flex:1;min-height:0;overflow-y:auto;background:var(--card);
+    border:1px solid var(--line);border-radius:6px;}
+
+  .pr-list::-webkit-scrollbar,.pr-nav-list::-webkit-scrollbar{width:8px;}
+  .pr-list::-webkit-scrollbar-thumb,.pr-nav-list::-webkit-scrollbar-thumb{
+    background:#D6D6D0;border-radius:4px;}
+
+  /* 商品行 104px：序号 / 缩略图 / 名称+SKU / SKU排序入口 / ≡ / ↑ / ↓ */
+  .pr-row{height:104px;gap:14px;cursor:default;user-select:none;}
+  .pr-row .pm-thumb{width:64px;height:64px;flex:0 0 64px;}
+
+  .pr-order{width:36px;flex:0 0 36px;text-align:right;font-family:var(--mono);
+    font-size:16px;font-weight:700;color:var(--aux);}
+
+  .pr-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;}
+  .pr-info .pm-name{flex:none;}
+  .pr-sub{font-family:var(--mono);font-size:13px;color:var(--aux);letter-spacing:.5px;}
+
+  /* SKU 排序入口：统一黑底白字按钮；无 SKU 的商品同款按钮半透明、点了无反应 */
+  .pr-sublink{display:inline-flex;align-items:center;justify-content:center;height:40px;
+    padding:0 16px;background:var(--ink);color:#fff;font-size:14px;font-weight:600;
+    text-decoration:none;white-space:nowrap;border-radius:4px;transition:background .12s;}
+  .pr-sublink:hover{background:#000;}
+  .pr-sublink:active{background:#2B2B2B;}
+  .pr-sublink.is-off,.pr-sublink.is-off:hover,.pr-sublink.is-off:active{
+    background:var(--ink);color:#fff;opacity:.4;cursor:not-allowed;}
+
+  .pr-handle{width:40px;height:40px;flex:0 0 40px;display:flex;align-items:center;justify-content:center;
+    font-size:24px;color:var(--aux);cursor:grab;border-radius:4px;}
+  .pr-handle:active{cursor:grabbing;}
+  .pr-row:hover .pr-handle{color:var(--ink);}
+
+  /* 拖拽反馈 */
+  .pr-row.dragging{opacity:.35;}
+  .pr-row.drop-before{box-shadow:inset 0 2px 0 var(--ink);}
+  .pr-row.drop-after{box-shadow:inset 0 -2px 0 var(--ink);}
+
+  .pr-empty{display:none;flex:1;align-items:center;justify-content:center;
+    background:var(--card);border:1px solid var(--line);border-radius:6px;
+    font-size:16px;color:var(--aux);}
+  .pr-empty.on{display:flex;}
+</style>
+</head>
+<body>
+<div class="vs-canvas">
+<div class="vs-topbar"><a class="vs-btn-line" href="beats-36-products.html">&#8592;&nbsp;返回</a><div class="page-title">商品排序</div><button class="vs-btn-line" style="margin-left:auto" id="save-btn" data-toast="已保存排序">保存</button></div>
+<main class="vs-main" style="gap:0">
+  <div class="pr-wrap">
+    <aside class="pr-nav">
+      <div class="pr-nav-head">商品分组</div>
+      <div class="pr-nav-list" id="pr-groups"></div>
+      <div class="pr-nav-foot">分组顺序与分组内顺序都会影响点单页的显示：可用 ↑ ↓ 一步一位微调，也可拖动 ≡ 直接挪。</div>
+    </aside>
+    <section class="pr-body">
+      <div class="pr-head">
+        <div class="pr-title" id="pr-title">碳酸饮料</div>
+        <div class="pr-count" id="pr-count"></div>
+        <div class="pr-hint">
+          <span class="pr-dirty" id="pr-dirty">顺序已修改 · 未保存</span>
+          <span>拖动或点 ↑ ↓ 调整顺序</span>
+        </div>
+      </div>
+      <div class="pr-list" id="pr-list"></div>
+      <div class="pr-empty" id="pr-empty">该分组暂无商品</div>
+    </section>
+  </div>
+</main>
+</div>
+
+<script>
+(function () {
+  /* ---------------- 数据（与价格管理 42 同一批商品） ---------------- */
+  var GROUPS = [
+    { id: 'cs', name: '碳酸饮料' },
+    { id: 'bt', name: '瓶装茶饮' },
+    { id: 'jc', name: '果汁' },
+    { id: 'mr', name: '乳饮' },
+    { id: 'wt', name: '水' },
+    { id: 'hp', name: '耳机' }
+  ];
+
+  /* 数组顺序即展示顺序：同一分组内的相对先后可被拖动修改 */
+  var PRODUCTS = [
+    { sku: 'SKU-CS-01', name: '可口可乐',     group: 'cs', skus: 0 },
+    { sku: 'SKU-CS-02', name: '百事可乐',     group: 'cs', skus: 0 },
+    { sku: 'SKU-CS-03', name: '无糖可乐',     group: 'cs', skus: 0 },
+    { sku: 'SKU-CS-04', name: '健怡可乐',     group: 'cs', skus: 0 },
+    { sku: 'SKU-CS-05', name: '雪碧',         group: 'cs', skus: 0 },
+    { sku: 'SKU-CS-06', name: '七喜',         group: 'cs', skus: 0 },
+    { sku: 'SKU-CS-07', name: '芬达橙味',     group: 'cs', skus: 0 },
+    { sku: 'SKU-CS-08', name: '美年达',       group: 'cs', skus: 0 },
+
+    { sku: 'SKU-BT-01', name: '冰红茶',       group: 'bt', skus: 0 },
+    { sku: 'SKU-BT-02', name: '冰绿茶',       group: 'bt', skus: 0 },
+    { sku: 'SKU-BT-03', name: '茉莉花茶',     group: 'bt', skus: 0 },
+    { sku: 'SKU-BT-04', name: '乌龙茶',       group: 'bt', skus: 0 },
+    { sku: 'SKU-BT-05', name: '王老吉',       group: 'bt', skus: 0 },
+    { sku: 'SKU-BT-06', name: '酸梅汤',       group: 'bt', skus: 0 },
+
+    { sku: 'SKU-JC-01', name: '橙汁',         group: 'jc', skus: 0 },
+    { sku: 'SKU-JC-02', name: '苹果汁',       group: 'jc', skus: 0 },
+    { sku: 'SKU-JC-03', name: '葡萄汁',       group: 'jc', skus: 0 },
+    { sku: 'SKU-JC-04', name: '芒果汁',       group: 'jc', skus: 0 },
+    { sku: 'SKU-JC-05', name: '桃汁',         group: 'jc', skus: 0 },
+
+    { sku: 'SKU-MR-01', name: '阿萨姆奶茶',   group: 'mr', skus: 0 },
+    { sku: 'SKU-MR-02', name: '元气乳茶',     group: 'mr', skus: 0 },
+    { sku: 'SKU-MR-03', name: '豆奶',         group: 'mr', skus: 0 },
+    { sku: 'SKU-MR-04', name: '椰汁',         group: 'mr', skus: 0 },
+    { sku: 'SKU-MR-05', name: '纯牛奶',       group: 'mr', skus: 0 },
+
+    { sku: 'SKU-WT-01', name: '矿泉水',       group: 'wt', skus: 0 },
+    { sku: 'SKU-WT-02', name: '纯净水',       group: 'wt', skus: 0 },
+    { sku: 'SKU-WT-03', name: '苏打气泡水',   group: 'wt', skus: 0 },
+
+    /* 耳机：下一级是颜色 SKU（黑色 / 云白色 / 粉色 / 晴空蓝色） */
+    { sku: 'SKU-HP-01', name: 'Beats 360',    group: 'hp', skus: 4 }
+  ];
+
+  /* SKU 排序入口带上商品上下文，49 页据此渲染该商品的 SKU 清单 */
+  function skuHref(p, gid) {
+    return 'beats-49-products-sort-5.html?p=' + encodeURIComponent(p.sku) +
+           '&n=' + encodeURIComponent(p.name) +
+           '&c=' + p.skus +
+           '&g=' + encodeURIComponent(gid);
+  }
+
+  /* ---------------- 状态 ---------------- */
+  var cur = 'cs';
+  var dirty = false;
+
+  /* 从 SKU 排序页返回时带回来源分组（?g=hp），避免每次都跳回碳酸饮料 */
+  (function initGroup() {
+    var m = /[?&]g=([^&#]*)/.exec(location.search || '');
+    if (!m) return;
+    var gid;
+    try { gid = decodeURIComponent(m[1]); } catch (e) { gid = m[1]; }
+    if (gIdxOf(gid) >= 0) cur = gid;
+  })();
+
+  var groupsEl = document.getElementById('pr-groups');
+  var listEl   = document.getElementById('pr-list');
+  var emptyEl  = document.getElementById('pr-empty');
+  var titleEl  = document.getElementById('pr-title');
+  var countEl  = document.getElementById('pr-count');
+  var dirtyEl  = document.getElementById('pr-dirty');
+
+  /* ---------------- 工具 ---------------- */
+  function rowsOf(id) {
+    return PRODUCTS.filter(function (p) { return p.group === id; });
+  }
+  function idxOf(sku) {
+    for (var i = 0; i < PRODUCTS.length; i++) if (PRODUCTS[i].sku === sku) return i;
+    return -1;
+  }
+  function markDirty(on) {
+    dirty = !!on;
+    dirtyEl.classList.toggle('on', dirty);
+  }
+
+  /* 组内移动：把 fromSku 插到 toSku 前（before=true）或后 */
+  function moveTo(fromSku, toSku, before) {
+    if (fromSku === toSku) return false;
+    var fi = idxOf(fromSku), ti = idxOf(toSku);
+    if (fi < 0 || ti < 0) return false;
+    if (PRODUCTS[fi].group !== PRODUCTS[ti].group) return false;
+    var p = PRODUCTS.splice(fi, 1)[0];
+    ti = idxOf(toSku);
+    PRODUCTS.splice(before ? ti : ti + 1, 0, p);
+    return true;
+  }
+
+  /* 商品逐位移动：dir=-1 上移一位，dir=+1 下移一位（只在本分组内） */
+  function stepProduct(sku, dir) {
+    var list = rowsOf(cur);
+    var i = -1;
+    for (var k = 0; k < list.length; k++) if (list[k].sku === sku) i = k;
+    var j = i + dir;
+    if (i < 0 || j < 0 || j >= list.length) return false;
+    var a = idxOf(list[i].sku), b = idxOf(list[j].sku);
+    var t = PRODUCTS[a]; PRODUCTS[a] = PRODUCTS[b]; PRODUCTS[b] = t;
+    return true;
+  }
+
+  /* 分组工具 */
+  function gIdxOf(id) {
+    for (var i = 0; i < GROUPS.length; i++) if (GROUPS[i].id === id) return i;
+    return -1;
+  }
+  function stepGroup(id, dir) {
+    var i = gIdxOf(id), j = i + dir;
+    if (i < 0 || j < 0 || j >= GROUPS.length) return false;
+    var t = GROUPS[i]; GROUPS[i] = GROUPS[j]; GROUPS[j] = t;
+    return true;
+  }
+  function moveGroupTo(fromId, toId, before) {
+    if (fromId === toId) return false;
+    var fi = gIdxOf(fromId), ti = gIdxOf(toId);
+    if (fi < 0 || ti < 0) return false;
+    var g = GROUPS.splice(fi, 1)[0];
+    ti = gIdxOf(toId);
+    GROUPS.splice(before ? ti : ti + 1, 0, g);
+    return true;
+  }
+
+  /* ---------------- 渲染 ---------------- */
+  /* 无 SKU（skus 为 0）的商品不出链接，渲染成不可点的同款黑按钮 */
+  function skuBtn(p) {
+    if (!p.skus) {
+      return '<span class="pr-sublink is-off" title="该商品无 SKU，无需排序">SKU 排序 &#8250;</span>';
+    }
+    return '<a class="pr-sublink" href="' + skuHref(p, cur) + '">SKU 排序 &#8250;</a>';
+  }
+
+  function arrowBtns(upOff, downOff) {
+    return '<span class="pr-act">' +
+             '<button class="pr-mv" data-mv="up" title="上移"' + (upOff ? ' disabled' : '') + '>&#8593;</button>' +
+             '<button class="pr-mv" data-mv="down" title="下移"' + (downOff ? ' disabled' : '') + '>&#8595;</button>' +
+           '</span>';
+  }
+
+  function renderGroups() {
+    var st = groupsEl.scrollTop;
+    groupsEl.innerHTML = GROUPS.map(function (g, i) {
+      return '<div class="pr-g' + (g.id === cur ? ' on' : '') + '" data-g="' + g.id + '" draggable="true">' +
+               '<span class="pr-g-name">' + g.name + '</span>' +
+               '<span class="n">' + rowsOf(g.id).length + '</span>' +
+               '<span class="pr-handle" title="拖动排序">&#8801;</span>' +
+               arrowBtns(i === 0, i === GROUPS.length - 1) +
+             '</div>';
+    }).join('');
+    groupsEl.scrollTop = st;
+  }
+
+  function renderList(keepScroll) {
+    var st = keepScroll ? listEl.scrollTop : 0;
+    var list = rowsOf(cur);
+    var g = GROUPS.filter(function (x) { return x.id === cur; })[0];
+
+    titleEl.textContent = g ? g.name : '全部商品';
+    countEl.textContent = list.length + ' 件商品';
+
+    listEl.innerHTML = list.map(function (p, i) {
+      return '<div class="pm-row pr-row" draggable="true" data-sku="' + p.sku + '">' +
+               '<span class="pr-order">' + (i + 1) + '</span>' +
+               '<div class="pm-thumb">商品图片</div>' +
+               '<div class="pr-info">' +
+                 '<div class="pm-name">' + p.name + '</div>' +
+                 '<div class="pr-sub">' + p.sku + (p.skus ? ' · ' + p.skus + ' 个SKU' : ' · 无 SKU') + '</div>' +
+               '</div>' +
+               skuBtn(p) +
+               '<span class="pr-handle" title="拖动排序">&#8801;</span>' +
+               arrowBtns(i === 0, i === list.length - 1) +
+             '</div>';
+    }).join('');
+
+    listEl.style.display = list.length ? '' : 'none';
+    emptyEl.classList.toggle('on', list.length === 0);
+    listEl.scrollTop = st;
+  }
+
+  /* ---------------- 交互：切分组 / 分组箭头升降 ---------------- */
+  groupsEl.addEventListener('click', function (ev) {
+    var row = ev.target.closest ? ev.target.closest('.pr-g') : null;
+    if (!row) return;
+    var mv = ev.target.closest('.pr-mv');
+    if (mv) {
+      ev.preventDefault();
+      if (mv.disabled) return;
+      if (stepGroup(row.getAttribute('data-g'), mv.getAttribute('data-mv') === 'up' ? -1 : 1)) {
+        markDirty(true);
+        renderGroups();
+      }
+      return;
+    }
+    cur = row.getAttribute('data-g');
+    groupsEl.querySelectorAll('.pr-g').forEach(function (b) {
+      b.classList.toggle('on', b === row);
+    });
+    renderList();
+  });
+
+  /* ---------------- 交互：商品箭头升降 ---------------- */
+  listEl.addEventListener('click', function (ev) {
+    var mv = ev.target.closest ? ev.target.closest('.pr-mv') : null;
+    if (!mv) return;
+    ev.preventDefault();
+    if (mv.disabled) return;
+    var row = mv.closest('.pr-row');
+    if (!row) return;
+    if (stepProduct(row.getAttribute('data-sku'), mv.getAttribute('data-mv') === 'up' ? -1 : 1)) {
+      markDirty(true);
+      renderList(true);
+    }
+  });
+
+  /* ---------------- 交互：拖动排序（组内） ---------------- */
+  var dragEl = null;
+  var dropEl = null;
+  var dropBefore = true;
+
+  function clearMarks() {
+    listEl.querySelectorAll('.pr-row').forEach(function (r) {
+      r.classList.remove('dragging', 'drop-before', 'drop-after');
+    });
+    dropEl = null;
+  }
+
+  listEl.addEventListener('dragstart', function (e) {
+    var row = e.target.closest ? e.target.closest('.pr-row') : null;
+    if (!row) return;
+    dragEl = row;
+    row.classList.add('dragging');
+    if (e.dataTransfer) {
+      try {
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', row.getAttribute('data-sku'));
+      } catch (err) {}
+    }
+  });
+
+  listEl.addEventListener('dragover', function (e) {
+    if (!dragEl) return;
+    var row = e.target.closest ? e.target.closest('.pr-row') : null;
+    if (!row || row === dragEl) { clearMarks(); dragEl.classList.add('dragging'); return; }
+    e.preventDefault();
+    if (e.dataTransfer) { try { e.dataTransfer.dropEffect = 'move'; } catch (err) {} }
+
+    var r = row.getBoundingClientRect();
+    var y = (e.clientY || 0);
+    dropBefore = y < r.top + r.height / 2;
+
+    if (dropEl !== row) {
+      clearMarks();
+      dragEl.classList.add('dragging');
+      dropEl = row;
+    }
+    row.classList.toggle('drop-before', dropBefore);
+    row.classList.toggle('drop-after', !dropBefore);
+  });
+
+  listEl.addEventListener('drop', function (e) {
+    if (!dragEl) return;
+    var row = e.target.closest ? e.target.closest('.pr-row') : null;
+    e.preventDefault();
+    if (row && row !== dragEl) {
+      var moved = moveTo(dragEl.getAttribute('data-sku'), row.getAttribute('data-sku'), dropBefore);
+      if (moved) markDirty(true);
+    }
+    dragEl = null;
+    clearMarks();
+    renderList();
+  });
+
+  listEl.addEventListener('dragend', function () {
+    dragEl = null;
+    clearMarks();
+  });
+
+  /* ---------------- 交互：拖动排序（分组的先后） ---------------- */
+  var gDragEl = null, gDropEl = null, gDropBefore = true;
+
+  function clearGroupMarks() {
+    groupsEl.querySelectorAll('.pr-g').forEach(function (r) {
+      r.classList.remove('dragging', 'drop-before', 'drop-after');
+    });
+    gDropEl = null;
+  }
+
+  groupsEl.addEventListener('dragstart', function (e) {
+    var row = e.target.closest ? e.target.closest('.pr-g') : null;
+    if (!row) return;
+    gDragEl = row;
+    row.classList.add('dragging');
+    if (e.dataTransfer) {
+      try {
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', row.getAttribute('data-g'));
+      } catch (err) {}
+    }
+  });
+
+  groupsEl.addEventListener('dragover', function (e) {
+    if (!gDragEl) return;
+    var row = e.target.closest ? e.target.closest('.pr-g') : null;
+    if (!row || row === gDragEl) { clearGroupMarks(); gDragEl.classList.add('dragging'); return; }
+    e.preventDefault();
+    if (e.dataTransfer) { try { e.dataTransfer.dropEffect = 'move'; } catch (err) {} }
+
+    var r = row.getBoundingClientRect();
+    gDropBefore = (e.clientY || 0) < r.top + r.height / 2;
+
+    if (gDropEl !== row) {
+      clearGroupMarks();
+      gDragEl.classList.add('dragging');
+      gDropEl = row;
+    }
+    row.classList.toggle('drop-before', gDropBefore);
+    row.classList.toggle('drop-after', !gDropBefore);
+  });
+
+  groupsEl.addEventListener('drop', function (e) {
+    if (!gDragEl) return;
+    var row = e.target.closest ? e.target.closest('.pr-g') : null;
+    e.preventDefault();
+    if (row && row !== gDragEl) {
+      var moved = moveGroupTo(gDragEl.getAttribute('data-g'), row.getAttribute('data-g'), gDropBefore);
+      if (moved) markDirty(true);
+    }
+    gDragEl = null;
+    clearGroupMarks();
+    renderGroups();
+  });
+
+  groupsEl.addEventListener('dragend', function () {
+    gDragEl = null;
+    clearGroupMarks();
+  });
+
+  /* ---------------- 交互：保存（提示语由引擎的 data-toast 负责） ---------------- */
+  document.getElementById('save-btn').addEventListener('click', function () {
+    if (dirty) markDirty(false);
+  });
+
+  renderGroups();
+  renderList();
+})();
+</script>
+
+<script src="../shared/i18n.js" defer></script>
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>

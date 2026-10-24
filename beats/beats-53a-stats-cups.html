@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>VendSolution Console · 出货量</title>
+<link rel="stylesheet" href="../shared/style.css">
+<style>
+  /* ---- 页头 ---- */
+  .pg-head{
+    flex:0 0 88px;height:88px;background:var(--card);
+    border-bottom:1px solid var(--ink);
+    display:flex;align-items:center;justify-content:center;position:relative;
+  }
+  .pg-back{
+    position:absolute;left:40px;top:18px;height:52px;padding:0 26px;
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--card);border:2px solid var(--ink);border-radius:8px;
+    font-family:var(--sans);font-size:16px;font-weight:700;color:var(--ink);cursor:pointer;
+  }
+  .pg-back:hover{background:var(--ink);color:#FFFFFF;}
+  .pg-title{font-size:20px;font-weight:700;}
+
+  /* ---- 时间范围段 ---- */
+  .sec{padding:28px 40px 32px;border-bottom:1px solid var(--ink);background:var(--card);}
+  .sec-h{font-size:17px;font-weight:700;margin-bottom:16px;}
+  .range-row{display:flex;gap:12px;}
+  .rg-btn{
+    height:44px;padding:0 22px;background:var(--card);
+    border:2px solid var(--ink);border-radius:8px;
+    font-family:var(--sans);font-size:16px;font-weight:700;color:var(--ink);cursor:pointer;
+  }
+  .rg-btn.on{background:var(--ink);color:#FFFFFF;}
+
+  /* ---- 主体 ---- */
+  .body{flex:1;background:var(--card);display:flex;flex-direction:column;}
+  .big-wrap{text-align:center;padding:22px 40px 20px;}
+  .big-num{font-size:40px;font-weight:700;font-family:var(--mono);}
+  .big-num .u{font-size:22px;margin-left:6px;}
+
+  /* ---- 趋势图卡片 ---- */
+  .chart-card{
+    margin:0 40px;height:300px;background:var(--card);
+    border:2px solid var(--ink);border-radius:8px;
+  }
+  .chart-card svg{display:block;width:100%;height:100%;}
+
+  /* ---- SKU 区 ---- */
+  .sku-head{display:flex;align-items:center;justify-content:space-between;margin:26px 40px 14px;}
+  .sku-title{font-size:17px;font-weight:700;}
+  .sort-toggle{display:flex;gap:10px;}
+  .st-btn{
+    height:36px;padding:0 18px;background:var(--card);
+    border:2px solid var(--ink);border-radius:8px;
+    font-family:var(--sans);font-size:14px;font-weight:700;color:var(--ink);cursor:pointer;
+  }
+  .st-btn.on{background:var(--ink);color:#FFFFFF;}
+  .sku-table{margin:0 40px;border:2px solid var(--ink);border-radius:8px;overflow:hidden;}
+  .sku-row{display:grid;grid-template-columns:1fr 1fr;padding:13px 24px;font-size:16px;}
+  .sku-row + .sku-row{border-top:1px solid var(--line);}
+  .sku-row.h{background:var(--bg);font-weight:700;}
+  .sku-row .mono{font-weight:500;}
+</style>
+</head>
+<body>
+<div class="vs-canvas">
+
+  <header class="pg-head">
+    <button class="pg-back" data-href="beats-53-stats.html">&#8592; 返回统计</button>
+    <div class="pg-title">出货量</div>
+  </header>
+
+  <section class="sec">
+    <div class="sec-h">时间范围</div>
+    <div class="range-row" id="rangeRow">
+      <button class="rg-btn on">今日</button>
+      <button class="rg-btn">本周</button>
+      <button class="rg-btn">本月</button>
+      <button class="rg-btn" data-op="custom-range">自定义 &#9662;</button>
+    </div>
+  </section>
+
+  <div class="body">
+    <div class="big-wrap">
+      <div class="big-num"><span class="mono">128</span><span class="u">件</span></div>
+    </div>
+
+    <div class="chart-card">
+      <svg viewBox="0 0 1200 300" preserveAspectRatio="none" role="img">
+        <title>出货量趋势</title>
+        <text x="600" y="26" text-anchor="middle" font-size="15" font-weight="700" fill="#171717">出货量趋势</text>
+        <g stroke="#E3E3DE" stroke-width="1">
+          <line x1="70" y1="55" x2="1160" y2="55"/>
+          <line x1="70" y1="108.3" x2="1160" y2="108.3"/>
+          <line x1="70" y1="161.7" x2="1160" y2="161.7"/>
+          <line x1="70" y1="215" x2="1160" y2="215"/>
+        </g>
+        <g font-size="12" fill="#888888" text-anchor="end" font-family="JetBrains Mono, monospace">
+          <text x="52" y="60">45</text>
+          <text x="52" y="113">30</text>
+          <text x="52" y="166">15</text>
+          <text x="52" y="220">0</text>
+        </g>
+        <path d="M70 165.2 H179 V108.3 H397 V119 H615 V65.7 H833 V90.6 H1051 V136.8 H1160"
+              fill="none" stroke="#171717" stroke-width="2" stroke-linejoin="round"/>
+        <g font-size="12" fill="#888888" text-anchor="middle" font-family="JetBrains Mono, monospace">
+          <text x="70" y="248">08:00</text>
+          <text x="288" y="248">10:00</text>
+          <text x="506" y="248">12:00</text>
+          <text x="724" y="248">14:00</text>
+          <text x="942" y="248">16:00</text>
+          <text x="1160" y="248">18:00</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="sku-head">
+      <div class="sku-title">SKU 出货量</div>
+      <div class="sort-toggle" id="sortToggle">
+        <button class="st-btn on" data-dir="-1">最多</button>
+        <button class="st-btn" data-dir="1">最少</button>
+      </div>
+    </div>
+    <div class="sku-table">
+      <div class="sku-row h"><span>SKU</span><span>出货量</span></div>
+      <div id="skuRows"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  /* 时间范围段：互斥选中（原型态） */
+  document.getElementById('rangeRow').addEventListener('click', function (e) {
+    var b = e.target.closest('.rg-btn');
+    if (!b) return;
+    this.querySelectorAll('.rg-btn').forEach(function (x) { x.classList.remove('on'); });
+    b.classList.add('on');
+  });
+
+  /* SKU 出货量：最多 / 最少 排序切换 */
+  var SKUS = [['可口可乐', 42], ['冰红茶', 35], ['矿泉水', 28], ['薯片', 23]];
+  function renderSKU(dir) {
+    var box = document.getElementById('skuRows');
+    box.innerHTML = '';
+    SKUS.slice().sort(function (a, b) { return (a[1] - b[1]) * dir; }).forEach(function (s) {
+      var r = document.createElement('div');
+      r.className = 'sku-row';
+      var n = document.createElement('span'); n.textContent = s[0];
+      var q = document.createElement('span'); q.className = 'mono';
+      var num = document.createTextNode(String(s[1]));
+      var unit = document.createElement('span'); unit.textContent = '件';
+      q.appendChild(num); q.appendChild(document.createTextNode(' ')); q.appendChild(unit);
+      r.appendChild(n); r.appendChild(q);
+      box.appendChild(r);
+    });
+  }
+  renderSKU(-1);
+  document.getElementById('sortToggle').addEventListener('click', function (e) {
+    var b = e.target.closest('.st-btn');
+    if (!b) return;
+    this.querySelectorAll('.st-btn').forEach(function (x) { x.classList.remove('on'); });
+    b.classList.add('on');
+    renderSKU(parseInt(b.getAttribute('data-dir'), 10));
+  });
+</script>
+<script src="../shared/i18n.js" defer></script>
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="gIMlAJ83AFxO8bTyzXZZpv">
+<head data-page-node-id="h7UdU7jRt4JZs8WfNBhVHF">
+<meta charset="UTF-8" data-page-node-id="Yzbuyvs3DQTI3gVq3Ub30k">
+<meta name="viewport" content="width=1280" data-page-node-id="AEKJjWHpIAtYFdHsrTJANn">
+<title>VendSolution Console · 运维模式登录</title>
+<link rel="stylesheet" href="../shared/style.css" data-page-node-id="itlCmGYUATtibd3wX4t6wi">
+<style>
+  /* ---- 本页专属：居中登录布局 ---- */
+  .login-topbar{
+    justify-content:space-between;
+  }
+  .login-topbar .bar-title{font-size:24px;font-weight:700;}
+  .login-body{
+    flex:1;
+    padding-top:44px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .login-title{
+    font-size:24px;
+    font-weight:700;
+    margin-bottom:30px;
+  }
+  .login-tabs{
+    width:64%;
+    display:flex;
+    border-bottom:1px solid var(--line);
+  }
+  .login-tab{
+    flex:1;
+    padding:14px 0;
+    text-align:center;
+    font-size:17px;
+    font-weight:500;
+    color:var(--aux);
+    cursor:pointer;
+    background:none;
+    border:none;
+    font-family:var(--sans);
+    position:relative;
+  }
+  .login-tab.active{
+    color:var(--ink);
+    font-weight:700;
+  }
+  .login-tab.active::after{
+    content:"";
+    position:absolute;
+    left:0;right:0;bottom:-1px;
+    height:3px;
+    background:var(--ink);
+  }
+  .login-form{
+    width:64%;
+    margin-top:34px;
+  }
+  .login-form .vs-field{max-width:none;margin-bottom:30px;}
+  .login-form .vs-field-label{font-size:16px;}
+  .login-form .vs-input{height:56px;}
+  .login-form .vs-input .ph{color:#B3B3AE;}
+  .login-submit{
+    width:100%;
+    height:64px;
+    margin-top:20px;
+    background:var(--dark);
+    border:1px solid var(--dark);
+    border-radius:4px;
+    color:#FFFFFF;
+    font-size:18px;
+    font-weight:700;
+    font-family:var(--sans);
+    cursor:pointer;
+  }
+  .login-submit:hover{background:#1F1F1F;}
+  .login-submit:active{background:#000000;}
+</style>
+</head>
+<body data-page-node-id="q2rgkbg057BfaHb0ZojWkf">
+<div class="vs-canvas" data-page-node-id="THb4Z8mhQAvyIf27H431BA">
+
+  <div class="vs-topbar login-topbar" data-page-node-id="SrtrrG3OxK57QDJKv05H7V">
+    <span class="bar-title" data-page-node-id="QdPDlITOfz4Zlb5X1HWElY">运维模式</span>
+    <div class="lang-switch" data-i18n-skip>
+      <button class="lang-seg" data-act="set-lang" data-lang="zh">简体中文</button>
+      <button class="lang-seg" data-act="set-lang" data-lang="en">English</button>
+      <button class="lang-seg" data-act="set-lang" data-lang="zh-TW">繁體中文</button>
+    </div>
+    <button class="vs-btn-line" data-page-node-id="6VJVhV5ARcXBBspk3Krefp" data-href="../select.html">返回</button>
+  </div>
+
+  <div class="login-body" data-page-node-id="QIu2t8mSJ3qhebyIioEe8D">
+    <div class="login-title" data-page-node-id="gHQnpTFJWLe7EbTO5QFvP9">后台运维模式登录</div>
+
+    <div class="login-tabs" data-page-node-id="6UNqbRxSv3ieQIuVzA5qec">
+      <button class="login-tab" data-page-node-id="7nCb7bgva2ZjhfvawUyM3X" data-href="beats-05-login-passcode.html">口令</button>
+      <button class="login-tab active" data-page-node-id="xOAF54DLqlDQG8H4ybmqPQ">账号密码</button>
+    </div>
+
+    <div class="login-form" data-page-node-id="dty7iTsWjWTFMdfp16iSll">
+      <div class="vs-field" data-page-node-id="lpYv2KQEy0yrTNjQZbVouT">
+        <span class="vs-field-label" data-page-node-id="9iKdeypSPEesbAg8IlkzEe">账号</span>
+        <div class="vs-input" data-page-node-id="ZUql6NpLMIjY5K43ESDqxS" data-kb data-kb-type="text" data-kb-max="32" data-kb-ph="请输入账号">
+        </div>
+      </div>
+      <div class="vs-field" data-page-node-id="t3l7ukQKnfhZtVgLQAcSFY">
+        <span class="vs-field-label" data-page-node-id="QwjnwwLeAd5jAWHhwmCI8v">密码</span>
+        <div class="vs-input" data-page-node-id="6DkZyhn5cnDQM8Vl9CJBez" data-kb data-kb-type="text" data-kb-mask data-kb-max="32" data-kb-ph="请输入密码">
+        </div>
+      </div>
+      <button class="login-submit" data-page-node-id="kKo0bHw0qYh2Y702quPm1W" data-href="beats-01-home.html" data-toast="登录成功">登录</button>
+    </div>
+  </div>
+
+</div>
+<script src="../shared/i18n.js" defer></script>
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>

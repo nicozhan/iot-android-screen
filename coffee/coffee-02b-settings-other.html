@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>VendSolution Console · 本机设置</title>
+<meta http-equiv="refresh" content="0; url=coffee-09-device-info.html?tab=local">
+<link rel="canonical" href="coffee-09-device-info.html?tab=local">
+<meta name="robots" content="noindex">
+<style>
+  html,body{height:100%;margin:0;}
+  body{
+    background:#F2F1EC;color:#8A8A83;
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",-apple-system,sans-serif;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .boot{display:flex;flex-direction:column;align-items:center;gap:12px;}
+  .boot-name{font-size:18px;font-weight:700;color:#3D3D38;}
+  .boot-tip{font-size:14px;}
+  .boot a{color:#3D3D38;}
+</style>
+<noscript><meta http-equiv="refresh" content="1; url=coffee-09-device-info.html?tab=local"></noscript>
+</head>
+<body>
+<div class="boot">
+  <div class="boot-name">本机设置</div>
+  <div class="boot-tip">已并入「设置 · 本机设置」页签，正在跳转…</div>
+  <noscript><div class="boot-tip"><a href="coffee-09-device-info.html?tab=local">手动进入 →</a></div></noscript>
+</div>
+<script>
+  /* 2026-10-24：设置页统一为 coffee-09-device-info.html（三 tab 就地切换）。
+     本文件原为「本机设置」独立页，现仅作旧链接的落地跳转，内容见 09 的 local 面板。 */
+  (function () {
+    var target = 'coffee-09-device-info.html?tab=local';
+    try { window.location.replace(target); }
+    catch (e) { window.location.href = target; }
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>整机清洗 · 确认 · VendSolution</title>
+<link rel="stylesheet" href="../shared/style.css">
+<style>
+  .cl-status-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .cl-card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:24px 28px;display:flex;flex-direction:column;gap:12px;}
+  .cl-card-label{font-size:15px;color:var(--sub);font-weight:500;}
+  .cl-card-value{font-size:32px;font-weight:700;font-family:var(--mono);letter-spacing:-.5px;}
+  .cl-card-sub{font-size:14px;color:var(--aux);}
+  .cl-card-sub .mono{color:var(--ink);font-weight:600;}
+  .cl-section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .cl-section-head .vs-section-title{margin-bottom:0;}
+  .cl-link{font-size:15px;color:var(--blue);font-weight:600;}
+  .cl-strategy-card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:24px 28px;display:flex;align-items:center;gap:64px;}
+  .cl-strategy-cur{display:flex;align-items:center;gap:12px;font-size:20px;font-weight:700;}
+  .cl-dot-on{width:14px;height:14px;border-radius:50%;background:var(--green);}
+  .cl-strategy-item{font-size:15px;color:var(--sub);}
+  .cl-strategy-item b{color:var(--ink);font-weight:600;margin-left:6px;}
+  .cl-actions{display:flex;flex-direction:column;gap:14px;}
+  .cl-action-btn{height:76px;background:var(--card);border:1px solid var(--line);border-radius:6px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font-size:19px;font-weight:600;color:var(--ink);position:relative;overflow:hidden;}
+  .cl-action-btn::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--green);}
+  .cl-action-btn .arrow{color:var(--aux);font-size:18px;}
+
+  .vs-overlay{position:absolute;inset:0;background:transparent;display:flex;align-items:center;justify-content:center;z-index:10;}
+  .vs-modal{width:560px;background:var(--card);border:1px solid var(--ink);border-radius:6px;overflow:hidden;}
+  .vs-modal-head{height:64px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--line);font-size:18px;font-weight:700;}
+  .vs-modal-body{padding:36px 40px;display:flex;flex-direction:column;gap:22px;}
+  .cl-check-list{display:flex;flex-direction:column;gap:14px;font-size:16px;color:var(--ink);}
+  .cl-check-item{display:flex;gap:10px;align-items:flex-start;line-height:1.5;}
+  .cl-check-item .bullet{color:var(--ink);font-weight:700;}
+  .vs-modal-foot{display:flex;gap:16px;padding:0 40px 32px;}
+  .cl-btn{flex:1;height:56px;border-radius:4px;font-size:17px;font-weight:600;font-family:var(--sans);cursor:pointer;}
+  .cl-btn-line{background:var(--card);border:1px solid var(--line-btn);color:var(--ink);}
+  .cl-btn-dark{background:var(--dark);border:1px solid var(--dark);color:#FFF;}
+</style>
+</head>
+<body>
+<div class="vs-canvas" style="position:relative;">
+
+  <div class="vs-topbar">
+    <button class="vs-btn-line" data-href="coffee-01-home.html">← 返回首页</button>
+    <div class="page-title">清洗</div>
+  </div>
+
+  <div class="vs-main" style="gap:24px;">
+    <section>
+      <div class="cl-section-head"><div class="vs-section-title">清洗状态</div></div>
+      <div class="cl-status-grid">
+        <div class="cl-card">
+          <div class="cl-card-label">上次清洗时间</div>
+          <div class="cl-card-value">2026/08/28 14:30</div>
+          <div class="cl-card-sub">整机清洗 · 自动执行</div>
+        </div>
+        <div class="cl-card">
+          <div class="cl-card-label">距下次清洗</div>
+          <div class="cl-card-value">12 小时</div>
+          <div class="cl-card-sub">或 <span class="mono">86</span> 杯（以先到者为准）</div>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="cl-section-head"><div class="vs-section-title">清洗策略</div><a class="cl-link">修改策略 →</a></div>
+      <div class="cl-strategy-card">
+        <div class="cl-strategy-cur"><span class="cl-dot-on"></span>当前策略：自动</div>
+        <div class="cl-strategy-item">清洗方式<b>按定时</b></div>
+        <div class="cl-strategy-item">清洗周期<b class="mono">每日 02:00</b></div>
+      </div>
+    </section>
+    <section style="flex:1;display:flex;flex-direction:column;">
+      <div class="cl-section-head"><div class="vs-section-title">清洗动作</div></div>
+      <div class="cl-actions">
+        <button class="cl-action-btn">整机清洗<span class="arrow">→</span></button>
+        <button class="cl-action-btn">右搅拌器清洗<span class="arrow">→</span></button>
+        <button class="cl-action-btn">冲泡器清洗<span class="arrow">→</span></button>
+        <button class="cl-action-btn">清洗鲜奶系统<span class="arrow">→</span></button>
+        <button class="cl-action-btn">左搅拌器清洗<span class="arrow">→</span></button>
+      </div>
+    </section>
+  </div>
+
+  <!-- 整机清洗确认弹窗 -->
+  <div class="vs-overlay">
+    <div class="vs-modal">
+      <div class="vs-modal-head">整机清洗</div>
+      <div class="vs-modal-body">
+        <div style="font-size:20px;font-weight:700;">准备开始清洗</div>
+        <div style="font-size:15px;color:var(--sub);">请确认：</div>
+        <div class="cl-check-list">
+          <div class="cl-check-item"><span class="bullet">·</span>机器处于可维护状态</div>
+          <div class="cl-check-item"><span class="bullet">·</span>已准备清洗液</div>
+          <div class="cl-check-item"><span class="bullet">·</span>清洗过程中请勿操作机器</div>
+        </div>
+      </div>
+      <div class="vs-modal-foot">
+        <button class="cl-btn cl-btn-line" data-close-go="coffee-16-cleaning.html">取消</button>
+        <button class="cl-btn cl-btn-dark" data-href="coffee-21-cleaning-progress.html">开始清洗</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="../shared/i18n.js" defer></script>
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>

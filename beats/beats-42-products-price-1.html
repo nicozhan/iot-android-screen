@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>VendSolution · 价格管理</title>
+<link rel="stylesheet" href="../shared/style.css">
+<style>
+
+  /* ---- 左右分栏：左分组 300 / 间距 32 / 右商品 884 ---- */
+  .pr-wrap{flex:1;display:flex;gap:32px;min-height:0;}
+
+  .pr-nav{width:300px;flex:0 0 300px;background:var(--card);border:1px solid var(--line);
+    border-radius:6px;display:flex;flex-direction:column;overflow:hidden;}
+
+  .pr-nav-head{height:56px;flex:0 0 56px;display:flex;align-items:center;padding:0 20px;
+    font-size:15px;color:var(--aux);border-bottom:1px solid var(--line-soft);}
+
+  .pr-nav-list{flex:1;min-height:0;overflow-y:auto;padding:6px 0;}
+
+  .pr-g{display:flex;align-items:center;justify-content:space-between;width:100%;height:64px;
+    padding:0 20px;background:none;border:none;border-left:3px solid transparent;
+    font-family:var(--sans);font-size:17px;font-weight:400;color:var(--sub);
+    text-align:left;cursor:pointer;}
+  .pr-g:hover{background:#FAFAF7;}
+  .pr-g .n{font-family:var(--mono);font-size:14px;color:var(--aux);}
+  .pr-g.on{background:#ECECE7;border-left-color:var(--ink);color:var(--ink);font-weight:700;}
+  .pr-g.on .n{color:var(--sub);}
+
+  .pr-nav-add{height:48px;flex:0 0 48px;margin:12px 16px 16px;border:1px dashed var(--line-btn);
+    border-radius:4px;background:none;font-family:var(--sans);font-size:15px;
+    color:var(--aux);cursor:pointer;}
+  .pr-nav-add:hover{background:#FAFAF7;color:var(--sub);}
+
+  .pr-body{flex:1;min-width:0;display:flex;flex-direction:column;}
+
+  .pr-head{display:flex;align-items:baseline;gap:14px;padding-bottom:16px;
+    border-bottom:1px solid var(--line-soft);margin-bottom:18px;}
+  .pr-title{font-size:22px;font-weight:700;}
+  .pr-count{font-size:14px;color:var(--aux);}
+  .pr-hint{margin-left:auto;font-size:13px;color:var(--aux);}
+
+  .pr-list{flex:1;min-height:0;overflow-y:auto;background:var(--card);
+    border:1px solid var(--line);border-radius:6px;}
+
+  .pr-list::-webkit-scrollbar,.pr-nav-list::-webkit-scrollbar{width:8px;}
+  .pr-list::-webkit-scrollbar-thumb,.pr-nav-list::-webkit-scrollbar-thumb{
+    background:#D6D6D0;border-radius:4px;}
+
+  /* 商品行 104px：缩略图 / 名称+SKU / 价格右对齐 / 箭头 */
+  .pr-row{height:104px;gap:20px;}
+  .pr-row .pm-thumb{width:64px;height:64px;flex:0 0 64px;}
+  .pr-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;}
+  .pr-info .pm-name{flex:none;}
+  .pr-sub{font-family:var(--mono);font-size:13px;color:var(--aux);letter-spacing:.5px;}
+  .pr-price{display:flex;flex-direction:column;align-items:flex-end;gap:3px;min-width:110px;}
+  .pr-price .pm-price{font-size:20px;}
+  .pr-price .pm-strike{margin-left:0;font-size:14px;}
+  .pr-go{font-size:22px;color:var(--aux);}
+
+  .pr-empty{display:none;flex:1;align-items:center;justify-content:center;
+    background:var(--card);border:1px solid var(--line);border-radius:6px;
+    font-size:16px;color:var(--aux);}
+  .pr-empty.on{display:flex;}
+
+  /* ---- 浮层内容样式 ---- */
+  .md-product{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:22px;}
+
+  .md-product-img{width:220px;height:150px;background:var(--track);border-radius:4px;
+    display:flex;align-items:center;justify-content:center;color:var(--aux);font-size:14px;}
+
+  .md-product-name{font-size:20px;font-weight:700;margin-top:4px;}
+
+  .md-product-sku{font-family:var(--mono);font-size:13px;color:var(--aux);letter-spacing:1px;}
+
+  .md-field{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:18px;}
+
+  .md-field-label{font-size:14px;font-weight:600;color:var(--ink);}
+
+  .md-field-label .opt{font-weight:400;color:var(--aux);margin-left:6px;}
+
+  .md-field-input{width:420px;height:56px;border:1px solid var(--line-btn);border-radius:4px;
+    background:var(--card);display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink);cursor:pointer;}
+  .md-field-input:hover{border-color:var(--ink);}
+  .md-field-input.unset{font-family:var(--sans);font-size:16px;font-weight:400;color:var(--aux);}
+</style>
+</head>
+<body>
+<div class="vs-canvas">
+<div class="vs-topbar"><a class="vs-btn-line" href="beats-36-products.html">&#8592;&nbsp;返回</a><div class="page-title">价格管理</div><button class="vs-btn-line" id="batch-btn" style="margin-left:auto" data-modal="#batch-modal">批量调价</button></div>
+<main class="vs-main" style="gap:0">
+  <div class="pr-wrap">
+    <aside class="pr-nav">
+      <div class="pr-nav-head">商品分组</div>
+      <div class="pr-nav-list" id="pr-groups"></div>
+      <button class="pr-nav-add" data-toast="新建分组（演示）">＋ 新建分组</button>
+    </aside>
+    <section class="pr-body">
+      <div class="pr-head">
+        <div class="pr-title" id="pr-title">碳酸饮料</div>
+        <div class="pr-count" id="pr-count"></div>
+        <div class="pr-hint">点击商品行修改价格</div>
+      </div>
+      <div class="pr-list" id="pr-list"></div>
+      <div class="pr-empty" id="pr-empty">该分组暂无商品</div>
+    </section>
+  </div>
+</main>
+</div>
+
+<!-- 浮层 · price-modal（深链 43-products-price-2.html 已并入本页） -->
+<div class="vs-overlay" id="price-modal">
+  <div class="vs-modal" style="width:640px;">
+    <div class="vs-modal-head">
+      <div class="vs-modal-title">修改价格</div>
+      <button class="vs-modal-close" data-close-hide>&#10005;</button>
+    </div>
+    <div class="vs-modal-body">
+      <div class="md-product">
+        <div class="md-product-img">商品图片</div>
+        <div class="md-product-name" id="pv-name" data-fill-name>可口可乐</div>
+        <div class="md-product-sku" id="pv-sku">SKU-CS-01</div>
+      </div>
+      <div class="md-field">
+        <span class="md-field-label">销售价</span>
+        <div class="md-field-input" id="pv-price" data-modal-stack data-modal="#price-numpad" data-kind="price">$6.00</div>
+      </div>
+      <div class="md-field">
+        <span class="md-field-label">划线价<span class="opt">（非必填）</span></span>
+        <div class="md-field-input" id="pv-strike" data-modal-stack data-modal="#price-numpad" data-kind="strike">$6.00</div>
+      </div>
+    </div>
+    <div class="md-foot md-foot-center">
+      <button class="md-btn md-btn-line" data-close-hide>取消</button>
+      <button class="md-btn md-btn-line" data-close-hide data-toast="已应用到本机同款">应用到本机同款</button>
+      <button class="md-btn md-btn-dark" id="pv-save" data-close-hide data-toast="已保存">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 浮层 · price-numpad（深链 44-products-price-3.html 已并入本页） -->
+<div class="vs-overlay" id="price-numpad">
+  <div class="vs-modal np-modal">
+    <div class="vs-modal-head"><div class="vs-modal-title" id="np-title">输入</div><button class="vs-modal-close" data-close-hide>&#10005;</button></div>
+    <div class="vs-modal-body">
+      <div class="np-display">0</div>
+      <div class="np-grid"><button class="np-key">1</button><button class="np-key">2</button><button class="np-key">3</button><button class="np-key">4</button><button class="np-key">5</button><button class="np-key">6</button><button class="np-key">7</button><button class="np-key">8</button><button class="np-key">9</button><button class="np-key">.</button><button class="np-key">0</button><button class="np-key action">&#9003;</button></div>
+    </div>
+    <div class="md-foot"><button class="md-btn md-btn-line" data-close-hide>取消</button><button class="md-btn md-btn-dark" id="np-ok" data-close-hide>确定</button></div>
+  </div>
+</div>
+
+<!-- 浮层 · batch-modal（批量调价：按当前分组整体调整） -->
+<div class="vs-overlay" id="batch-modal">
+  <div class="vs-modal" style="width:560px;">
+    <div class="vs-modal-head">
+      <div class="vs-modal-title">批量调价</div>
+      <button class="vs-modal-close" data-close-hide>&#10005;</button>
+    </div>
+    <div class="vs-modal-body">
+      <div class="pm-note" id="batch-scope">当前分组：碳酸饮料 · 共 8 件商品</div>
+      <div class="md-field" style="margin-top:18px;">
+        <span class="md-field-label">调整幅度<span class="opt">（100% 表示价格不变）</span></span>
+        <div class="md-field-input" id="batch-pct" data-modal-stack data-modal="#price-numpad" data-kind="pct">100%</div>
+      </div>
+      <div class="pm-note" style="text-align:center;">销售价与划线价按同比例调整，四舍五入到分</div>
+    </div>
+    <div class="md-foot">
+      <button class="md-btn md-btn-line" data-close-hide>取消</button>
+      <button class="md-btn md-btn-dark" id="batch-ok" data-close-hide>应用</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  /* ---------------- 数据 ---------------- */
+  var GROUPS = [
+    { id: 'all',     name: '全部商品' },
+    { id: 'cs',      name: '碳酸饮料' },
+    { id: 'bt',      name: '瓶装茶饮' },
+    { id: 'jc',      name: '果汁' },
+    { id: 'mr',      name: '乳饮' },
+    { id: 'wt',      name: '水' }
+  ];
+
+  var PRODUCTS = [
+    { sku: 'SKU-CS-01', name: '可口可乐',   group: 'cs', price: 3.50, strike: 4.00 },
+    { sku: 'SKU-CS-02', name: '百事可乐',   group: 'cs', price: 3.50, strike: null },
+    { sku: 'SKU-CS-03', name: '无糖可乐',   group: 'cs', price: 3.50, strike: null },
+    { sku: 'SKU-CS-04', name: '健怡可乐',   group: 'cs', price: 3.50, strike: null },
+    { sku: 'SKU-CS-05', name: '雪碧',       group: 'cs', price: 3.50, strike: null },
+    { sku: 'SKU-CS-06', name: '七喜',       group: 'cs', price: 3.50, strike: null },
+    { sku: 'SKU-CS-07', name: '芬达橙味',   group: 'cs', price: 3.50, strike: null },
+    { sku: 'SKU-CS-08', name: '美年达',     group: 'cs', price: 4.00, strike: null },
+
+    { sku: 'SKU-BT-01', name: '冰红茶',     group: 'bt', price: 4.00, strike: 4.50 },
+    { sku: 'SKU-BT-02', name: '冰绿茶',     group: 'bt', price: 4.00, strike: null },
+    { sku: 'SKU-BT-03', name: '茉莉花茶',   group: 'bt', price: 4.50, strike: null },
+    { sku: 'SKU-BT-04', name: '乌龙茶',     group: 'bt', price: 4.50, strike: null },
+    { sku: 'SKU-BT-05', name: '王老吉',     group: 'bt', price: 5.00, strike: null },
+    { sku: 'SKU-BT-06', name: '酸梅汤',     group: 'bt', price: 4.50, strike: null },
+
+    { sku: 'SKU-JC-01', name: '橙汁',       group: 'jc', price: 5.00, strike: null },
+    { sku: 'SKU-JC-02', name: '苹果汁',     group: 'jc', price: 5.00, strike: null },
+    { sku: 'SKU-JC-03', name: '葡萄汁',     group: 'jc', price: 5.50, strike: null },
+    { sku: 'SKU-JC-04', name: '芒果汁',     group: 'jc', price: 5.50, strike: null },
+    { sku: 'SKU-JC-05', name: '桃汁',       group: 'jc', price: 5.50, strike: null },
+
+    { sku: 'SKU-MR-01', name: '阿萨姆奶茶', group: 'mr', price: 5.50, strike: 6.00 },
+    { sku: 'SKU-MR-02', name: '元气乳茶',   group: 'mr', price: 6.00, strike: null },
+    { sku: 'SKU-MR-03', name: '豆奶',       group: 'mr', price: 4.00, strike: null },
+    { sku: 'SKU-MR-04', name: '椰汁',       group: 'mr', price: 5.00, strike: null },
+    { sku: 'SKU-MR-05', name: '纯牛奶',     group: 'mr', price: 4.50, strike: null },
+
+    { sku: 'SKU-WT-01', name: '矿泉水',     group: 'wt', price: 2.50, strike: null },
+    { sku: 'SKU-WT-02', name: '纯净水',     group: 'wt', price: 2.50, strike: null },
+    { sku: 'SKU-WT-03', name: '苏打气泡水', group: 'wt', price: 3.50, strike: null }
+  ];
+
+  /* ---------------- 状态 ---------------- */
+  var cur = 'cs';
+  var curSku = null;
+  var npTarget = null;
+  var pct = 100;
+
+  var groupsEl = document.getElementById('pr-groups');
+  var listEl   = document.getElementById('pr-list');
+  var emptyEl  = document.getElementById('pr-empty');
+  var titleEl  = document.getElementById('pr-title');
+  var countEl  = document.getElementById('pr-count');
+  var pvName   = document.getElementById('pv-name');
+  var pvSku    = document.getElementById('pv-sku');
+  var pvPrice  = document.getElementById('pv-price');
+  var pvStrike = document.getElementById('pv-strike');
+  var npTitle  = document.getElementById('np-title');
+  var npDisp   = document.querySelector('#price-numpad .np-display');
+  var batchPct = document.getElementById('batch-pct');
+  var batchScope = document.getElementById('batch-scope');
+
+  /* ---------------- 工具 ---------------- */
+  function money(v) { return '$' + Number(v).toFixed(2); }
+
+  function groupOf(id) {
+    for (var i = 0; i < GROUPS.length; i++) if (GROUPS[i].id === id) return GROUPS[i];
+    return GROUPS[1];
+  }
+
+  function rowsOf(id) {
+    if (id === 'all') return PRODUCTS.slice();
+    return PRODUCTS.filter(function (p) { return p.group === id; });
+  }
+
+  function productOf(sku) {
+    for (var i = 0; i < PRODUCTS.length; i++) if (PRODUCTS[i].sku === sku) return PRODUCTS[i];
+    return null;
+  }
+
+  function setField(el, v) {
+    el.dataset.val = (v === null || v === undefined) ? '' : v;
+    el.textContent = (v === null || v === undefined) ? money(0) : money(v);
+  }
+
+  /* 划线价：null/0 一律视为「未设置」，字段显示灰字占位，行内不渲染删除线 */
+  function setStrike(el, v) {
+    if (v === null || v === undefined || Number(v) <= 0) {
+      el.dataset.val = '';
+      el.textContent = '未设置';
+      el.classList.add('unset');
+      return;
+    }
+    el.dataset.val = v;
+    el.textContent = money(v);
+    el.classList.remove('unset');
+  }
+
+  function toast(msg) { if (window.VS && window.VS.toast) window.VS.toast(msg); }
+
+  /* ---------------- 渲染 ---------------- */
+  function renderGroups() {
+    var html = '';
+    GROUPS.forEach(function (g) {
+      html += '<button class="pr-g' + (g.id === cur ? ' on' : '') + '" data-g="' + g.id + '">' +
+                '<span>' + g.name + '</span>' +
+                '<span class="n">' + rowsOf(g.id).length + '</span>' +
+              '</button>';
+    });
+    groupsEl.innerHTML = html;
+  }
+
+  function renderList() {
+    var g = groupOf(cur);
+    var list = rowsOf(cur);
+
+    titleEl.textContent = g.name;
+    countEl.textContent = list.length + ' 件商品';
+
+    listEl.innerHTML = list.map(function (p) {
+      return '<a class="pm-row pr-row" data-modal="#price-modal" data-sku="' + p.sku + '">' +
+               '<div class="pm-thumb">商品图片</div>' +
+               '<div class="pr-info">' +
+                 '<div class="pm-name">' + p.name + '</div>' +
+                 '<div class="pr-sub">' + p.sku + '</div>' +
+               '</div>' +
+               '<div class="pr-price">' +
+                 '<span class="pm-price">' + money(p.price) + '</span>' +
+                 (p.strike === null ? '' : '<span class="pm-strike">' + money(p.strike) + '</span>') +
+               '</div>' +
+               '<span class="pr-go">&#8250;</span>' +
+             '</a>';
+    }).join('');
+
+    listEl.style.display = list.length ? '' : 'none';
+    emptyEl.classList.toggle('on', list.length === 0);
+    listEl.scrollTop = 0;
+  }
+
+  /* ---------------- 交互：切分组 ---------------- */
+  groupsEl.addEventListener('click', function (ev) {
+    var btn = ev.target.closest ? ev.target.closest('.pr-g') : null;
+    if (!btn) return;
+    cur = btn.getAttribute('data-g');
+    groupsEl.querySelectorAll('.pr-g').forEach(function (b) {
+      b.classList.toggle('on', b === btn);
+    });
+    renderList();
+  });
+
+  /* ---------------- 交互：点行 → 回填价格浮层 ---------------- */
+  document.addEventListener('click', function (ev) {
+    if (!ev.target.closest) return;
+    var row = ev.target.closest('.pr-row');
+    if (!row) return;
+    var p = productOf(row.getAttribute('data-sku'));
+    if (!p) return;
+    curSku = p.sku;
+    pvName.textContent = p.name;
+    pvSku.textContent = p.sku;
+    setField(pvPrice, p.price);
+    setStrike(pvStrike, p.strike);
+  });
+
+  /* ---------------- 交互：字段 → 数字键盘 ---------------- */
+  var NP_TITLE = { price: '销售价', strike: '划线价', pct: '调整幅度（%）' };
+
+  document.addEventListener('click', function (ev) {
+    if (!ev.target.closest) return;
+    var f = ev.target.closest('.md-field-input');
+    if (!f) return;
+    npTarget = f;
+    var kind = f.getAttribute('data-kind');
+    npTitle.textContent = NP_TITLE[kind] || '输入';
+    var v = f.dataset.val;
+    npDisp.textContent = (v === '' || v === undefined || v === null) ? '0' : String(v);
+  });
+
+  document.getElementById('np-ok').addEventListener('click', function () {
+    if (!npTarget) return;
+    var raw = npDisp.textContent.trim();
+    var v = parseFloat(raw);
+    if (isNaN(v) || v < 0) v = 0;
+
+    var kind = npTarget.getAttribute('data-kind');
+    if (kind === 'pct') {
+      pct = v;
+      npTarget.dataset.val = v;
+      npTarget.textContent = v + '%';
+    } else if (kind === 'strike') {
+      setStrike(npTarget, v);
+    } else {
+      setField(npTarget, v);
+    }
+    npTarget = null;
+  });
+
+  /* ---------------- 交互：保存单条价格 ---------------- */
+  document.getElementById('pv-save').addEventListener('click', function () {
+    var p = productOf(curSku);
+    if (!p) return;
+    p.price = parseFloat(pvPrice.dataset.val) || 0;
+    var s = parseFloat(pvStrike.dataset.val);
+    p.strike = (isNaN(s) || s <= 0) ? null : s;
+    renderList();
+  });
+
+  /* ---------------- 交互：批量调价 ---------------- */
+  document.getElementById('batch-btn').addEventListener('click', function () {
+    var g = groupOf(cur);
+    batchScope.textContent = '当前分组：' + g.name + ' · 共 ' + rowsOf(cur).length + ' 件商品';
+    batchPct.dataset.val = pct;
+    batchPct.textContent = pct + '%';
+  });
+
+  document.getElementById('batch-ok').addEventListener('click', function () {
+    var k = pct / 100;
+    var list = rowsOf(cur);
+    list.forEach(function (p) {
+      p.price = Math.round(p.price * k * 100) / 100;
+      if (p.strike !== null) p.strike = Math.round(p.strike * k * 100) / 100;
+    });
+    renderList();
+    toast('已按 ' + pct + '% 调整 ' + list.length + ' 件商品');
+  });
+
+  renderGroups();
+  renderList();
+})();
+</script>
+
+<script src="../shared/i18n.js" defer></script>
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>

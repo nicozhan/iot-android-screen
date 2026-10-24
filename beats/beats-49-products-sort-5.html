@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>VendSolution · SKU 排序</title>
+<link rel="stylesheet" href="../shared/style.css">
+<style>
+
+  .sku-head{display:flex;align-items:baseline;gap:16px;}
+  .sku-head .vs-section-title{margin-bottom:0;}
+  .sku-dirty{display:none;margin-left:auto;font-size:13px;font-weight:700;color:var(--red);}
+  .sku-dirty.on{display:inline;}
+
+  /* SKU 行：货道号 / 缩略图 / 名称 / 编码 / ≡ / ↑ / ↓ */
+  .sku-list{flex:1;min-height:0;overflow-y:auto;padding-right:4px;}
+  .sku-list::-webkit-scrollbar{width:8px;}
+  .sku-list::-webkit-scrollbar-thumb{background:#D6D6D0;border-radius:4px;}
+
+  .sku-row{height:88px;gap:16px;cursor:default;user-select:none;}
+  .sku-row .pm-sort-no{flex:0 0 40px;}
+  .sku-row .pm-sort-thumb{width:60px;height:60px;flex:0 0 60px;}
+  .sku-row .pm-sort-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .sku-code{font-family:var(--mono);font-size:13px;color:var(--aux);letter-spacing:.5px;flex:0 0 auto;}
+  .sku-row .pm-handle{flex:0 0 28px;cursor:grab;}
+  .sku-row .pm-handle:active{cursor:grabbing;}
+
+  .sku-act{display:flex;gap:4px;flex:0 0 auto;}
+  .sku-mv{width:40px;height:40px;flex:0 0 40px;display:flex;align-items:center;justify-content:center;
+    padding:0;background:var(--card);border:1px solid var(--line-btn);border-radius:4px;
+    font-family:var(--sans);font-size:16px;line-height:1;color:var(--sub);cursor:pointer;}
+  .sku-mv:hover{background:#F0F0EC;color:var(--ink);border-color:var(--aux);}
+  .sku-mv:active{background:#E6E6E1;}
+  .sku-mv:disabled{opacity:.3;cursor:not-allowed;background:var(--card);
+    color:var(--aux);border-color:var(--line-soft);}
+
+  /* 拖拽反馈：拖动中的卡片淡出，落点卡片描边（.drop-target 由 shared 引擎加） */
+  .sku-row.dragging{opacity:.35;}
+  .sku-list .drop-target{outline:2px solid var(--ink);outline-offset:-2px;}
+</style>
+</head>
+<body>
+<div class="vs-canvas">
+<div class="vs-topbar"><a class="vs-btn-line" id="sku-back" href="beats-45-products-sort-1.html">&#8592;&nbsp;返回</a><div class="page-title">SKU 排序</div><button class="vs-btn-line" style="margin-left:auto" id="sku-save" data-toast="已保存SKU排序">保存</button></div>
+<main class="vs-main" style="gap:14px">
+  <div class="sku-head">
+    <div class="vs-section-title" id="sku-title">可口可乐 · 12 个SKU</div>
+    <span class="sku-dirty" id="sku-dirty">SKU 顺序已修改 · 未保存</span>
+  </div>
+  <div class="pm-note">如果商品下面还有 SKU，可拖拽调整 SKU 顺序；也可用 ↑ ↓ 一步一位微调。</div>
+  <div class="pm-sort-list sku-list" id="sku-list"></div>
+</main>
+</div>
+
+<script>
+(function () {
+  /* ---------------- 各商品的 SKU 清单（键 = 45 页商品行的 SKU 编码） ---------------- */
+  var DATA = {
+    'SKU-CS-01': {
+      name: '可口可乐',
+      skus: ['可口可乐 330ml罐', '可口可乐 500ml瓶', '可口可乐 600ml瓶', '可口可乐 1.25L瓶',
+             '无糖可乐 330ml罐', '无糖可乐 500ml瓶', '雪碧 330ml罐', '雪碧 500ml瓶',
+             '七喜 330ml罐', '芬达橙味 330ml罐', '美年达 330ml罐', '苏打气泡水 500ml瓶']
+    },
+    'SKU-HP-01': {
+      name: 'Beats 360',
+      skus: ['黑色', '云白色', '粉色', '晴空蓝色']
+    }
+  };
+
+  /* ---------------- 读地址栏参数：?p=商品SKU&n=商品名&c=SKU数&g=来源分组 ---------------- */
+  var q = {};
+  String(location.search || '').replace(/^\?/, '').split('&').forEach(function (kv) {
+    if (!kv) return;
+    var i = kv.indexOf('=');
+    var k = i < 0 ? kv : kv.slice(0, i);
+    var v = i < 0 ? '' : kv.slice(i + 1);
+    try { q[decodeURIComponent(k)] = decodeURIComponent(v); } catch (e) { q[k] = v; }
+  });
+
+  var pid = q.p || 'SKU-CS-01';
+  var d = DATA[pid];
+  if (!d) {
+    /* 未登记的商品：按 45 传过来的商品名 + SKU 数生成占位条目，保证入口都能打开 */
+    var nm = q.n || '可口可乐';
+    var cnt = parseInt(q.c, 10);
+    if (isNaN(cnt) || cnt < 1) cnt = 12;
+    var arr = [];
+    for (var i = 1; i <= cnt; i++) arr.push(nm + ' 规格' + i);
+    d = { name: nm, skus: arr };
+  }
+
+  var SKUS = d.skus.slice();
+  var name = d.name;
+  var dirty = false;
+
+  var listEl  = document.getElementById('sku-list');
+  var titleEl = document.getElementById('sku-title');
+  var dirtyEl = document.getElementById('sku-dirty');
+  var backEl  = document.getElementById('sku-back');
+
+  /* 返回 45 时带回来源分组，避免回到默认的碳酸饮料 */
+  if (q.g) backEl.setAttribute('href', 'beats-45-products-sort-1.html?g=' + encodeURIComponent(q.g));
+
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function markDirty(on) {
+    dirty = !!on;
+    dirtyEl.classList.toggle('on', dirty);
+  }
+  function arrowBtns(upOff, downOff) {
+    return '<span class="sku-act">' +
+             '<button class="sku-mv" data-mv="up" title="上移"' + (upOff ? ' disabled' : '') + '>&#8593;</button>' +
+             '<button class="sku-mv" data-mv="down" title="下移"' + (downOff ? ' disabled' : '') + '>&#8595;</button>' +
+           '</span>';
+  }
+
+  function render(keepScroll) {
+    var st = keepScroll ? listEl.scrollTop : 0;
+    titleEl.textContent = name + ' · ' + SKUS.length + ' 个SKU';
+    listEl.innerHTML = SKUS.map(function (s, i) {
+      return '<div class="pm-sort-card sku-row" draggable="true" data-i="' + i + '">' +
+               '<span class="pm-sort-no">L' + (i + 1) + '</span>' +
+               '<div class="pm-sort-thumb">商品图片</div>' +
+               '<div class="pm-sort-name">' + s + '</div>' +
+               '<span class="sku-code">' + pid + '-' + pad(i + 1) + '</span>' +
+               '<span class="pm-handle" title="拖动排序">&#8801;</span>' +
+               arrowBtns(i === 0, i === SKUS.length - 1) +
+             '</div>';
+    }).join('');
+    listEl.scrollTop = st;
+  }
+
+  /* 逐位上移 / 下移 */
+  function step(i, dir) {
+    var j = i + dir;
+    if (i < 0 || j < 0 || j >= SKUS.length) return false;
+    var t = SKUS[i]; SKUS[i] = SKUS[j]; SKUS[j] = t;
+    return true;
+  }
+
+  listEl.addEventListener('click', function (ev) {
+    var mv = ev.target.closest ? ev.target.closest('.sku-mv') : null;
+    if (!mv) return;
+    ev.preventDefault();
+    if (mv.disabled) return;
+    var row = mv.closest('.sku-row');
+    if (!row) return;
+    var i = parseInt(row.getAttribute('data-i'), 10);
+    if (step(i, mv.getAttribute('data-mv') === 'up' ? -1 : 1)) {
+      markDirty(true);
+      render(true);
+    }
+  });
+
+  /* ---------------- 拖拽排序 ----------------
+     拖动本身由 shared/interactions.js 负责（.pm-sort-list 内的 .pm-sort-card 会就地插拔
+     并重排 L 编号，别在页面里再写一套）。这里只在拖完后把 DOM 顺序同步回数据模型。 */
+  listEl.addEventListener('dragend', function () {
+    var order = [].map.call(listEl.querySelectorAll('.pm-sort-name'), function (e) {
+      return e.textContent.trim();
+    });
+    if (order.length !== SKUS.length) return;
+    if (order.join('\u0001') === SKUS.join('\u0001')) return;
+    SKUS = order;
+    markDirty(true);
+    render(true);            // 重排后重算货道号 / 编码 / ↑↓ 可用态
+  });
+
+  /* 保存：脏标记收起，提示语由引擎的 data-toast 负责 */
+  document.getElementById('sku-save').addEventListener('click', function () {
+    if (dirty) markDirty(false);
+  });
+
+  render(false);
+})();
+</script>
+
+<script src="../shared/i18n.js" defer></script>
+<script src="../shared/interactions.js" defer></script>
+</body>
+</html>

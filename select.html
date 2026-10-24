@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VendSolution · 选择控制台</title>
+<link rel="stylesheet" href="shared/style.css">
+<style>
+  html,body{min-height:100%;}
+  body{background:var(--bg);}
+
+  .sel-wrap{min-height:100vh;display:flex;flex-direction:column;padding:40px 72px 44px;}
+
+  .sel-head{display:flex;align-items:baseline;gap:16px;padding-bottom:22px;
+    border-bottom:1px solid var(--line-soft);}
+  .sel-brand{font-size:24px;font-weight:700;letter-spacing:.3px;}
+  .sel-tag{font-family:var(--mono);font-size:13px;color:var(--aux);letter-spacing:.5px;}
+  .sel-head .sp{flex:1;}
+  .sel-help{font-size:14px;color:var(--aux);}
+
+  .sel-main{flex:1;display:flex;flex-direction:column;justify-content:center;
+    align-items:center;text-align:center;padding:26px 0 10px;}
+  .sel-title{font-size:34px;font-weight:700;letter-spacing:.5px;}
+  .sel-sub{margin-top:12px;font-size:16px;line-height:1.7;color:var(--sub);}
+
+  .sel-cards{display:flex;gap:32px;margin-top:44px;flex-wrap:wrap;justify-content:center;}
+
+  .sel-card{width:440px;min-height:326px;display:flex;flex-direction:column;gap:13px;
+    padding:30px 32px 28px;background:var(--card);border:1px solid var(--line);
+    border-radius:10px;text-decoration:none;color:var(--ink);text-align:left;
+    transition:border-color .18s, box-shadow .18s, transform .18s;}
+  .sel-card:hover{border-color:var(--ink);transform:translateY(-3px);
+    box-shadow:0 12px 28px rgba(0,0,0,.07);}
+  .sel-card:active{transform:translateY(-1px);}
+  .sel-card:focus-visible{outline:2px solid var(--ink);outline-offset:2px;}
+
+  .sel-icon{height:128px;display:flex;align-items:center;justify-content:center;
+    background:#FAFAF7;border-radius:6px;margin-bottom:4px;}
+  .sel-icon svg{display:block;}
+  .sel-icon svg *{fill:none;stroke:var(--ink);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+
+  .sel-name{font-size:26px;font-weight:700;}
+  .sel-model{font-family:var(--mono);font-size:13px;color:var(--aux);letter-spacing:.6px;}
+  .sel-desc{font-size:15px;line-height:1.65;color:var(--sub);}
+
+  .sel-go{margin-top:auto;display:inline-flex;align-items:center;gap:9px;
+    font-size:15px;font-weight:700;}
+  .sel-go .arw{transition:transform .18s;}
+  .sel-card:hover .sel-go .arw{transform:translateX(4px);}
+
+  .sel-foot{display:flex;justify-content:center;font-size:13px;color:var(--aux);}
+
+  @media (max-width:1000px){
+    .sel-wrap{padding:26px 24px 30px;}
+    .sel-card{width:100%;max-width:440px;}
+  }
+</style>
+</head>
+<body>
+<div class="sel-wrap">
+  <header class="sel-head">
+    <div class="sel-brand">VendSolution</div>
+    <div class="sel-tag">CONTROL PANEL · v0.4</div>
+    <div class="sp"></div>
+    <div class="sel-help">两种机型各一套界面，请按设备选择</div>
+  </header>
+
+  <main class="sel-main">
+    <h1 class="sel-title">选择要进入的控制台</h1>
+    <p class="sel-sub">选好机型后进入对应登录页，登录成功即进入该机型的首页。</p>
+
+    <div class="sel-cards">
+      <a class="sel-card" href="beats/beats-04-login.html">
+        <span class="sel-icon">
+          <svg width="152" height="112" viewBox="0 0 152 112" aria-hidden="true">
+            <rect x="16" y="6" width="120" height="100" rx="9"/>
+            <rect x="32" y="22" width="66" height="62" rx="4"/>
+            <line x1="32" y1="46" x2="98" y2="46"/>
+            <line x1="32" y1="64" x2="98" y2="64"/>
+            <rect x="110" y="26" width="14" height="8" rx="2"/>
+            <rect x="110" y="40" width="14" height="8" rx="2"/>
+            <rect x="110" y="54" width="14" height="8" rx="2"/>
+            <rect x="36" y="88" width="56" height="10" rx="3"/>
+          </svg>
+        </span>
+        <span class="sel-name">Beats 售卖机</span>
+        <span class="sel-model">VENDING · BEATS</span>
+        <span class="sel-desc">瓶装 / 袋装成品售卖：补货、商品与价格、出货测试、运营统计。</span>
+        <span class="sel-go">进入售卖机控制台 <span class="arw">&#8594;</span></span>
+      </a>
+
+      <a class="sel-card" href="coffee/coffee-04-login.html">
+        <span class="sel-icon">
+          <svg width="152" height="112" viewBox="0 0 152 112" aria-hidden="true">
+            <rect x="16" y="6" width="120" height="100" rx="9"/>
+            <rect x="32" y="22" width="52" height="34" rx="4"/>
+            <line x1="32" y1="72" x2="120" y2="72"/>
+            <rect x="50" y="72" width="10" height="20" rx="2"/>
+            <path d="M74 78h24a4 4 0 0 1 4 4v6a4 4 0 0 1-4 4H74z"/>
+            <line x1="98" y1="30" x2="110" y2="30"/>
+            <line x1="98" y1="40" x2="110" y2="40"/>
+            <line x1="98" y1="50" x2="110" y2="50"/>
+          </svg>
+        </span>
+        <span class="sel-name">wsd coffee 咖啡机</span>
+        <span class="sel-model">ESPRESSO · WSD COFFEE</span>
+        <span class="sel-desc">现制咖啡与热饮：配方校准、清洗策略、出货测试、运营统计。</span>
+        <span class="sel-go">进入咖啡机控制台 <span class="arw">&#8594;</span></span>
+      </a>
+    </div>
+  </main>
+
+  <footer class="sel-foot">登录方式：账号 + 密码，或使用六位口令</footer>
+</div>
+</body>
+</html>
