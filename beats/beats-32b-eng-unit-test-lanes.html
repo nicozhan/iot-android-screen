@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1280">
-<meta http-equiv="refresh" content="0;url=beats-32-eng-unit-test.html?cat=%E7%A2%B3%E9%85%B8%E9%A5%AE%E6%96%99">
+<meta http-equiv="refresh" content="0;url=beats-32-eng-unit-test.html">
 <title>VendSolution · 测试出货</title>
 <link rel="stylesheet" href="../shared/style.css">
 <style>
@@ -23,22 +23,17 @@
     <div class="rd-wrap">
       <div class="rd-title">正在转到「测试出货」…</div>
       <div class="rd-desc">
-        本页内容已并入 <b>beats-32-eng-unit-test.html</b>（按商品出货改成左分类、右商品的左右结构，<br>
-        出货配置 / 出货中 / 完成三个浮层都在同一页），这里只保留旧链接入口。
+        本页内容已并入 <b>beats-32-eng-unit-test.html</b>（按货道出货的 10×8 矩阵），<br>
+        是否出货 / 出货中 / 出货完成三个浮层都在同一页，这里只保留旧链接入口。
       </div>
       <a class="rd-link" id="rd-go" href="beats-32-eng-unit-test.html">如果没有自动跳转，点这里</a>
     </div>
   </main>
 </div>
 <script>
-/* 旧深链（32b）→ 32 的按商品出货；保留上一页经 vs-ctx 传来的分类，避免落到默认分类 */
+/* 旧深链（32b）→ 32（现只有按货道出货） */
 (function () {
-  var cat = '碳酸饮料';
-  try {
-    var ctx = JSON.parse(sessionStorage.getItem('vs-ctx') || 'null');
-    if (ctx && ctx.name) cat = ctx.name;
-  } catch (e) {}
-  var url = 'beats-32-eng-unit-test.html?cat=' + encodeURIComponent(cat);
+  var url = 'beats-32-eng-unit-test.html';
   var a = document.getElementById('rd-go');
   if (a) a.setAttribute('href', url);
   var m = document.querySelector('meta[http-equiv="refresh"]');

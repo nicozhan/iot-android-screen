@@ -8,7 +8,8 @@
   /* ---- 左右结构：左栏 300（同 42 页分组导航）· 右栏自适应 ---- */
   .cw-wrap{flex:1;display:flex;gap:32px;min-height:0;}
 
-  .cw-nav{width:300px;flex:0 0 300px;background:var(--card);border:1px solid var(--line);
+  .cw-nav{width:300px;flex:0 0 300px;align-self:flex-start;max-height:100%;
+    background:var(--card);border:1px solid var(--line);
     border-radius:6px;display:flex;flex-direction:column;overflow:hidden;}
   .cw-nav-head{height:56px;flex:0 0 56px;display:flex;align-items:center;justify-content:space-between;
     padding:0 20px;font-size:15px;color:var(--aux);border-bottom:1px solid var(--line-soft);}
@@ -41,26 +42,30 @@
     font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;
     font-family:var(--mono);}
 
-  /* ---- 基准行 ---- */
-  .cw-card{flex:1;min-height:0;background:var(--card);border:1px solid var(--line);border-radius:6px;
-    display:flex;flex-direction:column;overflow:hidden;}
-  .cw-row{flex:1;min-height:96px;display:grid;
-    grid-template-columns:152px 108px 168px 92px 96px 1fr;
-    align-items:center;gap:14px;padding:0 22px;border-bottom:1px solid var(--line-soft);}
-  .cw-row:last-child{border-bottom:none;}
+  /* ---- 规格卡：一排三个（3+2 两行），一屏内放完 5 个规格 ---- */
+  .cw-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-content:start;}
 
-  .cw-name{display:flex;flex-direction:column;gap:5px;}
+  .cw-row{height:184px;min-width:0;display:flex;flex-direction:column;gap:12px;padding:18px 20px;
+    background:var(--card);border:1px solid var(--line);border-radius:6px;}
+
+  .cw-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;min-width:0;}
+
+  .cw-name{display:flex;flex-direction:column;gap:6px;min-width:0;}
   .cw-name .t{font-size:19px;font-weight:700;white-space:nowrap;}
-  .cw-name .cw-last{font-family:var(--mono);font-size:12px;color:var(--aux);white-space:nowrap;}
   .cw-name .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--line-btn);
     margin-left:8px;vertical-align:middle;}
   .cw-name .dot.bad{background:var(--red);}
   .cw-name .dot.ok{background:var(--green);}
 
-  .cw-tgt{font-size:14px;color:var(--aux);}
-  .cw-tgt .mono{color:var(--sub);font-weight:500;}
+  .cw-tgt{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--aux);white-space:nowrap;
+    overflow:hidden;text-overflow:ellipsis;}
+  .cw-tgt .mono{color:var(--sub);font-weight:600;}
+  .cw-tgt .sep{color:#C9C9C0;}
+  .cw-last{font-family:var(--mono);font-size:13px;color:var(--aux);}
 
-  .cw-input{height:56px;display:flex;align-items:center;justify-content:space-between;
+  .cw-ctl{display:flex;align-items:center;gap:10px;margin-top:auto;}
+
+  .cw-input{flex:1;min-width:0;height:56px;display:flex;align-items:center;justify-content:space-between;
     padding:0 16px;border:1px solid var(--line-btn);border-radius:4px;background:var(--card);
     font-family:var(--mono);font-size:19px;font-weight:600;cursor:pointer;}
   .cw-input:hover{border-color:#999;}
@@ -68,18 +73,13 @@
   .cw-input .u{font-family:var(--sans);font-size:14px;font-weight:500;color:var(--aux);}
   .cw-input.empty .ph{color:var(--aux);font-weight:400;}
 
-  .cw-test{height:48px;width:92px;background:var(--card);border:1px solid var(--line-btn);
+  .cw-test{flex:0 0 88px;width:88px;height:56px;background:var(--card);border:1px solid var(--line-btn);
     border-radius:4px;font-family:var(--sans);font-size:15px;font-weight:600;color:var(--ink);cursor:pointer;}
   .cw-test:hover{background:#F0F0EC;}
   .cw-test[disabled]{opacity:.55;cursor:default;}
   .cw-test.run{background:var(--dark);border-color:var(--dark);color:#FFF;opacity:1;}
 
-  .cw-dev{font-family:var(--mono);font-size:17px;font-weight:600;color:var(--sub);white-space:nowrap;}
-  .cw-dev .u{font-family:var(--sans);font-size:13px;color:var(--aux);margin-left:3px;font-weight:500;}
-  .cw-dev.bad{color:var(--red);}
-  .cw-dev.bad .u{color:var(--red);}
-
-  .cw-st{font-size:14px;color:var(--aux);text-align:right;white-space:nowrap;font-weight:500;}
+  .cw-st{flex:0 0 auto;font-size:14px;color:var(--aux);text-align:right;white-space:nowrap;font-weight:500;}
   .cw-st.done{color:var(--green);}
   .cw-st.dirty{color:var(--orange);font-weight:700;}
   .cw-st.todo{color:var(--aux);}
@@ -105,15 +105,16 @@
   <main class="vs-main" style="gap:0;">
     <div class="cw-wrap">
 
-      <!-- 左栏：7 项（水量 + 粉盒 1~6） -->
+      <!-- 左栏：8 项（研磨粉 + 水量 + 粉盒 1~6），三页互通 -->
       <aside class="cw-nav">
-        <div class="cw-nav-head"><span>校准项</span><span class="n">7 项</span></div>
+        <div class="cw-nav-head"><span>校准项</span><span class="n">8 项</span></div>
         <div class="cw-nav-list">
-          <button class="cw-g on">水量校准<span class="st">5 项</span></button>
-          <button class="cw-g" data-href="coffee-24d-calibration-powder.html?box=1">粉盒校准(1)<span class="st">已校准 08/26</span></button>
-          <button class="cw-g" data-href="coffee-24d-calibration-powder.html?box=2">粉盒校准(2)<span class="st">已校准 08/26</span></button>
-          <button class="cw-g" data-href="coffee-24d-calibration-powder.html?box=3">粉盒校准(3)<span class="st">已校准 08/25</span></button>
-          <button class="cw-g" data-href="coffee-24d-calibration-powder.html?box=4">粉盒校准(4)<span class="st">已校准 08/25</span></button>
+          <button class="cw-g" data-href="coffee-24-calibration-grind.html">研磨粉校准<span class="st">已校准</span></button>
+          <button class="cw-g on">水量校准<span class="st">已校准</span></button>
+          <button class="cw-g" data-href="coffee-24d-calibration-powder.html?box=1">粉盒校准(1)<span class="st">已校准</span></button>
+          <button class="cw-g" data-href="coffee-24d-calibration-powder.html?box=2">粉盒校准(2)<span class="st">已校准</span></button>
+          <button class="cw-g" data-href="coffee-24d-calibration-powder.html?box=3">粉盒校准(3)<span class="st">已校准</span></button>
+          <button class="cw-g" data-href="coffee-24d-calibration-powder.html?box=4">粉盒校准(4)<span class="st">已校准</span></button>
           <button class="cw-g" data-href="coffee-24d-calibration-powder.html?box=5">粉盒校准(5)<span class="st todo">待校准</span></button>
           <button class="cw-g" data-href="coffee-24d-calibration-powder.html?box=6">粉盒校准(6)<span class="st todo">待校准</span></button>
         </div>
@@ -132,50 +133,75 @@
           <span>请以实际出水量为准；偏差超过 ±5% 时建议连续校准三次取均值</span>
         </div>
 
-        <div class="cw-card" id="cw-list">
+        <div class="cw-grid" id="cw-list">
           <div class="cw-row" data-target="60">
-            <div class="cw-name"><span class="t">校准 60 mL<span class="dot ok"></span></span><span class="cw-last">上次 08/27 10:20</span></div>
-            <div class="cw-tgt">目标 <b class="mono">60</b> mL</div>
-            <div class="cw-input" data-kb data-kb-max="3" data-kb-value="60"><span class="ph">60</span><span class="u">mL</span></div>
-            <button class="cw-test">测试</button>
-            <div class="cw-dev">+0<span class="u">mL</span></div>
-            <div class="cw-st done">已校准</div>
+            <div class="cw-top">
+              <div class="cw-name">
+                <span class="t">校准 60 mL<span class="dot ok"></span></span>
+              </div>
+              <div class="cw-st done">已校准</div>
+            </div>
+            <div class="cw-tgt">目标 <b class="mono">60</b> mL<span class="sep">·</span>上次 <span class="cw-last">08/27 10:20</span></div>
+            <div class="cw-ctl">
+              <div class="cw-input" data-kb data-kb-max="3" data-kb-value="60"><span class="ph">60</span><span class="u">mL</span></div>
+              <button class="cw-test">测试</button>
+            </div>
           </div>
 
           <div class="cw-row" data-target="70">
-            <div class="cw-name"><span class="t">校准 70 mL<span class="dot ok"></span></span><span class="cw-last">上次 08/27 10:21</span></div>
-            <div class="cw-tgt">目标 <b class="mono">70</b> mL</div>
-            <div class="cw-input" data-kb data-kb-max="3" data-kb-value="69"><span class="ph">69</span><span class="u">mL</span></div>
-            <button class="cw-test">测试</button>
-            <div class="cw-dev">−1<span class="u">mL</span></div>
-            <div class="cw-st done">已校准</div>
+            <div class="cw-top">
+              <div class="cw-name">
+                <span class="t">校准 70 mL<span class="dot ok"></span></span>
+              </div>
+              <div class="cw-st done">已校准</div>
+            </div>
+            <div class="cw-tgt">目标 <b class="mono">70</b> mL<span class="sep">·</span>上次 <span class="cw-last">08/27 10:21</span></div>
+            <div class="cw-ctl">
+              <div class="cw-input" data-kb data-kb-max="3" data-kb-value="69"><span class="ph">69</span><span class="u">mL</span></div>
+              <button class="cw-test">测试</button>
+            </div>
           </div>
 
           <div class="cw-row" data-target="90">
-            <div class="cw-name"><span class="t">校准 90 mL<span class="dot ok"></span></span><span class="cw-last">上次 08/27 10:22</span></div>
-            <div class="cw-tgt">目标 <b class="mono">90</b> mL</div>
-            <div class="cw-input" data-kb data-kb-max="3" data-kb-value="91"><span class="ph">91</span><span class="u">mL</span></div>
-            <button class="cw-test">测试</button>
-            <div class="cw-dev">+1<span class="u">mL</span></div>
-            <div class="cw-st done">已校准</div>
+            <div class="cw-top">
+              <div class="cw-name">
+                <span class="t">校准 90 mL<span class="dot ok"></span></span>
+              </div>
+              <div class="cw-st done">已校准</div>
+            </div>
+            <div class="cw-tgt">目标 <b class="mono">90</b> mL<span class="sep">·</span>上次 <span class="cw-last">08/27 10:22</span></div>
+            <div class="cw-ctl">
+              <div class="cw-input" data-kb data-kb-max="3" data-kb-value="91"><span class="ph">91</span><span class="u">mL</span></div>
+              <button class="cw-test">测试</button>
+            </div>
           </div>
 
           <div class="cw-row" data-target="120">
-            <div class="cw-name"><span class="t">校准 120 mL<span class="dot ok"></span></span><span class="cw-last">上次 08/27 10:23</span></div>
-            <div class="cw-tgt">目标 <b class="mono">120</b> mL</div>
-            <div class="cw-input" data-kb data-kb-max="3" data-kb-value="122"><span class="ph">122</span><span class="u">mL</span></div>
-            <button class="cw-test">测试</button>
-            <div class="cw-dev">+2<span class="u">mL</span></div>
-            <div class="cw-st done">已校准</div>
+            <div class="cw-top">
+              <div class="cw-name">
+                <span class="t">校准 120 mL<span class="dot ok"></span></span>
+              </div>
+              <div class="cw-st done">已校准</div>
+            </div>
+            <div class="cw-tgt">目标 <b class="mono">120</b> mL<span class="sep">·</span>上次 <span class="cw-last">08/27 10:23</span></div>
+            <div class="cw-ctl">
+              <div class="cw-input" data-kb data-kb-max="3" data-kb-value="122"><span class="ph">122</span><span class="u">mL</span></div>
+              <button class="cw-test">测试</button>
+            </div>
           </div>
 
           <div class="cw-row" data-target="150">
-            <div class="cw-name"><span class="t">校准 150 mL<span class="dot"></span></span><span class="cw-last">上次 --</span></div>
-            <div class="cw-tgt">目标 <b class="mono">150</b> mL</div>
-            <div class="cw-input empty" data-kb data-kb-max="3" data-kb-value="" data-kb-ph="--"><span class="ph">--</span><span class="u">mL</span></div>
-            <button class="cw-test">测试</button>
-            <div class="cw-dev">--<span class="u">mL</span></div>
-            <div class="cw-st todo">未校准</div>
+            <div class="cw-top">
+              <div class="cw-name">
+                <span class="t">校准 150 mL<span class="dot"></span></span>
+              </div>
+              <div class="cw-st todo">待校准</div>
+            </div>
+            <div class="cw-tgt">目标 <b class="mono">150</b> mL<span class="sep">·</span>上次 <span class="cw-last">--</span></div>
+            <div class="cw-ctl">
+              <div class="cw-input empty" data-kb data-kb-max="3" data-kb-value="" data-kb-ph="--"><span class="ph">--</span><span class="u">mL</span></div>
+              <button class="cw-test">测试</button>
+            </div>
           </div>
         </div>
 
@@ -231,35 +257,23 @@
     dirtyEl.classList.toggle('on', dirtyCount > 0);
   }
 
+  /* 状态只有两种：已校准 / 待校准（有实测值即已校准） */
   function applyRow(row) {
-    var target = Number(row.dataset.target);
     var inp = row.querySelector('.cw-input');
     var raw = inp.getAttribute('data-kb-value') || '';
-    var devEl = row.querySelector('.cw-dev');
     var stEl = row.querySelector('.cw-st');
     var dot = row.querySelector('.cw-name .dot');
 
     inp.classList.toggle('empty', raw === '');
 
     if (raw === '') {
-      devEl.innerHTML = '--<span class="u">mL</span>';
-      devEl.classList.remove('bad');
-      stEl.textContent = '未校准';
+      stEl.textContent = '待校准';
       stEl.className = 'cw-st todo';
       dot.className = 'dot';
-      return;
-    }
-
-    var actual = Number(raw);
-    var dev = actual - target;
-    var over = Math.abs(dev) > target * 0.05;
-    devEl.innerHTML = (dev > 0 ? '+' : dev < 0 ? '−' : ' ') + Math.abs(dev) + '<span class="u">mL</span>';
-    devEl.classList.toggle('bad', over);
-    dot.className = 'dot ' + (over ? 'bad' : 'ok');
-
-    if (row.dataset.dirty === '1') {
-      stEl.textContent = '待保存';
-      stEl.className = 'cw-st dirty';
+    } else {
+      stEl.textContent = '已校准';
+      stEl.className = 'cw-st done';
+      dot.className = 'dot ok';
     }
   }
 
@@ -311,7 +325,7 @@
       var stEl = row.querySelector('.cw-st');
       stEl.textContent = '已校准';
       stEl.className = 'cw-st done';
-      row.querySelector('.cw-last').textContent = '上次 ' + t;
+      row.querySelector('.cw-last').textContent = t;
     });
     lastEl.textContent = stamp(true);
     refresh();

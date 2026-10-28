@@ -66,25 +66,12 @@
   .pr-list::-webkit-scrollbar-thumb,.pr-nav-list::-webkit-scrollbar-thumb{
     background:#D6D6D0;border-radius:4px;}
 
-  /* 商品行 104px：序号 / 缩略图 / 名称+SKU / SKU排序入口 / ≡ / ↑ / ↓ */
-  .pr-row{height:104px;gap:14px;cursor:default;user-select:none;}
-  .pr-row .pm-thumb{width:64px;height:64px;flex:0 0 64px;}
+  /* 商品行 88px：序号 / 缩略图 / 名称 / ≡ / ↑ / ↓ */
+  .pr-row{height:88px;gap:14px;cursor:default;user-select:none;}
+  .pr-row .pm-thumb{width:56px;height:56px;flex:0 0 56px;}
 
   .pr-order{width:36px;flex:0 0 36px;text-align:right;font-family:var(--mono);
     font-size:16px;font-weight:700;color:var(--aux);}
-
-  .pr-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;}
-  .pr-info .pm-name{flex:none;}
-  .pr-sub{font-family:var(--mono);font-size:13px;color:var(--aux);letter-spacing:.5px;}
-
-  /* SKU 排序入口：统一黑底白字按钮；无 SKU 的商品同款按钮半透明、点了无反应 */
-  .pr-sublink{display:inline-flex;align-items:center;justify-content:center;height:40px;
-    padding:0 16px;background:var(--ink);color:#fff;font-size:14px;font-weight:600;
-    text-decoration:none;white-space:nowrap;border-radius:4px;transition:background .12s;}
-  .pr-sublink:hover{background:#000;}
-  .pr-sublink:active{background:#2B2B2B;}
-  .pr-sublink.is-off,.pr-sublink.is-off:hover,.pr-sublink.is-off:active{
-    background:var(--ink);color:#fff;opacity:.4;cursor:not-allowed;}
 
   .pr-handle{width:40px;height:40px;flex:0 0 40px;display:flex;align-items:center;justify-content:center;
     font-size:24px;color:var(--aux);cursor:grab;border-radius:4px;}
@@ -104,7 +91,7 @@
 </head>
 <body>
 <div class="vs-canvas">
-<div class="vs-topbar"><a class="vs-btn-line" href="beats-36-products.html">&#8592;&nbsp;返回</a><div class="page-title">商品排序</div><button class="vs-btn-line" style="margin-left:auto" id="save-btn" data-toast="已保存排序">保存</button></div>
+<div class="vs-topbar"><a class="vs-btn-line" href="beats-01-home.html">&#8592;&nbsp;返回</a><div class="page-title">商品排序</div><button class="vs-btn-line" style="margin-left:auto" id="save-btn" data-toast="已保存排序">保存</button></div>
 <main class="vs-main" style="gap:0">
   <div class="pr-wrap">
     <aside class="pr-nav">
@@ -130,67 +117,55 @@
 
 <script>
 (function () {
-  /* ---------------- 数据（与价格管理 42 同一批商品） ---------------- */
+  /* ---------------- 数据 ---------------- */
   var GROUPS = [
     { id: 'cs', name: '碳酸饮料' },
     { id: 'bt', name: '瓶装茶饮' },
     { id: 'jc', name: '果汁' },
     { id: 'mr', name: '乳饮' },
-    { id: 'wt', name: '水' },
-    { id: 'hp', name: '耳机' }
+    { id: 'wt', name: '水' }
   ];
 
   /* 数组顺序即展示顺序：同一分组内的相对先后可被拖动修改 */
   var PRODUCTS = [
-    { sku: 'SKU-CS-01', name: '可口可乐',     group: 'cs', skus: 0 },
-    { sku: 'SKU-CS-02', name: '百事可乐',     group: 'cs', skus: 0 },
-    { sku: 'SKU-CS-03', name: '无糖可乐',     group: 'cs', skus: 0 },
-    { sku: 'SKU-CS-04', name: '健怡可乐',     group: 'cs', skus: 0 },
-    { sku: 'SKU-CS-05', name: '雪碧',         group: 'cs', skus: 0 },
-    { sku: 'SKU-CS-06', name: '七喜',         group: 'cs', skus: 0 },
-    { sku: 'SKU-CS-07', name: '芬达橙味',     group: 'cs', skus: 0 },
-    { sku: 'SKU-CS-08', name: '美年达',       group: 'cs', skus: 0 },
+    { sku: 'SKU-CS-01', name: '可口可乐',     group: 'cs' },
+    { sku: 'SKU-CS-02', name: '百事可乐',     group: 'cs' },
+    { sku: 'SKU-CS-03', name: '无糖可乐',     group: 'cs' },
+    { sku: 'SKU-CS-04', name: '健怡可乐',     group: 'cs' },
+    { sku: 'SKU-CS-05', name: '雪碧',         group: 'cs' },
+    { sku: 'SKU-CS-06', name: '七喜',         group: 'cs' },
+    { sku: 'SKU-CS-07', name: '芬达橙味',     group: 'cs' },
+    { sku: 'SKU-CS-08', name: '美年达',       group: 'cs' },
 
-    { sku: 'SKU-BT-01', name: '冰红茶',       group: 'bt', skus: 0 },
-    { sku: 'SKU-BT-02', name: '冰绿茶',       group: 'bt', skus: 0 },
-    { sku: 'SKU-BT-03', name: '茉莉花茶',     group: 'bt', skus: 0 },
-    { sku: 'SKU-BT-04', name: '乌龙茶',       group: 'bt', skus: 0 },
-    { sku: 'SKU-BT-05', name: '王老吉',       group: 'bt', skus: 0 },
-    { sku: 'SKU-BT-06', name: '酸梅汤',       group: 'bt', skus: 0 },
+    { sku: 'SKU-BT-01', name: '冰红茶',       group: 'bt' },
+    { sku: 'SKU-BT-02', name: '冰绿茶',       group: 'bt' },
+    { sku: 'SKU-BT-03', name: '茉莉花茶',     group: 'bt' },
+    { sku: 'SKU-BT-04', name: '乌龙茶',       group: 'bt' },
+    { sku: 'SKU-BT-05', name: '王老吉',       group: 'bt' },
+    { sku: 'SKU-BT-06', name: '酸梅汤',       group: 'bt' },
 
-    { sku: 'SKU-JC-01', name: '橙汁',         group: 'jc', skus: 0 },
-    { sku: 'SKU-JC-02', name: '苹果汁',       group: 'jc', skus: 0 },
-    { sku: 'SKU-JC-03', name: '葡萄汁',       group: 'jc', skus: 0 },
-    { sku: 'SKU-JC-04', name: '芒果汁',       group: 'jc', skus: 0 },
-    { sku: 'SKU-JC-05', name: '桃汁',         group: 'jc', skus: 0 },
+    { sku: 'SKU-JC-01', name: '橙汁',         group: 'jc' },
+    { sku: 'SKU-JC-02', name: '苹果汁',       group: 'jc' },
+    { sku: 'SKU-JC-03', name: '葡萄汁',       group: 'jc' },
+    { sku: 'SKU-JC-04', name: '芒果汁',       group: 'jc' },
+    { sku: 'SKU-JC-05', name: '桃汁',         group: 'jc' },
 
-    { sku: 'SKU-MR-01', name: '阿萨姆奶茶',   group: 'mr', skus: 0 },
-    { sku: 'SKU-MR-02', name: '元气乳茶',     group: 'mr', skus: 0 },
-    { sku: 'SKU-MR-03', name: '豆奶',         group: 'mr', skus: 0 },
-    { sku: 'SKU-MR-04', name: '椰汁',         group: 'mr', skus: 0 },
-    { sku: 'SKU-MR-05', name: '纯牛奶',       group: 'mr', skus: 0 },
+    { sku: 'SKU-MR-01', name: '阿萨姆奶茶',   group: 'mr' },
+    { sku: 'SKU-MR-02', name: '元气乳茶',     group: 'mr' },
+    { sku: 'SKU-MR-03', name: '豆奶',         group: 'mr' },
+    { sku: 'SKU-MR-04', name: '椰汁',         group: 'mr' },
+    { sku: 'SKU-MR-05', name: '纯牛奶',       group: 'mr' },
 
-    { sku: 'SKU-WT-01', name: '矿泉水',       group: 'wt', skus: 0 },
-    { sku: 'SKU-WT-02', name: '纯净水',       group: 'wt', skus: 0 },
-    { sku: 'SKU-WT-03', name: '苏打气泡水',   group: 'wt', skus: 0 },
-
-    /* 耳机：下一级是颜色 SKU（黑色 / 云白色 / 粉色 / 晴空蓝色） */
-    { sku: 'SKU-HP-01', name: 'Beats 360',    group: 'hp', skus: 4 }
+    { sku: 'SKU-WT-01', name: '矿泉水',       group: 'wt' },
+    { sku: 'SKU-WT-02', name: '纯净水',       group: 'wt' },
+    { sku: 'SKU-WT-03', name: '苏打气泡水',   group: 'wt' }
   ];
-
-  /* SKU 排序入口带上商品上下文，49 页据此渲染该商品的 SKU 清单 */
-  function skuHref(p, gid) {
-    return 'beats-49-products-sort-5.html?p=' + encodeURIComponent(p.sku) +
-           '&n=' + encodeURIComponent(p.name) +
-           '&c=' + p.skus +
-           '&g=' + encodeURIComponent(gid);
-  }
 
   /* ---------------- 状态 ---------------- */
   var cur = 'cs';
   var dirty = false;
 
-  /* 从 SKU 排序页返回时带回来源分组（?g=hp），避免每次都跳回碳酸饮料 */
+  /* 允许从别的页面带 ?g=<分组> 直接落到某个分组 */
   (function initGroup() {
     var m = /[?&]g=([^&#]*)/.exec(location.search || '');
     if (!m) return;
@@ -265,14 +240,6 @@
   }
 
   /* ---------------- 渲染 ---------------- */
-  /* 无 SKU（skus 为 0）的商品不出链接，渲染成不可点的同款黑按钮 */
-  function skuBtn(p) {
-    if (!p.skus) {
-      return '<span class="pr-sublink is-off" title="该商品无 SKU，无需排序">SKU 排序 &#8250;</span>';
-    }
-    return '<a class="pr-sublink" href="' + skuHref(p, cur) + '">SKU 排序 &#8250;</a>';
-  }
-
   function arrowBtns(upOff, downOff) {
     return '<span class="pr-act">' +
              '<button class="pr-mv" data-mv="up" title="上移"' + (upOff ? ' disabled' : '') + '>&#8593;</button>' +
@@ -305,11 +272,7 @@
       return '<div class="pm-row pr-row" draggable="true" data-sku="' + p.sku + '">' +
                '<span class="pr-order">' + (i + 1) + '</span>' +
                '<div class="pm-thumb">商品图片</div>' +
-               '<div class="pr-info">' +
-                 '<div class="pm-name">' + p.name + '</div>' +
-                 '<div class="pr-sub">' + p.sku + (p.skus ? ' · ' + p.skus + ' 个SKU' : ' · 无 SKU') + '</div>' +
-               '</div>' +
-               skuBtn(p) +
+               '<div class="pm-name">' + p.name + '</div>' +
                '<span class="pr-handle" title="拖动排序">&#8801;</span>' +
                arrowBtns(i === 0, i === list.length - 1) +
              '</div>';

@@ -8,6 +8,14 @@
 <style>
 a.vs-quick-btn,a.vs-more-btn{text-decoration:none;}
 
+/* ---- 本页：开门（绿色）/ 更多功能 4 列 ---- */
+.vs-q-door{--accent:var(--green);--accent-hover:#127A3B;--accent-active:#0F6531;}
+.vs-more-grid{grid-template-columns:repeat(4,1fr);}
+/* 更多功能里的绿色「开门」（白底按钮的绿色变体） */
+.vs-more-btn.vs-m-door{background:var(--green);border-color:var(--green);color:#FFFFFF;font-weight:600;}
+.vs-more-btn.vs-m-door:hover{background:#127A3B;border-color:#127A3B;}
+.vs-more-btn.vs-m-door:active{background:#0F6531;border-color:#0F6531;}
+
 /* ---- 本页：顶栏均匀分布 ---- */
 .vs-header{justify-content:space-between;position:relative;z-index:5;}
 .user-entry{cursor:pointer;user-select:none;display:flex;align-items:center;gap:4px;}
@@ -132,15 +140,15 @@ a.vs-quick-btn,a.vs-more-btn{text-decoration:none;}
     <section>
       <div class="vs-section-title">快捷操作</div>
       <div class="vs-quick-grid">
+        <button class="vs-quick-btn vs-q-door" data-modal="#door-confirm">
+          <span class="vs-quick-title">开门</span>
+        </button>
         <a class="vs-quick-btn vs-q-restock" href="beats-13-vm-ops-overview.html">
           <span class="vs-quick-title">补货</span>
           <span class="vs-quick-sub">上次补货：<span class="mono">08/01 11:02</span></span>
         </a>
         <a class="vs-quick-btn vs-q-stats" href="beats-45-products-sort-1.html">
           <span class="vs-quick-title">商品排序</span>
-        </a>
-        <a class="vs-quick-btn vs-q-goods" href="beats-42-products-price-1.html">
-          <span class="vs-quick-title">商品价格</span>
         </a>
         <button class="vs-quick-btn vs-q-ops" data-href="beats-32-eng-unit-test.html">
           <span class="vs-quick-title">测试出货</span>
@@ -157,14 +165,31 @@ a.vs-quick-btn,a.vs-more-btn{text-decoration:none;}
       <div class="vs-more-grid">
         <button class="vs-more-btn" data-href="beats-02-settings-device.html">基本设置</button>
         <button class="vs-more-btn" data-href="beats-03-settings-users.html">账号设置</button>
-        <a class="vs-more-btn" href="beats-36-products.html">商品管理</a>
         <button class="vs-more-btn" data-href="beats-54-alerts.html">告警</button>
-        <button class="vs-more-btn" data-href="beats-53-stats.html">统计</button>
-        <button class="vs-more-btn">预留5</button>
+        <button class="vs-more-btn vs-m-door" data-modal="#door-confirm">开门</button>
       </div>
     </section>
 
   </main>
+
+  <!-- 二次确认：开门 -->
+  <div class="vs-overlay" id="door-confirm">
+    <div class="vs-modal">
+      <div class="modal-head">
+        <div>
+          <div class="modal-tag">CONFIRM</div>
+          <div class="modal-title" style="margin-top:6px">开门</div>
+        </div>
+        <button class="vs-modal-close" data-close-hide>&#10005;</button>
+      </div>
+      <hr class="modal-divider">
+      <div class="modal-desc">确定要打开设备柜门吗？<br>开门前请确认设备已停止出货，取放商品后请及时关门。</div>
+      <div class="md-foot">
+        <button class="md-btn md-btn-line" data-close-hide>取消</button>
+        <button class="md-btn md-btn-dark" data-close-hide data-toast="开门指令已发送">确认开门</button>
+      </div>
+    </div>
+  </div>
 
   <!-- 二次确认：退出登录 -->
   <div class="vs-overlay" id="logout-confirm">

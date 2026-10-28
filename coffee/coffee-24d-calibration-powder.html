@@ -8,7 +8,8 @@
   /* ---- 左右结构：左栏 300（同 24c / 42 页）· 右栏自适应 ---- */
   .cp-wrap{flex:1;display:flex;gap:32px;min-height:0;}
 
-  .cp-nav{width:300px;flex:0 0 300px;background:var(--card);border:1px solid var(--line);
+  .cp-nav{width:300px;flex:0 0 300px;align-self:flex-start;max-height:100%;
+    background:var(--card);border:1px solid var(--line);
     border-radius:6px;display:flex;flex-direction:column;overflow:hidden;}
   .cp-nav-head{height:56px;flex:0 0 56px;display:flex;align-items:center;justify-content:space-between;
     padding:0 20px;font-size:15px;color:var(--aux);border-bottom:1px solid var(--line-soft);}
@@ -34,40 +35,31 @@
   .cp-save{margin-left:auto;min-width:112px;height:48px;font-size:15px;}
   .cp-save[disabled]{opacity:.38;cursor:default;pointer-events:none;}
 
-  .cp-hint{height:48px;flex:0 0 48px;display:flex;align-items:center;gap:10px;
-    padding:0 18px;background:var(--card);border:1px solid var(--line);border-radius:6px;
-    font-size:14px;color:var(--sub);}
-  .cp-hint .i{flex:0 0 auto;width:18px;height:18px;border-radius:50%;background:var(--dark);color:#FFF;
-    font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;
-    font-family:var(--mono);}
+  /* ---- 规格卡：一排三个（3+2 两行），一屏内放完 5 个出粉基准 ---- */
+  .cp-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-content:start;}
 
-  /* ---- 基准行 ---- */
-  .cp-card{flex:1;min-height:0;background:var(--card);border:1px solid var(--line);border-radius:6px;
-    display:flex;flex-direction:column;overflow:hidden;}
-  .cp-row{flex:1;min-height:96px;display:grid;
-    grid-template-columns:160px 96px 112px 152px 84px 80px 1fr;
-    align-items:center;gap:12px;padding:0 20px;border-bottom:1px solid var(--line-soft);}
-  .cp-row:last-child{border-bottom:none;}
+  .cp-row{height:208px;min-width:0;display:flex;flex-direction:column;gap:12px;padding:18px 20px;
+    background:var(--card);border:1px solid var(--line);border-radius:6px;}
 
-  .cp-name{display:flex;flex-direction:column;gap:5px;}
-  .cp-name .t{font-size:18px;font-weight:700;white-space:nowrap;}
-  .cp-name .cp-last{font-family:var(--mono);font-size:12px;color:var(--aux);white-space:nowrap;}
+  .cp-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;min-width:0;}
+
+  .cp-name{display:flex;flex-direction:column;gap:6px;min-width:0;}
+  .cp-name .t{font-size:19px;font-weight:700;white-space:nowrap;}
   .cp-name .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--line-btn);
     margin-left:8px;vertical-align:middle;}
   .cp-name .dot.bad{background:var(--red);}
   .cp-name .dot.ok{background:var(--green);}
 
-  .cp-tgt{font-size:14px;color:var(--aux);white-space:nowrap;}
-  .cp-tgt .mono{color:var(--sub);font-weight:500;}
+  .cp-meta{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--aux);white-space:nowrap;}
+  .cp-meta .mono{color:var(--sub);font-weight:600;}
+  .cp-meta .sep{color:#C9C9C0;}
 
-  /* 下料时间：系统只读 */
-  .cp-time{display:flex;align-items:baseline;gap:5px;height:36px;padding:0 10px;
-    background:#F4F4EF;border:1px solid var(--line-soft);border-radius:4px;width:fit-content;}
-  .cp-time .lb{font-size:12px;color:var(--aux);}
-  .cp-time .mono{font-size:15px;font-weight:600;color:var(--sub);}
-  .cp-time .u{font-size:12px;color:var(--aux);}
+  .cp-tgt{font-size:13px;color:var(--aux);white-space:nowrap;margin-top:-6px;}
+  .cp-last{font-family:var(--mono);font-size:13px;color:var(--aux);}
 
-  .cp-input{height:56px;display:flex;align-items:center;justify-content:space-between;
+  .cp-ctl{display:flex;align-items:center;gap:10px;margin-top:auto;}
+
+  .cp-input{flex:1;min-width:0;height:56px;display:flex;align-items:center;justify-content:space-between;
     padding:0 16px;border:1px solid var(--line-btn);border-radius:4px;background:var(--card);
     font-family:var(--mono);font-size:19px;font-weight:600;cursor:pointer;}
   .cp-input:hover{border-color:#999;}
@@ -75,18 +67,13 @@
   .cp-input .u{font-family:var(--sans);font-size:14px;font-weight:500;color:var(--aux);}
   .cp-input.empty .ph{color:var(--aux);font-weight:400;}
 
-  .cp-test{height:48px;width:84px;background:var(--card);border:1px solid var(--line-btn);
+  .cp-test{flex:0 0 84px;width:84px;height:56px;background:var(--card);border:1px solid var(--line-btn);
     border-radius:4px;font-family:var(--sans);font-size:15px;font-weight:600;color:var(--ink);cursor:pointer;}
   .cp-test:hover{background:#F0F0EC;}
   .cp-test[disabled]{opacity:.55;cursor:default;}
   .cp-test.run{background:var(--dark);border-color:var(--dark);color:#FFF;opacity:1;}
 
-  .cp-dev{font-family:var(--mono);font-size:17px;font-weight:600;color:var(--sub);white-space:nowrap;}
-  .cp-dev .u{font-family:var(--sans);font-size:13px;color:var(--aux);margin-left:3px;font-weight:500;}
-  .cp-dev.bad{color:var(--red);}
-  .cp-dev.bad .u{color:var(--red);}
-
-  .cp-st{font-size:14px;color:var(--aux);text-align:right;white-space:nowrap;font-weight:500;}
+  .cp-st{flex:0 0 auto;font-size:14px;color:var(--aux);text-align:right;white-space:nowrap;font-weight:500;}
   .cp-st.done{color:var(--green);}
   .cp-st.dirty{color:var(--orange);font-weight:700;}
   .cp-st.todo{color:var(--aux);}
@@ -112,15 +99,16 @@
   <main class="vs-main" style="gap:0;">
     <div class="cp-wrap">
 
-      <!-- 左栏：7 项（水量 + 粉盒 1~6） -->
+      <!-- 左栏：8 项（研磨粉 + 水量 + 粉盒 1~6），三页互通 -->
       <aside class="cp-nav">
-        <div class="cp-nav-head"><span>校准项</span><span class="n">7 项</span></div>
+        <div class="cp-nav-head"><span>校准项</span><span class="n">8 项</span></div>
         <div class="cp-nav-list">
-          <button class="cp-g" data-href="coffee-24c-calibration-water.html">水量校准<span class="st">5 项</span></button>
-          <button class="cp-g" data-box="1" data-href="coffee-24d-calibration-powder.html?box=1">粉盒校准(1)<span class="st">已校准 08/26</span></button>
-          <button class="cp-g" data-box="2" data-href="coffee-24d-calibration-powder.html?box=2">粉盒校准(2)<span class="st">已校准 08/26</span></button>
-          <button class="cp-g" data-box="3" data-href="coffee-24d-calibration-powder.html?box=3">粉盒校准(3)<span class="st">已校准 08/25</span></button>
-          <button class="cp-g" data-box="4" data-href="coffee-24d-calibration-powder.html?box=4">粉盒校准(4)<span class="st">已校准 08/25</span></button>
+          <button class="cp-g" data-href="coffee-24-calibration-grind.html">研磨粉校准<span class="st">已校准</span></button>
+          <button class="cp-g" data-href="coffee-24c-calibration-water.html">水量校准<span class="st">已校准</span></button>
+          <button class="cp-g" data-box="1" data-href="coffee-24d-calibration-powder.html?box=1">粉盒校准(1)<span class="st">已校准</span></button>
+          <button class="cp-g" data-box="2" data-href="coffee-24d-calibration-powder.html?box=2">粉盒校准(2)<span class="st">已校准</span></button>
+          <button class="cp-g" data-box="3" data-href="coffee-24d-calibration-powder.html?box=3">粉盒校准(3)<span class="st">已校准</span></button>
+          <button class="cp-g" data-box="4" data-href="coffee-24d-calibration-powder.html?box=4">粉盒校准(4)<span class="st">已校准</span></button>
           <button class="cp-g" data-box="5" data-href="coffee-24d-calibration-powder.html?box=5">粉盒校准(5)<span class="st todo">待校准</span></button>
           <button class="cp-g" data-box="6" data-href="coffee-24d-calibration-powder.html?box=6">粉盒校准(6)<span class="st todo">待校准</span></button>
         </div>
@@ -134,60 +122,70 @@
           <button class="vs-btn-line cp-save" id="cp-save" disabled>保存</button>
         </div>
 
-        <div class="cp-hint">
-          <span class="i">i</span>
-          <span>称重取实际出粉量（保留一位小数）；偏差超 ±5%（最小 0.2 g）时建议连续校准三次取均值</span>
-        </div>
-
-        <div class="cp-card" id="cp-list">
+        <div class="cp-grid" id="cp-list">
           <div class="cp-row" data-target="5" data-time="1.5">
-            <div class="cp-name"><span class="t">校准出粉 5 g<span class="dot ok"></span></span><span class="cp-last">上次 08/26 09:10</span></div>
-            <div class="cp-tgt">目标 <b class="mono">5.0</b> g</div>
-            <div class="cp-time"><span class="lb">下料</span><span class="mono">1.5</span><span class="u">s</span></div>
-            <div class="cp-input" data-kb data-kb-max="3" data-kb-value="5.0"><span class="ph">5.0</span><span class="u">g</span></div>
-            <button class="cp-test">测试</button>
-            <div class="cp-dev">+0.0<span class="u">g</span></div>
-            <div class="cp-st done">已校准</div>
+            <div class="cp-top">
+              <div class="cp-name"><span class="t">校准出粉 5 g<span class="dot ok"></span></span></div>
+              <div class="cp-st done">已校准</div>
+            </div>
+            <div class="cp-meta">目标 <b class="mono">5.0</b> g<span class="sep">·</span>下料 <span class="mono">1.5</span> s</div>
+            <div class="cp-tgt">上次 <span class="cp-last">08/26 09:10</span></div>
+            <div class="cp-ctl">
+              <div class="cp-input" data-kb data-kb-max="3" data-kb-value="5.0"><span class="ph">5.0</span><span class="u">g</span></div>
+              <button class="cp-test">测试</button>
+            </div>
           </div>
 
           <div class="cp-row" data-target="15" data-time="4.5">
-            <div class="cp-name"><span class="t">校准出粉 15 g<span class="dot ok"></span></span><span class="cp-last">上次 08/26 09:10</span></div>
-            <div class="cp-tgt">目标 <b class="mono">15.0</b> g</div>
-            <div class="cp-time"><span class="lb">下料</span><span class="mono">4.5</span><span class="u">s</span></div>
-            <div class="cp-input" data-kb data-kb-max="3" data-kb-value="15.2"><span class="ph">15.2</span><span class="u">g</span></div>
-            <button class="cp-test">测试</button>
-            <div class="cp-dev">+0.2<span class="u">g</span></div>
-            <div class="cp-st done">已校准</div>
+            <div class="cp-top">
+              <div class="cp-name"><span class="t">校准出粉 15 g<span class="dot ok"></span></span></div>
+              <div class="cp-st done">已校准</div>
+            </div>
+            <div class="cp-meta">目标 <b class="mono">15.0</b> g<span class="sep">·</span>下料 <span class="mono">4.5</span> s</div>
+            <div class="cp-tgt">上次 <span class="cp-last">08/26 09:10</span></div>
+            <div class="cp-ctl">
+              <div class="cp-input" data-kb data-kb-max="3" data-kb-value="15.2"><span class="ph">15.2</span><span class="u">g</span></div>
+              <button class="cp-test">测试</button>
+            </div>
           </div>
 
           <div class="cp-row" data-target="20" data-time="6.0">
-            <div class="cp-name"><span class="t">校准出粉 20 g<span class="dot ok"></span></span><span class="cp-last">上次 08/26 09:10</span></div>
-            <div class="cp-tgt">目标 <b class="mono">20.0</b> g</div>
-            <div class="cp-time"><span class="lb">下料</span><span class="mono">6.0</span><span class="u">s</span></div>
-            <div class="cp-input" data-kb data-kb-max="3" data-kb-value="19.8"><span class="ph">19.8</span><span class="u">g</span></div>
-            <button class="cp-test">测试</button>
-            <div class="cp-dev">−0.2<span class="u">g</span></div>
-            <div class="cp-st done">已校准</div>
+            <div class="cp-top">
+              <div class="cp-name"><span class="t">校准出粉 20 g<span class="dot ok"></span></span></div>
+              <div class="cp-st done">已校准</div>
+            </div>
+            <div class="cp-meta">目标 <b class="mono">20.0</b> g<span class="sep">·</span>下料 <span class="mono">6.0</span> s</div>
+            <div class="cp-tgt">上次 <span class="cp-last">08/26 09:10</span></div>
+            <div class="cp-ctl">
+              <div class="cp-input" data-kb data-kb-max="3" data-kb-value="19.8"><span class="ph">19.8</span><span class="u">g</span></div>
+              <button class="cp-test">测试</button>
+            </div>
           </div>
 
           <div class="cp-row" data-target="25" data-time="7.3">
-            <div class="cp-name"><span class="t">校准出粉 25 g<span class="dot ok"></span></span><span class="cp-last">上次 08/26 09:10</span></div>
-            <div class="cp-tgt">目标 <b class="mono">25.0</b> g</div>
-            <div class="cp-time"><span class="lb">下料</span><span class="mono">7.3</span><span class="u">s</span></div>
-            <div class="cp-input" data-kb data-kb-max="3" data-kb-value="25.1"><span class="ph">25.1</span><span class="u">g</span></div>
-            <button class="cp-test">测试</button>
-            <div class="cp-dev">+0.1<span class="u">g</span></div>
-            <div class="cp-st done">已校准</div>
+            <div class="cp-top">
+              <div class="cp-name"><span class="t">校准出粉 25 g<span class="dot ok"></span></span></div>
+              <div class="cp-st done">已校准</div>
+            </div>
+            <div class="cp-meta">目标 <b class="mono">25.0</b> g<span class="sep">·</span>下料 <span class="mono">7.3</span> s</div>
+            <div class="cp-tgt">上次 <span class="cp-last">08/26 09:10</span></div>
+            <div class="cp-ctl">
+              <div class="cp-input" data-kb data-kb-max="3" data-kb-value="25.1"><span class="ph">25.1</span><span class="u">g</span></div>
+              <button class="cp-test">测试</button>
+            </div>
           </div>
 
           <div class="cp-row" data-target="30" data-time="9.3">
-            <div class="cp-name"><span class="t">校准出粉 30 g<span class="dot ok"></span></span><span class="cp-last">上次 08/26 09:10</span></div>
-            <div class="cp-tgt">目标 <b class="mono">30.0</b> g</div>
-            <div class="cp-time"><span class="lb">下料</span><span class="mono">9.3</span><span class="u">s</span></div>
-            <div class="cp-input" data-kb data-kb-max="3" data-kb-value="30.4"><span class="ph">30.4</span><span class="u">g</span></div>
-            <button class="cp-test">测试</button>
-            <div class="cp-dev">+0.4<span class="u">g</span></div>
-            <div class="cp-st done">已校准</div>
+            <div class="cp-top">
+              <div class="cp-name"><span class="t">校准出粉 30 g<span class="dot ok"></span></span></div>
+              <div class="cp-st done">已校准</div>
+            </div>
+            <div class="cp-meta">目标 <b class="mono">30.0</b> g<span class="sep">·</span>下料 <span class="mono">9.3</span> s</div>
+            <div class="cp-tgt">上次 <span class="cp-last">08/26 09:10</span></div>
+            <div class="cp-ctl">
+              <div class="cp-input" data-kb data-kb-max="3" data-kb-value="30.4"><span class="ph">30.4</span><span class="u">g</span></div>
+              <button class="cp-test">测试</button>
+            </div>
           </div>
         </div>
 
@@ -270,7 +268,7 @@
       var inp = row.querySelector('.cp-input');
       inp.querySelector('.ph').textContent = v === '' ? '--' : v;
       inp.setAttribute('data-kb-value', v);
-      row.querySelector('.cp-last').textContent = '上次 ' + (data.short || '--');
+      row.querySelector('.cp-last').textContent = data.short || '--';
       row.dataset.dirty = '0';
       applyRow(row);
     });
@@ -286,37 +284,23 @@
     dirtyEl.classList.toggle('on', dirtyCount > 0);
   }
 
+  /* 状态只有两种：已校准 / 待校准（有实测值即已校准） */
   function applyRow(row) {
-    var target = Number(row.dataset.target);
     var inp = row.querySelector('.cp-input');
     var raw = inp.getAttribute('data-kb-value') || '';
-    var devEl = row.querySelector('.cp-dev');
     var stEl = row.querySelector('.cp-st');
     var dot = row.querySelector('.cp-name .dot');
 
     inp.classList.toggle('empty', raw === '');
 
     if (raw === '') {
-      devEl.innerHTML = '--<span class="u">g</span>';
-      devEl.classList.remove('bad');
-      stEl.textContent = '未校准';
+      stEl.textContent = '待校准';
       stEl.className = 'cp-st todo';
       dot.className = 'dot';
-      return;
-    }
-
-    var actual = Number(raw);
-    var dev = actual - target;
-    var tol = Math.max(0.2, target * 0.05);
-    var over = Math.abs(dev) > tol + 1e-9;
-    var abs = Math.abs(dev);
-    devEl.innerHTML = (dev >= 0 ? '+' : '−') + (abs < 0.05 ? '0.0' : fmt1(abs)) + '<span class="u">g</span>';
-    devEl.classList.toggle('bad', over);
-    dot.className = 'dot ' + (over ? 'bad' : 'ok');
-
-    if (row.dataset.dirty === '1') {
-      stEl.textContent = '待保存';
-      stEl.className = 'cp-st dirty';
+    } else {
+      stEl.textContent = '已校准';
+      stEl.className = 'cp-st done';
+      dot.className = 'dot ok';
     }
   }
 
@@ -376,13 +360,13 @@
       var stEl = row.querySelector('.cp-st');
       stEl.textContent = '已校准';
       stEl.className = 'cp-st done';
-      row.querySelector('.cp-last').textContent = '上次 ' + t;
+      row.querySelector('.cp-last').textContent = t;
     });
     lastEl.textContent = stamp(true);
     var mine = navs.filter(function (b) { return b.dataset.box === String(box); })[0];
     if (mine) {
       var st = mine.querySelector('.st');
-      st.textContent = '已校准 ' + t.slice(0, 5);
+      st.textContent = '已校准';
       st.classList.remove('todo');
     }
     refresh();
