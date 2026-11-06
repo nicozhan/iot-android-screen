@@ -84,6 +84,45 @@
   .role-pwd-btn:active{background:#FDEEE4;}
   .role-note{margin-top:20px;font-size:14px;color:var(--aux);}
 
+  /* ==== 面板三 · 功能权限矩阵（功能 × 角色，打勾） ==== */
+  .perm-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:24px 0 14px;}
+  .perm-head .vs-sub-title{margin:0;}
+  .perm-legend{display:flex;align-items:center;gap:18px;font-size:13px;color:var(--aux);}
+  .perm-legend span{display:inline-flex;align-items:center;gap:6px;}
+  .perm-legend i{width:12px;height:12px;border-radius:3px;border:1px solid var(--line-btn);display:inline-block;}
+  .perm-legend i.on{background:var(--ink);border-color:var(--ink);}
+  .perm-legend i.lock{border-style:dashed;background:#F4F4EE;}
+
+  .perm-wrap{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;}
+  .perm-table{background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden;}
+  .perm-row{display:grid;grid-template-columns:1fr 86px 86px 86px;align-items:center;
+    border-bottom:1px solid var(--line-soft);}
+  .perm-row:last-child{border-bottom:none;}
+  .perm-row.head{height:50px;background:#FAFAF7;border-bottom:1px solid var(--line);
+    font-size:14px;font-weight:700;color:var(--sub);}
+  .perm-row.group{height:36px;background:#FAFAF7;}
+  .perm-row.item{height:52px;}
+  .perm-row.item:hover{background:#FCFCFA;}
+  .perm-fn{padding:0 14px 0 22px;font-size:15px;font-weight:600;color:var(--ink);line-height:1.25;}
+  .perm-fn em{display:block;font-style:normal;font-size:12px;font-weight:400;
+    color:var(--aux);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .perm-g{padding-left:22px;font-size:12px;font-weight:700;letter-spacing:1.5px;color:var(--aux);}
+  .perm-row.head .perm-cell{justify-content:center;}
+  .perm-cell{display:flex;align-items:center;justify-content:center;}
+  .perm-box{width:24px;height:24px;border-radius:4px;border:1px solid var(--line-btn);
+    background:var(--card);display:flex;align-items:center;justify-content:center;
+    font-size:14px;font-weight:700;line-height:1;color:#FFFFFF;cursor:pointer;user-select:none;}
+  .perm-box:hover{border-color:var(--ink);}
+  .perm-box.on{background:var(--ink);border-color:var(--ink);}
+  .perm-box.lock{border-style:dashed;background:#F4F4EE;color:var(--aux);
+    cursor:not-allowed;}
+  .perm-box.lock svg{width:13px;height:13px;display:block;}
+  .perm-box.lock:hover{border-color:var(--line-btn);}
+  .perm-legend .lk{width:14px;height:14px;border:1px dashed var(--line-btn);border-radius:3px;
+    background:#F4F4EE;color:var(--aux);display:inline-flex;align-items:center;justify-content:center;}
+  .perm-legend .lk svg{width:9px;height:9px;display:block;}
+  .perm-foot{margin-top:14px;font-size:14px;color:var(--aux);}
+
   /* ==== 浮层内容样式 ==== */
   .loading-modal{
     width:360px;background:var(--card);
@@ -289,6 +328,20 @@
       </div>
 
       <div class="role-note">注：仅店长可以修改其他角色的口令和权限。</div>
+
+      <div class="perm-head">
+        <div class="vs-sub-title">功能权限</div>
+        <div class="perm-legend">
+          <span><i class="on"></i>可操作</span>
+          <span><i></i>不可操作</span>
+          <span><i class="lk"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.2" y="7" width="9.6" height="6.6" rx="1.6"/><path d="M5.6 7V5.1a2.4 2.4 0 0 1 4.8 0V7"/></svg></i>系统限制（仅店长可改）</span>
+        </div>
+      </div>
+      <div class="perm-wrap">
+        <div class="perm-table" data-perm-side="op"></div>
+        <div class="perm-table" data-perm-side="dev"></div>
+      </div>
+      <div class="perm-foot">注：打勾表示该角色可进入并使用对应功能；取消打勾后该功能对该角色隐藏。修改后点右下角「保存」生效。</div>
     </div>
 
   </main>
@@ -452,6 +505,140 @@
     resetAll();
     if (window.VS) window.VS.toast(t('口令已修改'));
   });
+})();
+</script>
+<script>
+/* =========================================================
+   功能权限矩阵 · 页面级逻辑
+   - 数据：功能（分两组：运营侧 / 设备侧）× 角色（店长 / 店员 / 工程师）
+   - 交互：点格子切换打勾；标灰虚线框为系统限制（如人员与口令仅店长）
+   - 持久化：localStorage['vs-fn-perm']，点页脚「保存」写入
+   ========================================================= */
+(function () {
+  var KEY = 'vs-fn-perm';
+  var ROLES = ['店长', '店员', '工程师'];
+
+  /* side：把 13 项功能拆成左右两张表，避免 1280×1280 画布内超出可视区 */
+  var GROUPS = [
+    { side: 'op', name: '日常运营', items: [
+      { id: 'door',  n: '开门 / 复位', d: '远程开柜门、设备复位' },
+      { id: 'stock', n: '补货',        d: '料盒与货道库存补充' },
+      { id: 'clean', n: '清洗',        d: '清洗动作与清洗策略' },
+      { id: 'test',  n: '出货测试',    d: '试出一杯，验证配方与出液' },
+      { id: 'alert', n: '告警处理',    d: '查看并确认设备告警' }
+    ]},
+    { side: 'op', name: '商品管理', items: [
+      { id: 'price', n: '商品价格', d: '单品定价、批量调价' },
+      { id: 'sort',  n: '商品排序', d: '售卖界面展示顺序' }
+    ]},
+    { side: 'dev', name: '设备维护', items: [
+      { id: 'cal',  n: '校准',           d: '研磨 / 水量 / 粉盒校准' },
+      { id: 'info', n: '设备信息与固件', d: '版本查看、网络测试、更新' },
+      { id: 'sync', n: '参数同步',       d: '下发并同步设备参数' }
+    ]},
+    { side: 'dev', name: '系统与权限', items: [
+      { id: 'local', n: '本机设置',   d: '点位、客服电话、购物车上限' },
+      { id: 'user',  n: '人员与口令', d: '角色口令与权限配置', lock: [0, 1, 1] },
+      { id: 'iot',   n: '高级 IoT',   d: '单动测试、传感器、参数调节' }
+    ]}
+  ];
+
+  /* 默认权限：1 = 打勾。lock 中为 1 的位置不可配置（系统限制） */
+  var DEFAULTS = {
+    door:  [1, 1, 1],
+    stock: [1, 1, 0],
+    clean: [1, 1, 1],
+    test:  [1, 1, 1],
+    alert: [1, 1, 1],
+    price: [1, 0, 0],
+    sort:  [1, 0, 0],
+    cal:   [1, 0, 1],
+    info:  [1, 1, 1],
+    sync:  [0, 0, 1],
+    local: [1, 0, 0],
+    user:  [1, 0, 0],
+    iot:   [0, 0, 1]
+  };
+
+  var state = {};
+  function clone(a) { return a.slice(); }
+  function initState() {
+    Object.keys(DEFAULTS).forEach(function (k) { state[k] = clone(DEFAULTS[k]); });
+    try {
+      var raw = JSON.parse(localStorage.getItem(KEY) || 'null');
+      if (raw && typeof raw === 'object') {
+        Object.keys(state).forEach(function (k) {
+          if (Array.isArray(raw[k]) && raw[k].length === 3) state[k] = raw[k].map(Number);
+        });
+      }
+    } catch (e) {}
+  }
+
+  function isLocked(it, r) {
+    return !!(it.lock && it.lock[r]);
+  }
+
+  function cellHtml(it, r) {
+    if (isLocked(it, r)) {
+      return '<span class="perm-box lock" title="系统限制：仅店长可配置">' +
+             '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">' +
+             '<rect x="3.2" y="7" width="9.6" height="6.6" rx="1.6"/>' +
+             '<path d="M5.6 7V5.1a2.4 2.4 0 0 1 4.8 0V7"/></svg></span>';
+    }
+    var on = state[it.id][r] ? ' on' : '';
+    return '<span class="perm-box' + on + '" data-perm="' + it.id + '" data-role="' + r +
+           '" title="' + ROLES[r] + ' · ' + (state[it.id][r] ? '可操作，点击取消' : '不可操作，点击授权') + '">' +
+           (state[it.id][r] ? '&#10003;' : '') + '</span>';
+  }
+
+  function rowHtml(it) {
+    var h = '<div class="perm-row item">' +
+            '<div class="perm-fn">' + it.n + '<em>' + it.d + '</em></div>';
+    for (var r = 0; r < 3; r++) h += '<div class="perm-cell">' + cellHtml(it, r) + '</div>';
+    return h + '</div>';
+  }
+
+  function tableHtml(side) {
+    var h = '<div class="perm-row head"><div class="perm-fn" style="padding-left:22px">功能</div>' +
+            ROLES.map(function (n) { return '<div class="perm-cell">' + n + '</div>'; }).join('') +
+            '</div>';
+    GROUPS.filter(function (g) { return g.side === side; }).forEach(function (g) {
+      h += '<div class="perm-row group"><div class="perm-g">' + g.name + '</div><div></div><div></div><div></div></div>';
+      g.items.forEach(function (it) { h += rowHtml(it); });
+    });
+    return h;
+  }
+
+  function render() {
+    ['op', 'dev'].forEach(function (side) {
+      var box = document.querySelector('.perm-table[data-perm-side="' + side + '"]');
+      if (box) box.innerHTML = tableHtml(side);
+    });
+  }
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+  }
+
+  initState();
+  render();
+
+  /* 点格子：切换打勾（锁定的格子点击无效） */
+  document.addEventListener('click', function (ev) {
+    var box = ev.target.closest && ev.target.closest('.perm-box[data-perm]');
+    if (!box) return;
+    var id = box.getAttribute('data-perm');
+    var r = Number(box.getAttribute('data-role'));
+    if (!state[id] || isNaN(r)) return;
+    state[id][r] = state[id][r] ? 0 : 1;
+    box.classList.toggle('on', !!state[id][r]);
+    box.innerHTML = state[id][r] ? '&#10003;' : '';
+    box.setAttribute('title', ROLES[r] + ' · ' + (state[id][r] ? '可操作，点击取消' : '不可操作，点击授权'));
+  });
+
+  /* 页脚「保存」：写入本地存储（toast 由引擎的 data-toast 负责） */
+  var saveBtn = document.querySelector('.vs-save-btn');
+  if (saveBtn) saveBtn.addEventListener('click', save);
 })();
 </script>
 </body>

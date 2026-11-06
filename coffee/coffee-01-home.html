@@ -44,14 +44,48 @@
   .lang-opt .lang-tag{font-size:12px;color:var(--aux);border:1px solid var(--line-btn);
     border-radius:3px;padding:1px 6px;}
 
-  /* ---- 快捷操作：4 列 × 2 行（当前 6 项 → 首行 4 个、次行 2 个，余位留空） ---- */
+  /* ---- 快捷入口：4 列（7 项 → 第二行由「本机设置」跨 2 格补满） ---- */
   .vs-quick-grid{grid-template-columns:repeat(4,1fr);}
+  .vs-quick-grid .vs-q-set{grid-column:span 2;}
   /* 出货测试：石板灰，与清洗/价格/补货/排序四色区分 */
   .vs-q-test{--accent:#58606B;--accent-hover:#4A515A;--accent-active:#3D434B;}
   /* 校准：紫，与其余五项区分 */
   .vs-q-cal{--accent:#6A5A9E;--accent-hover:#5B4C8A;--accent-active:#4D4076;}
-  /* ---- 更多功能：每行最多 6 个（7 项 → 首行 6、次行 1，余位留空） ---- */
-  .vs-more-grid{grid-template-columns:repeat(6,1fr);}
+  /* 本机设置：青（原「更多功能」三项合并后的唯一入口） */
+  .vs-q-set{--accent:#14707F;--accent-hover:#0F5F6C;--accent-active:#0C4F5A;}
+
+  /* ---- 设备操作：三个动作按钮，统一「大图标 + 轻文字」的图标按钮形态（E 方案） ---- */
+  .co-act-head{display:flex;align-items:baseline;gap:12px;margin:24px 0 12px;}
+  .co-act-title{font-size:15px;font-weight:700;color:var(--ink);}
+  .co-act-note{font-size:13px;color:var(--aux);}
+  /* 一行按 6 个按钮排版：当前 3 个占左侧 3 格，右侧预留 3 格给后续动作 */
+  .co-act-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px;}
+  .co-act-btn{height:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+    border-radius:6px;border:1px solid var(--dark);background:var(--dark);color:#FFFFFF;
+    font-family:var(--sans);font-size:15px;font-weight:500;line-height:1;cursor:pointer;
+    transition:background .12s ease,border-color .12s ease;}
+  .co-act-btn svg{width:40px;height:40px;flex:0 0 40px;}
+  .co-act-btn span{line-height:1;}
+  .co-act-btn:hover{background:#000;border-color:#000;}
+  .co-act-btn:active{background:#2B2B2B;border-color:#2B2B2B;}
+  /* 开门：绿色实心（与 beats 首页开门一致） */
+  .co-act-btn.is-door{background:var(--green);border-color:var(--green);}
+  .co-act-btn.is-door:hover{background:#127A3B;border-color:#127A3B;}
+  .co-act-btn.is-door:active{background:#0F6531;border-color:#0F6531;}
+  /* 同步参数：白底深描边，区分「次要动作」但仍明确是按钮 */
+  .co-act-btn.is-sync{background:var(--card);border:2px solid var(--ink);color:var(--ink);}
+  .co-act-btn.is-sync:hover{background:#F4F4EE;}
+  .co-act-btn.is-sync:active{background:#EDEDE5;}
+
+  /* ---- 高级（IoT）：固定钉在右下角的「厂家专用 APP」入口 ---- */
+  .co-iot-fab{position:fixed;right:26px;bottom:26px;z-index:70;
+    height:56px;padding:0 22px;display:inline-flex;align-items:center;gap:10px;
+    border-radius:28px;border:1px solid var(--dark);background:var(--dark);color:#FFFFFF;
+    font-family:var(--sans);font-size:15px;font-weight:700;cursor:pointer;
+    transition:background .12s ease,border-color .12s ease;}
+  .co-iot-fab svg{width:20px;height:20px;flex:0 0 20px;}
+  .co-iot-fab:hover{background:#000;border-color:#000;}
+  .co-iot-fab:active{background:#2B2B2B;border-color:#2B2B2B;}
 
   /* ---- 顶栏：文案均匀分布（品牌 / 设备ID / 时间 / 用户 等间距铺满整条） ---- */
   .vs-header{justify-content:space-between;}
@@ -63,6 +97,14 @@
   .modal-title{font-size:20px;font-weight:700;}
   .modal-divider{border:none;border-top:1px solid var(--line);margin:16px 0 20px;}
   .modal-desc{font-size:16px;line-height:1.7;color:var(--sub);}
+  /* 弹窗版式补齐（.vs-modal 本身无内边距；关闭键与底部按钮原先缺失，三个确认层都受影响） */
+  .vs-modal{padding:26px 28px 28px;}
+  .vs-modal-close{background:none;border:none;font-size:18px;color:var(--aux);cursor:pointer;line-height:1;padding:2px;}
+  .md-foot{display:flex;justify-content:center;gap:14px;margin-top:26px;}
+  .md-btn{height:52px;padding:0 28px;border-radius:4px;font-size:16px;font-weight:600;
+    font-family:var(--sans);cursor:pointer;border:1px solid transparent;}
+  .md-btn-line{background:var(--card);border-color:var(--line-btn);color:var(--ink);}
+  .md-btn-dark{background:var(--dark);border-color:var(--dark);color:#FFFFFF;}
 </style>
 </head>
 <body data-page-node-id="KqlDC8mUuoSYoIaFlaN2sO">
@@ -147,9 +189,9 @@
       </div>
     </section>
 
-    <!-- 快捷操作 -->
+    <!-- 快捷入口 -->
     <section data-page-node-id="PM1lUAcclPWOzW7wvJMrFe">
-      <div class="vs-section-title" data-page-node-id="wocSGN2AHXJlnVQnV4hcNX">快捷操作</div>
+      <div class="vs-section-title" data-page-node-id="wocSGN2AHXJlnVQnV4hcNX">快捷入口</div>
       <div class="vs-quick-grid" data-page-node-id="7xmG8vrZ2O8lC9EOAjMAVt">
         <button class="vs-quick-btn vs-q-clean" data-page-node-id="SiDABonJR9NyHOtPAVEI96" data-href="coffee-16-cleaning.html">
           <span class="vs-quick-title" data-page-node-id="wwBHl4sk3u17EDEjzbiWZk">清洗</span>
@@ -172,24 +214,72 @@
           <span class="vs-quick-title" data-page-node-id="Dz7Qm5tCalib0002">校准</span>
           <span class="vs-quick-sub" data-page-node-id="Dz7Qm5tCalib0003">上次校准：<span class="mono" data-page-node-id="Dz7Qm5tCalib0004">08/28 14:30</span></span>
         </button>
+        <button class="vs-quick-btn vs-q-set" data-href="coffee-09-device-info.html?tab=local">
+          <span class="vs-quick-title">本机设置</span>
+          <span class="vs-quick-sub">本机 / 设备信息 / 应用权限</span>
+        </button>
       </div>
     </section>
 
-    <!-- 更多功能 -->
+    <!-- 设备操作区（原「更多功能」的三项已合并为上方「本机设置」入口） -->
     <section class="vs-more-section" data-page-node-id="gm9Qd1hYiybl6yTfAlszeG">
-      <div class="vs-section-title sm" data-page-node-id="dXqEFOwrBF9q8kXRGHgixI">更多功能</div>
-      <div class="vs-more-grid" data-page-node-id="LkSwglHpgW2PYFhwyNBTPb">
-        <button class="vs-more-btn" data-page-node-id="5ZIRinoBAVedA3EsPOgf7h" data-href="coffee-09-device-info.html?tab=local">本机设置</button>
-        <button class="vs-more-btn" data-page-node-id="h1TH3AW7cqZ7ovpwilGXNK" data-href="coffee-09-device-info.html?tab=device">设备信息</button>
-        <button class="vs-more-btn" data-page-node-id="tC3G8pR0d8aauUcflBjNgr" data-href="coffee-09-device-info.html?tab=perm">账号设置</button>
-        <button class="vs-more-btn" data-page-node-id="1McHYJXTErWHE4L4hxcR7j" data-href="coffee-31-eng-settings.html">高级（IoT）</button>
-        <button class="vs-more-btn" data-page-node-id="MdYLWegix63zgkIPJwH3AF" data-toast="已下发开门指令">开门</button>
-        <button class="vs-more-btn" data-page-node-id="T3BcRSQMjepreEatJ4OJMU" data-toast="已下发复位指令">复位</button>
-        <button class="vs-more-btn" data-page-node-id="2uc47Dnr4QokJXKUAQK3PV" data-toast="正在同步设备参数…">同步参数</button>
+      <!-- 设备操作：三个可点按的动作按钮（实心/描边 + 图标 + 点击即刻执行） -->
+      <div class="co-act-head">
+        <span class="co-act-title">设备操作</span>
+        <span class="co-act-note">点击即刻执行</span>
+      </div>
+      <div class="co-act-grid">
+        <button class="co-act-btn is-door" data-page-node-id="MdYLWegix63zgkIPJwH3AF" data-toast="已下发开门指令">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 21V4a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v17"/><path d="M3 21h18"/><path d="M15 12h6"/><path d="M18.5 9.5 21 12l-2.5 2.5"/>
+          </svg>
+          <span>开门</span>
+        </button>
+        <button class="co-act-btn is-reset" data-page-node-id="T3BcRSQMjepreEatJ4OJMU" data-toast="已下发复位指令">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20.5 12a8.5 8.5 0 1 1-2.5-6"/><path d="M20.5 3.5V9H15"/>
+          </svg>
+          <span>复位</span>
+        </button>
+        <button class="co-act-btn is-sync" data-page-node-id="2uc47Dnr4QokJXKUAQK3PV" data-toast="正在同步设备参数…">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M8 3v14"/><path d="M4.5 13.5 8 17l3.5-3.5"/><path d="M16 21V7"/><path d="M12.5 10.5 16 7l3.5 3.5"/>
+          </svg>
+          <span>同步参数</span>
+        </button>
       </div>
     </section>
 
   </main>
+</div>
+
+<!-- 高级（IoT）：固定在右下角，点击先二次确认再跳厂家专用 APP -->
+<button class="co-iot-fab" data-modal="#iot-confirm">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="3"/>
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.2.63.77 1.09 1.43 1.13H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+  </svg>
+  <span>高级（IoT）</span>
+</button>
+
+
+<!-- 二次确认：跳转厂家专用 APP -->
+<div class="vs-overlay" id="iot-confirm">
+  <div class="vs-modal" style="width:520px">
+    <div class="modal-head">
+      <div>
+        <div class="modal-tag">CONFIRM</div>
+        <div class="modal-title" style="margin-top:6px">跳转厂家专用 APP</div>
+      </div>
+      <button class="vs-modal-close" data-close-hide>&#10005;</button>
+    </div>
+    <hr class="modal-divider">
+    <div class="modal-desc">您确定要跳转至厂家专用 APP 吗？<br>IoT 高级设置需在厂家 APP 内完成，跳转后将离开本操作界面。</div>
+    <div class="md-foot">
+      <button class="md-btn md-btn-line" data-close-hide>取消</button>
+      <button class="md-btn md-btn-dark" data-href="coffee-31-eng-settings.html">确定跳转</button>
+    </div>
+  </div>
 </div>
 
 

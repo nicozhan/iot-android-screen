@@ -403,6 +403,7 @@
   "当前账号": "Current Account",
   "当前账号权限": "Current Account Permissions",
   "当前运营信息": "Current Ops Info",
+  "快捷入口": "Quick Access",
   "快捷操作": "Quick Actions",
   "总计补货数量： 66": "Total restock qty: 66",
   "或": "or",
